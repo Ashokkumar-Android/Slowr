@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_root"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/size_five"
+    app:cardBackgroundColor="@color/color_white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/img_ad"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_default_vertical" />
+
+            <TextView
+                android:id="@+id/txt_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_price"
+                android:fontFamily="@font/nunito_regular"
+                android:paddingLeft="@dimen/size_five"
+                android:paddingTop="@dimen/size_five"
+                android:paddingRight="@dimen/size_fifteen"
+                android:paddingBottom="@dimen/size_five"
+                android:text="₹ 600/day"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/size_ten" />
+            <LinearLayout
+                android:id="@+id/layout_promoted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginTop="@dimen/size_five"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/img_top_page_mark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="@dimen/size_five"
+                    android:layout_marginRight="@dimen/size_five"
+                    android:src="@drawable/ic_star_small" />
+
+                <ImageView
+                    android:id="@+id/txt_premium_mark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="@dimen/size_five"
+                    android:layout_marginRight="@dimen/size_five"
+                    android:src="@drawable/ic_crown_small" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/txt_ad_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/size_five"
+            android:fontFamily="@font/nunito_regular"
+            android:gravity="center"
+            android:maxLines="2"
+            android:minHeight="30dp"
+            android:text=""
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_twelve" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

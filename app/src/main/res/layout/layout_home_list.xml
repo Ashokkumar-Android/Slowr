@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/size_ten"
+    app:cardBackgroundColor="@color/color_white">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_list_title"
+                style="@style/attribute_title"
+                android:layout_marginLeft="@dimen/size_fifteen"
+                android:layout_marginTop="@dimen/size_five"
+                android:layout_weight="1"
+                android:fontFamily="@font/nunito_regular"
+                android:text="Popular Product"
+                android:textColor="@color/txt_orange" />
+
+            <TextView
+                android:id="@+id/txt_view_more"
+                style="@style/txt_nav_sub_title"
+                android:layout_gravity="right|center"
+                android:layout_marginRight="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_more"
+                android:textColor="@color/txt_orange"
+                android:textSize="@dimen/size_twelve"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_home_ad_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_five"
+            android:layout_marginBottom="@dimen/size_five"
+            android:background="@color/color_white"
+            android:paddingLeft="@dimen/size_five"
+            android:paddingRight="@dimen/size_five" />
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

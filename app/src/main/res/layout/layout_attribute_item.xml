@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_select_title"
+        style="@style/attribute_title"
+        android:layout_marginTop="@dimen/size_ten"
+        android:fontFamily="@font/nunito_regular"
+        android:text="" />
+
+    <LinearLayout
+        android:id="@+id/layout_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/layout_drop_down"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_select_content"
+                style="@style/attribute_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/nunito_regular"
+                android:text="" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center|right"
+                android:rotation="270"
+                android:src="@drawable/ic_backarrow" />
+        </LinearLayout>
+
+        <View style="@style/attribute_line" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edt_attributeValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:inputType="text|textCapSentences"
+            android:textSize="@dimen/size_fifteen" />
+
+
+        <View style="@style/attribute_line" />
+
+    </LinearLayout>
+
+</LinearLayout>

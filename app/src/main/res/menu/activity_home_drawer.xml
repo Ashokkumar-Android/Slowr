@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/gp_nav_home"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:title="@string/nav_home" />
+
+    </group>
+    <group
+        android:id="@+id/gp_dash_board"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dash_board"
+            android:title="@string/nav_dash_board" />
+    </group>
+    <group
+        android:id="@+id/gp_nav_favorites"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_favorites"
+            android:title="@string/nav_my_favorite" />
+
+    </group>
+    <group
+        android:id="@+id/gp_nav_profile"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_profile"
+            android:title="@string/txt_profile" />
+
+    </group>
+    <group
+        android:id="@+id/gp_nav_notification"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_notification"
+            android:title="@string/nav_notification" />
+
+    </group>
+    <group
+        android:id="@+id/gp_nav_invoice"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_invoice"
+            android:title="@string/transaction_history" />
+
+    </group>
+
+
+    <group
+        android:id="@+id/gp_privacy_policy"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_privacy_policy"
+            android:title="@string/nav_privacy_policy" />
+    </group>
+    <group
+        android:id="@+id/gp_terms_conditions"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_terms_conditions"
+            android:title="@string/nav_terms_conditions" />
+    </group>
+    <group
+        android:id="@+id/gp_report_us"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_report_us"
+            android:title="@string/nav_report_us" />
+    </group>
+    <group
+        android:id="@+id/gp_about_us"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_about_us"
+            android:title="@string/nav_about_us" />
+    </group>
+    <group
+        android:id="@+id/gp_logout"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_logout"
+            android:title="@string/nav_logout" />
+    </group>
+</menu>

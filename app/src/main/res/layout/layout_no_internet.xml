@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/size_twenty">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_no_network" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_twenty"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/no_internet_content_one"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_eighteen" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/size_twenty"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/no_internet_content_two"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_eighteen" />
+
+        <Button
+            android:id="@+id/btn_try_again"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginTop="@dimen/size_twenty"
+            android:background="@drawable/bg_orenge"
+            android:fontFamily="@font/nunito_regular"
+            android:gravity="center"
+            android:paddingLeft="@dimen/size_twenty"
+            android:paddingRight="@dimen/size_twenty"
+            android:text="@string/txt_try_again"
+            android:textAllCaps="false"
+            android:textColor="@color/color_white"
+            android:textSize="@dimen/size_thirteen" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

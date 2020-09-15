@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/txt_ad_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/size_ten"
+            android:layout_weight="1"
+            android:fontFamily="@font/nunito_regular"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_fifteen" />
+
+
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_delete_img"
+            android:background="@drawable/circle_ripple_effect"
+            android:padding="@dimen/size_ten"
+            android:tint="@color/color_black"/>
+
+    </LinearLayout>
+
+    <View style="@style/attribute_line" />
+</LinearLayout>

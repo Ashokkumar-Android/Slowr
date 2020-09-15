@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/page_bg"
+    android:orientation="vertical"
+    tools:context=".activity.UpgradeActivity">
+
+    <include layout="@layout/layout_header" />
+
+    <ScrollView
+        android:id="@+id/layout_upgrade"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/size_twenty">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_from_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_calender"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingLeft="@dimen/size_five"
+                        android:paddingRight="@dimen/size_five"
+                        android:text="@string/txt_from"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_sixteen" />
+
+                    <View style="@style/attribute_line" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/size_twenty"
+                    android:layout_height="1dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_to_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_calender"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingLeft="@dimen/size_five"
+                        android:paddingRight="@dimen/size_five"
+                        android:text="@string/txt_to"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_sixteen" />
+
+                    <View style="@style/attribute_line" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_ten"
+                    app:cardBackgroundColor="@color/color_white"
+                    app:cardCornerRadius="@dimen/size_five">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:layout_margin="@dimen/size_ten"
+                            android:src="@drawable/ic_star_big" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/size_ten">
+
+                            <TextView
+                                android:id="@+id/txt_top_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/promote_sample"
+                                android:textColor="@color/color_black"
+                                android:textSize="@dimen/size_sixteen" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.7"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/nunito_regular"
+                                        android:text="@string/txt_rupee_simpal"
+                                        android:textColor="@color/colorPrimaryDark"
+                                        android:textSize="@dimen/size_eighteen" />
+
+                                    <TextView
+                                        android:id="@+id/txt_top_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/size_five"
+                                        android:layout_marginTop="@dimen/size_fifteen"
+                                        android:fontFamily="@font/nunito_regular"
+                                        android:text="50"
+                                        android:textColor="@color/colorPrimaryDark"
+                                        android:textSize="@dimen/size_thirdy" />
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/size_fifteen"
+                                    android:fontFamily="@font/nunito_regular"
+                                    android:text="@string/txt_inc_tax"
+                                    android:textColor="@color/color_black"
+                                    android:textSize="@dimen/size_eighteen" />
+
+                                <Button
+                                    android:id="@+id/btn_select_top"
+                                    style="@style/LoginButtonStyle"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/size_fifteen"
+                                    android:layout_marginBottom="@dimen/size_twenty"
+                                    android:background="@drawable/bg_orenge"
+                                    android:text="@string/txt_select"
+                                    android:textSize="@dimen/size_fourteen" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="35dp"
+                    app:cardBackgroundColor="@android:color/transparent">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_blue_top_page"
+                        android:gravity="center"
+                        android:text="@string/txt_top_of_page"
+                        android:textColor="@color/color_white" />
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_ten"
+                    app:cardBackgroundColor="@color/color_white"
+                    app:cardCornerRadius="@dimen/size_five">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:layout_margin="@dimen/size_ten"
+                            android:src="@drawable/ic_crown_big" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/size_ten">
+
+                            <TextView
+                                android:id="@+id/txt_premium_content"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.3"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/promote_sample"
+                                android:textColor="@color/color_black"
+                                android:textSize="@dimen/size_sixteen" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.7"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/nunito_regular"
+                                        android:text="@string/txt_rupee_simpal"
+                                        android:textColor="@color/bg_green"
+                                        android:textSize="@dimen/size_eighteen" />
+
+                                    <TextView
+                                        android:id="@+id/txt_premium_price"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/size_five"
+                                        android:layout_marginTop="@dimen/size_fifteen"
+                                        android:fontFamily="@font/nunito_regular"
+                                        android:text="1000"
+                                        android:textColor="@color/bg_green"
+                                        android:textSize="@dimen/size_thirdy" />
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/size_fifteen"
+                                    android:fontFamily="@font/nunito_regular"
+                                    android:text="@string/txt_inc_tax"
+                                    android:textColor="@color/color_black"
+                                    android:textSize="@dimen/size_eighteen" />
+
+                                <Button
+                                    android:id="@+id/btn_select_premium"
+                                    style="@style/LoginButtonStyle"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/size_fifteen"
+                                    android:layout_marginBottom="@dimen/size_twenty"
+                                    android:background="@drawable/bg_orenge"
+                                    android:text="@string/txt_select"
+                                    android:textSize="@dimen/size_fourteen" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="35dp"
+                    app:cardBackgroundColor="@android:color/transparent">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_green_top_page"
+                        android:gravity="center"
+                        android:text="@string/txt_premium_caps"
+                        android:textColor="@color/color_white" />
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_search_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+
+        <EditText
+            android:id="@+id/edt_search_suggestion"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="@dimen/size_fifteen"
+            android:background="@drawable/bg_edt_login"
+            android:drawableRight="@drawable/ic_search"
+            android:hint="@string/search_prosper_id"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:paddingLeft="@dimen/size_ten"
+            android:paddingRight="@dimen/size_ten"
+            android:textSize="@dimen/size_fifteen" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/txt_prosper_suggestion"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_eighteen" />
+        <ImageView
+            android:id="@+id/img_fancy_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/size_ten"
+            android:src="@drawable/ic_fancy_page"/>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_ten"
+            android:layout_marginTop="@dimen/size_ten"
+            app:cardBackgroundColor="@color/color_white"
+            app:cardCornerRadius="@dimen/size_ten">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_prosperList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_success"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_twenty"
+            app:cardBackgroundColor="@color/color_white"
+            app:cardCornerRadius="@dimen/size_ten">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/size_twenty">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/promote_success"
+                    android:textAllCaps="true"
+                    android:textColor="@color/bg_green"
+                    android:textSize="@dimen/size_forty" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_success" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/promote_content_one"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/promote_content_two"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+                <Button
+                    android:id="@+id/btn_home_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_twenty"
+                    android:paddingRight="@dimen/size_twenty"
+                    android:text="@string/nav_dash_board"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_success_prosper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_twenty"
+            app:cardBackgroundColor="@color/color_white"
+            app:cardCornerRadius="@dimen/size_ten">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/size_twenty">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/txt_congratulations"
+                    android:textAllCaps="true"
+                    android:textColor="@color/txt_orange"
+                    android:textSize="@dimen/size_thirdy" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/propsper_success_content_one"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/prosper_id"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/edt_box_height" />
+
+                <TextView
+                    android:id="@+id/txt_prosper_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="AA1111"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/size_forty_five" />
+
+
+                <Button
+                    android:id="@+id/btn_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_twenty"
+                    android:paddingRight="@dimen/size_twenty"
+                    android:text="@string/txt_profile"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_twenty"
+            app:cardBackgroundColor="@color/color_white"
+            app:cardCornerRadius="@dimen/size_ten">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/size_twenty">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/promote_error"
+                    android:textAllCaps="true"
+                    android:textColor="@color/txt_orange"
+                    android:textSize="@dimen/size_forty" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/promote_content_error"
+                    android:gravity="center"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+
+
+                <Button
+                    android:id="@+id/btn_go_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_twenty"
+                    android:paddingRight="@dimen/size_twenty"
+                    android:text="@string/txt_go_back"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</LinearLayout>

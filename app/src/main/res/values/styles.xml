@@ -1,0 +1,123 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="android:statusBarColor">@color/color_white</item>
+        <item name="android:autofilledHighlight" tools:targetApi="26">@android:color/transparent
+        </item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+        <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
+        <item name="colorControlNormal">@color/color_black_line</item>
+
+
+    </style>
+
+    <style name="LoginEditBoxStyle">
+        <item name="android:layout_height">@dimen/edt_box_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@drawable/bg_edt_login</item>
+        <item name="android:paddingLeft">@dimen/size_ten</item>
+        <item name="android:paddingRight">@dimen/size_ten</item>
+        <item name="android:textSize">@dimen/size_fifteen</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="LoginButtonStyle">
+        <item name="android:layout_height">@dimen/button_box_height</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:background">@drawable/bg_btn_signup</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textSize">@dimen/size_twelve</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="OTPButtonStyle">
+        <item name="android:layout_height">@dimen/size_twenty_five</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:background">@drawable/bg_btn_signup</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textSize">@dimen/size_ten</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+
+    </style>
+
+    <style name="OtpWidget" />
+
+    <style name="OtpWidget.OtpView" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="txt_create_post">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_fifteen</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="txt_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_sixteen</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+
+    </style>
+
+    <style name="attribute_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_fourteen</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="attribute_content">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_sixteen</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="hintTextColor">@color/color_hind</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="attribute_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">@dimen/size_five</item>
+        <item name="android:background">@color/color_black_line</item>
+    </style>
+
+    <style name="txt_nav_sub_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_sixteen</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="android:fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="ad_view_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_twenty_two</item>
+        <item name="android:textColor">@color/color_black</item>
+        <item name="fontFamily">@font/nunito_regular</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+</resources>

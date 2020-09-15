@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?actionBarSize"
+    android:background="@color/colorPrimary"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/img_back"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/circle_ripple_effect"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_forward"
+            android:tint="@color/color_white" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_page_title"
+        style="@style/txt_title"
+        android:layout_centerInParent="true"
+        android:layout_toRightOf="@+id/img_back" />
+
+    <TextView
+        android:id="@+id/txt_clear"
+        style="@style/txt_title"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="@dimen/size_fifteen"
+        android:layout_toLeftOf="@+id/txt_page_action"
+        android:fontFamily="@font/nunito_regular" />
+
+    <TextView
+        android:id="@+id/txt_page_action"
+        style="@style/txt_title"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="@dimen/size_fifteen"
+        android:fontFamily="@font/nunito_regular" />
+
+
+</RelativeLayout>

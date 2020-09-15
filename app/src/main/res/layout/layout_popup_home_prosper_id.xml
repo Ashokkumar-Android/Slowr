@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/txt_gray_trans"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_ten"
+        app:cardBackgroundColor="@color/color_white"
+        app:cardCornerRadius="@dimen/size_ten">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/size_ten">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_congratulations"
+                android:textAllCaps="true"
+                android:textColor="@color/txt_orange"
+                android:textSize="@dimen/size_thirdy" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/prosper_id"
+                android:textColor="@color/color_black"
+                android:textSize="@dimen/edt_box_height" />
+
+            <TextView
+                android:id="@+id/txt_prosper_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:text="AA1111"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/size_forty_five" />
+
+            <TextView
+                android:id="@+id/txt_content_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/prosper_id"
+                android:gravity="center"
+                android:textColor="@color/color_black"
+                android:textSize="@dimen/size_sixteen" />
+
+            <View
+                style="@style/attribute_line"
+                android:layout_marginTop="@dimen/size_ten" />
+
+            <TextView
+                android:id="@+id/txt_content_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/prosper_id"
+                android:gravity="center"
+                android:textColor="@color/color_black"
+                android:textSize="@dimen/size_sixteen" />
+
+            <View
+                style="@style/attribute_line"
+                android:layout_marginTop="@dimen/size_ten" />
+
+            <TextView
+                android:id="@+id/txt_content_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/prosper_id"
+                android:gravity="center"
+                android:textColor="@color/color_black"
+                android:textSize="@dimen/size_sixteen" />
+
+            <View
+                style="@style/attribute_line"
+                android:layout_marginTop="@dimen/size_ten" />
+
+            <TextView
+                android:id="@+id/txt_content_four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/prosper_id"
+                android:gravity="center"
+                android:textColor="@color/color_black"
+                android:textSize="@dimen/size_sixteen" />
+
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="@dimen/size_twenty"
+                android:background="@drawable/bg_orenge"
+                android:fontFamily="@font/nunito_regular"
+                android:gravity="center"
+                android:paddingLeft="@dimen/size_twenty"
+                android:paddingRight="@dimen/size_twenty"
+                android:text="@string/txt_continue"
+                android:textAllCaps="false"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/size_thirteen" />
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

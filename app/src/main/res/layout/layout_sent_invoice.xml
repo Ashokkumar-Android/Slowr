@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/txt_gray_trans"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_ten"
+        app:cardBackgroundColor="@color/color_white"
+        app:cardCornerRadius="@dimen/size_ten">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/size_fifteen">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/send_invoice_to"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/size_eighteen" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:fontFamily="@font/nunito_regular"
+                android:hint="@string/enter_your_email"
+                android:textColorHint="@color/color_black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edt_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:importantForAutofill="auto"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_fifteen"
+                    app:hintTextColor="@color/color_black" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="@dimen/size_twenty"
+                android:background="@drawable/bg_orenge"
+                android:fontFamily="@font/nunito_regular"
+                android:gravity="center"
+                android:paddingLeft="@dimen/size_twenty"
+                android:paddingRight="@dimen/size_twenty"
+                android:text="@string/txt_continue"
+                android:textAllCaps="false"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/size_thirteen" />
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

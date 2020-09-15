@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1072568124198",
+    "firebase_url": "https://slowr-1590558532912.firebaseio.com",
+    "project_id": "slowr-1590558532912",
+    "storage_bucket": "slowr-1590558532912.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1072568124198:android:bae1eb66138918b8bbb7e7",
+        "android_client_info": {
+          "package_name": "com.slowr.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1072568124198-n6f9qdel5vvd683th1eohgvflnp04l35.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsP1vWq3rqkPhJoe-pFXFvX1d9KSXTlS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1072568124198-n6f9qdel5vvd683th1eohgvflnp04l35.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1072568124198-c2evm19vgenm3dobv8sd11ume8htulkk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Test.Slowr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
