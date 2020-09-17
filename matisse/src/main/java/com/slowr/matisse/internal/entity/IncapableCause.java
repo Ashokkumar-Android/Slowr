@@ -86,7 +86,7 @@ public class IncapableCause {
                 TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
                 tv.setText(cause.mMessage);
                 Toast toast = new Toast(((FragmentActivity) context));
-                toast.setGravity(Gravity.BOTTOM, 0, 100);
+                toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.setView(layout);
                 toast.show();
@@ -99,7 +99,7 @@ public class IncapableCause {
                 TextView tv1 = (TextView) layout1.findViewById(R.id.txt_toast_message);
                 tv1.setText(cause.mMessage);
                 Toast toast1 = new Toast(((FragmentActivity) context));
-                toast1.setGravity(Gravity.BOTTOM, 0, 100);
+                toast1.setGravity(Gravity.CENTER, 0, 100);
                 toast1.setDuration(Toast.LENGTH_SHORT);
                 toast1.setView(layout1);
                 toast1.show();

@@ -87,6 +87,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String isLike = "0";
     int likeCount = 0;
     String PageFrom = "";
+    boolean unVerified = false;
+    String userProsperId = "";
 
     View rootView = null;
     String imageStringArray = "";
@@ -153,6 +155,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         img_user_profile.setOnClickListener(this);
         img_unverified_user.setOnClickListener(this);
         btn_call_now.setOnClickListener(this);
+        txt_prosperId_post.setOnClickListener(this);
+        txt_view_profile.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(PostViewActivity.this)) {
             GetAdDetails();
@@ -289,9 +293,9 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             }
 
                             txt_description.setText(editAdDetailsModel.getDescription());
-                            String proId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
-                            Log.i("ProsperId", proId);
-                            txt_prosperId_post.setText(proId);
+                            userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
+                            Log.i("ProsperId", userProsperId);
+                            txt_prosperId_post.setText(userProsperId);
                             userProUrl = dr.getEditDataModel().getUserDetailsModel().getUserPhoto();
                             Glide.with(PostViewActivity.this)
                                     .load(dr.getEditDataModel().getUserDetailsModel().getUserPhoto())
@@ -301,6 +305,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                     .into(img_user_profile);
                             if (dr.getEditDataModel().getUserDetailsModel().getIsProfileVerified().equals("0")) {
                                 img_unverified_user.setVisibility(View.VISIBLE);
+                                unVerified = true;
                             } else {
                                 img_unverified_user.setVisibility(View.GONE);
                             }
@@ -445,6 +450,16 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             case R.id.btn_call_now:
                 if (_fun.checkPermission2(PostViewActivity.this))
                     Function.CallNow(PostViewActivity.this, userPhone);
+                break;
+            case R.id.txt_prosperId_post:
+                if (unVerified) {
+                    ShowPopupProsper();
+                }
+                break;
+            case R.id.txt_view_profile:
+                Intent i = new Intent(PostViewActivity.this, UserProfileActivity.class);
+                i.putExtra("prosperId", userProsperId);
+                startActivity(i);
                 break;
         }
     }

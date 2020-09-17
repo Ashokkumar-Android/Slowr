@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.UserProfileActivity">
+
+    <include layout="@layout/layout_header" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/size_five"
+                app:cardBackgroundColor="@color/color_white"
+                app:cardCornerRadius="@dimen/size_five">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
+                        android:gravity="right|center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/img_user_profile"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:layout_margin="@dimen/size_ten"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_default_profile" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical"
+                        android:padding="@dimen/size_fifteen">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                style="@style/attribute_title"
+                                android:text="@string/txt_prosper_id"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="@dimen/size_twenty" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/txt_prosperId_post"
+                                    style="@style/txt_title"
+                                    android:layout_centerInParent="true"
+                                    android:fontFamily="@font/nunito_regular"
+                                    android:text=""
+                                    android:textColor="@color/colorPrimary"
+                                    android:textSize="@dimen/size_twenty_six" />
+
+                                <ImageView
+                                    android:id="@+id/img_unverified_user"
+                                    android:layout_width="10dp"
+                                    android:layout_height="10dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginBottom="7dp"
+                                    android:layout_toRightOf="@+id/txt_prosperId_post"
+                                    android:src="@drawable/ic_unverified_user" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/txt_name"
+                                style="@style/ad_view_title"
+                                android:text=""
+                                android:textSize="@dimen/size_twenty" />
+
+                            <TextView
+                                android:id="@+id/txt_phone"
+                                style="@style/ad_view_title"
+                                android:text=""
+                                android:textSize="@dimen/size_twenty" />
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_ad_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

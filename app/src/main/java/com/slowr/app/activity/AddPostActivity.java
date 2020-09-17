@@ -14,7 +14,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -26,6 +28,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -187,7 +190,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     boolean isOTPView = false;
     String otp = "";
     int resentCount = 0;
-
+    private PopupWindow spinnerPopup;
 
     private Function _fun = new Function();
     PostImageListAdapter postImageListAdapter;
@@ -1682,7 +1685,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             DefaultResponse dr = response.body();
             try {
                 if (dr.isStatus()) {
-                    Function.CustomMessage(AddPostActivity.this, dr.getMessage());
+//                    Function.CustomMessage(AddPostActivity.this, dr.getMessage());
 //                    if (AdType == 1) {
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
@@ -1690,12 +1693,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 //                        Intent intent = new Intent();
 //                        setResult(RESULT_OK, intent);
 //                    }
-                    if (isRequirement) {
-                        Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
-                        h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(h);
-                    }
-                    finish();
+                    ShowPopupSuccess(dr.getMessage());
+
 
                 } else {
                     Function.CustomMessage(AddPostActivity.this, dr.getMessage());
@@ -2107,7 +2106,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        if (isCity) {
+        if (spinnerPopup!=null&&spinnerPopup.isShowing()) {
+            if (isRequirement) {
+                Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
+                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(h);
+            }
+            finish();
+        } else if (isCity) {
             isCity = false;
             ListVisible(false);
 
@@ -2168,4 +2174,32 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    public void ShowPopupSuccess(String mesg) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_post_success, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+        TextView txt_content_one = view.findViewById(R.id.txt_content_one);
+        Button btn_ok = view.findViewById(R.id.btn_ok);
+        txt_content_one.setText(mesg);
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                spinnerPopup.dismiss();
+                if (isRequirement) {
+                    Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
+                    h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(h);
+                }
+                finish();
+            }
+        });
+
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
 }

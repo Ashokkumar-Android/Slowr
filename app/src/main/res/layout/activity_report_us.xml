@@ -165,7 +165,7 @@
                     android:background="@drawable/bg_description"
                     android:gravity="top"
                     android:imeOptions="actionDone"
-                    android:inputType="textMultiLine|textCapSentences"
+                    android:inputType="text"
                     android:maxLength="200"
                     android:minHeight="80dp"
                     android:padding="@dimen/size_ten"
@@ -220,6 +220,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
+                android:gravity="center"
                 android:text="@string/txt_allow_process"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_eighteen" />

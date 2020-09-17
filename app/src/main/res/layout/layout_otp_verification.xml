@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/size_fifteen">
+            android:padding="@dimen/size_ten">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
                     android:textColor="@android:color/black"
                     app:hideLineWhenFilled="false"
                     app:itemCount="4"
-                    app:itemSpacing="15dp"
+                    app:itemSpacing="10dp"
                     app:lineColor="@color/txt_gray_border"
                     app:rtlTextDirection="false"
                     app:state_filled="false"

@@ -25,6 +25,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
+        <activity android:name=".activity.UserProfileActivity"></activity>
         <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="portrait">
@@ -33,7 +34,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activity.PolicyActivity"
@@ -44,7 +44,7 @@
         <activity
             android:name=".activity.UpgradeActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".activity.ReportUsActivity"
             android:screenOrientation="portrait" />
@@ -59,8 +59,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ProfileActivity"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ChangPasswordActivity"
             android:screenOrientation="portrait" />
@@ -75,9 +74,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.HomeActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activity.NotificationActivity"
             android:screenOrientation="portrait" />
@@ -136,7 +133,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" /> <!-- For Facebook Login -->

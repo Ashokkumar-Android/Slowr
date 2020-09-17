@@ -350,7 +350,7 @@
                         android:text="@string/txt_view_profile"
                         android:textColor="@color/txt_orange"
                         android:textSize="@dimen/size_twelve"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

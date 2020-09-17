@@ -296,7 +296,7 @@ public class MatisseActivity extends AppCompatActivity implements
                 TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
                 tv.setText( getString(R.string.error_over_original_size, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
-                toast.setGravity(Gravity.BOTTOM, 0, 100);
+                toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.setView(layout);
                 toast.show();
@@ -353,7 +353,7 @@ public class MatisseActivity extends AppCompatActivity implements
                 TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
                 tv.setText( getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
-                toast.setGravity(Gravity.BOTTOM, 0, 100);
+                toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.setView(layout);
                 toast.show();

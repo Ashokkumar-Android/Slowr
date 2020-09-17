@@ -206,9 +206,9 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         if (edt_search_suggestion.getText().length() == 0) {
-                            Function.CustomMessage(UpgradeActivity.this,"Enter Prosper Id");
+                            Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
                         } else if (edt_search_suggestion.getText().length() < 4) {
-                            Function.CustomMessage(UpgradeActivity.this,"Enter 4 digits");
+                            Function.CustomMessage(UpgradeActivity.this, "Enter 4 digits");
                         } else {
                             getProsperIdList();
                         }
@@ -225,9 +225,9 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     if (edt_search_suggestion.getText().length() == 0) {
-                        Function.CustomMessage(UpgradeActivity.this,"Enter Prosper Id");
+                        Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
                     } else if (edt_search_suggestion.getText().length() < 4) {
-                        Function.CustomMessage(UpgradeActivity.this,"Enter 4 digits");
+                        Function.CustomMessage(UpgradeActivity.this, "Enter 4 digits");
                     } else {
                         getProsperIdList();
                     }
@@ -378,11 +378,11 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         Calendar calendar = Calendar.getInstance();
         String formCurrentDate = sdf2.format(calendar.getTime());
         if (adStartDate.equals("")) {
-            Function.CustomMessage(UpgradeActivity.this,getString(R.string.select_from_date));
+            Function.CustomMessage(UpgradeActivity.this, getString(R.string.select_from_date));
             return;
         }
         if (adEndDate.equals("")) {
-            Function.CustomMessage(UpgradeActivity.this,getString(R.string.select_end_date));
+            Function.CustomMessage(UpgradeActivity.this, getString(R.string.select_end_date));
             return;
         }
         try {
@@ -392,7 +392,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             cDate = sdf3.parse(formCurrentDate);
 
             if (tDate.before(fDate)) {
-                Function.CustomMessage(UpgradeActivity.this,getString(R.string.event_date_validation));
+                Function.CustomMessage(UpgradeActivity.this, getString(R.string.event_date_validation));
                 return;
 
             }
@@ -401,16 +401,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             Log.v("Exception", ex.getLocalizedMessage());
         }
 
-        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-            startPayment();
-        } else {
-            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    startPayment();
-                }
-            });
-        }
+        validatePromotion();
 
 
     }
@@ -431,7 +422,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                     topPrice = Integer.valueOf(dr.getPriceItemModel().getTopOfPagePrice());
                     premiumPrice = Integer.valueOf(dr.getPriceItemModel().getPremiumPagePrice());
                 } else {
-                    Function.CustomMessage(UpgradeActivity.this,dr.getMessage());
+                    Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -475,7 +466,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             co.open(activity, options);
         } catch (Exception e) {
 
-            Function.CustomMessage(UpgradeActivity.this,"Try Again.");
+            Function.CustomMessage(UpgradeActivity.this, "Try Again.");
             e.printStackTrace();
         }
     }
@@ -510,6 +501,33 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    public void validatePromotion() {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+
+
+        params.put("from_date", adStartDate);
+        params.put("to_date", adEndDate);
+        params.put("ads_id", adId);
+        params.put("category_id", catId);
+
+        Log.i("params", params.toString());
+
+
+        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).checkPromotionValid(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true));
+        } else {
+            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).checkPromotionValid(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true));
+                }
+            });
+        }
+    }
 
     public void savePromotion() {
         if (!params.isEmpty()) {
@@ -577,7 +595,44 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                     setResult(RESULT_OK, intent);
 //                    finish();
                 } else {
-                    Function.CustomMessage(UpgradeActivity.this,dr.getMessage());
+                    Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    retrofit2.Callback<DefaultResponse> validatePromotionApi = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            try {
+                DefaultResponse dr = response.body();
+                if (dr.isStatus()) {
+                    if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+                        startPayment();
+                    } else {
+                        _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                startPayment();
+                            }
+                        });
+                    }
+                } else {
+//                    Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
+                    ShowPopupSuccess(dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -608,10 +663,10 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                     prosperIdList.addAll(dr.getProsperIdItemModel());
                     prosperIdAdapter.notifyDataSetChanged();
                     if (dr.getMessage() != null && !dr.getMessage().equals("")) {
-                        Function.CustomMessage(UpgradeActivity.this,dr.getMessage());
+                        Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
                     }
                 } else {
-                    Function.CustomMessage(UpgradeActivity.this,dr.getMessage());
+                    Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -715,6 +770,29 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
                 }
+            }
+        });
+
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+    public void ShowPopupSuccess(String mesg) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_post_success, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        TextView txt_content_one = view.findViewById(R.id.txt_content_one);
+        Button btn_ok = view.findViewById(R.id.btn_ok);
+        txt_content_one.setText(mesg);
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                spinnerPopup.dismiss();
+
             }
         });
 

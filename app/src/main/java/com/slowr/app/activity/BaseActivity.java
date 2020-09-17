@@ -265,6 +265,23 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 ShowPopupProsperBase();
             }
         });
+        txt_prosperId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
+                    ShowPopupProsperBase();
+                }
+            }
+        });
+
+        txt_prosperId_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
+                    ShowPopupProsperBase();
+                }
+            }
+        });
     }
 
     public void ShowPopupProsperBase() {

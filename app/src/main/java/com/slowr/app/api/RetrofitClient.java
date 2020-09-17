@@ -24,8 +24,8 @@ public class RetrofitClient {
             .addInterceptor(new LogJsonInterceptor())
             .cache(null)
             .addInterceptor(new ConnectivityInterceptor())
-            .readTimeout(120, TimeUnit.SECONDS)
-            .connectTimeout(120, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS)
+            .connectTimeout(180, TimeUnit.SECONDS)
             .build();
 
     public static Retrofit getClient() {

@@ -15,6 +15,7 @@ import com.slowr.app.models.HomeFilterAdModel;
 import com.slowr.app.models.InvoiceModel;
 import com.slowr.app.models.LoginResponse;
 import com.slowr.app.models.NotificationModel;
+import com.slowr.app.models.OtherProfileModel;
 import com.slowr.app.models.PopularAdModel;
 import com.slowr.app.models.ProfileModel;
 import com.slowr.app.models.PromotePriceModel;
@@ -199,4 +200,12 @@ public interface Api {
 
     @POST("generate-invoice")
     Call<DefaultResponse> sendInvoice(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("check-promotion-exists")
+    Call<DefaultResponse> checkPromotionValid(@Body Object params, @Header("Authorization") String contentRange);
+
+
+    @GET("user/{prosperId}")
+    Call<OtherProfileModel> getUserAdDetails(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
+
 }

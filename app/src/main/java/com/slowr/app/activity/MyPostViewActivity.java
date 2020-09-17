@@ -94,6 +94,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String changeAdStatus = "";
     String userProUrl = "";
     String userId = "";
+    String userProsperId = "";
     int EDIT_POST_CODE = 1299;
     int likeCount = 0;
     int favCount = 0;
@@ -102,6 +103,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String imageStringArray = "";
     int imgSelectPos = 0;
     String userPhone = "";
+
+    boolean isUnverified = false;
 
     boolean isPageChange = false;
     private Function _fun = new Function();
@@ -171,6 +174,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_view_profile.setOnClickListener(this);
         img_unverified_user.setOnClickListener(this);
         btn_call_now.setOnClickListener(this);
+        txt_prosperId.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
             GetAdDetails();
@@ -291,7 +295,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_price.setVisibility(View.GONE);
                             }
                             txt_description.setText(editAdDetailsModel.getDescription());
-
+                            userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
                             txt_prosperId.setText(dr.getEditDataModel().getUserDetailsModel().getProsperId());
                             userProUrl = dr.getEditDataModel().getUserDetailsModel().getUserPhoto();
                             Glide.with(MyPostViewActivity.this)
@@ -303,6 +307,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
                             if (dr.getEditDataModel().getUserDetailsModel().getIsProfileVerified().equals("0")) {
                                 img_unverified_user.setVisibility(View.VISIBLE);
+                                isUnverified = true;
                             } else {
                                 img_unverified_user.setVisibility(View.GONE);
                             }
@@ -368,7 +373,6 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             if (!editAdDetailsModel.getUserId().equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
                                 txt_active_status.setVisibility(View.GONE);
                                 layout_action_button.setVisibility(View.GONE);
-                                txt_view_profile.setVisibility(View.GONE);
                                 layout_chat_call.setVisibility(View.VISIBLE);
                             }
                         }
@@ -570,8 +574,15 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.txt_view_profile:
-                Intent profile = new Intent(MyPostViewActivity.this, ProfileActivity.class);
-                startActivity(profile);
+                if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+                    Intent profile = new Intent(MyPostViewActivity.this, ProfileActivity.class);
+                    startActivity(profile);
+                } else {
+                    Intent j = new Intent(MyPostViewActivity.this, UserProfileActivity.class);
+                    j.putExtra("prosperId", userProsperId);
+                    startActivity(j);
+                }
+
                 break;
             case R.id.img_unverified_user:
                 ShowPopupProsper();
@@ -579,6 +590,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_call_now:
                 if (_fun.checkPermission2(MyPostViewActivity.this))
                     Function.CallNow(MyPostViewActivity.this, userPhone);
+                break;
+            case R.id.txt_prosperId:
+                if (isUnverified) {
+                    ShowPopupProsper();
+                }
                 break;
         }
     }

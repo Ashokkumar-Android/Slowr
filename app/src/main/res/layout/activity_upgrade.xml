@@ -142,7 +142,7 @@
                                         android:fontFamily="@font/nunito_regular"
                                         android:text="50"
                                         android:textColor="@color/colorPrimaryDark"
-                                        android:textSize="@dimen/size_thirdy" />
+                                        android:textSize="@dimen/size_twenty_six" />
 
                                 </LinearLayout>
 
@@ -258,7 +258,7 @@
                                         android:fontFamily="@font/nunito_regular"
                                         android:text="1000"
                                         android:textColor="@color/bg_green"
-                                        android:textSize="@dimen/size_thirdy" />
+                                        android:textSize="@dimen/size_twenty_six" />
 
                                 </LinearLayout>
 
