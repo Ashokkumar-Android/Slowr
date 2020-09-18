@@ -79,7 +79,7 @@ public class AreaListAdapter extends RecyclerView.Adapter<AreaListAdapter.MyView
         if (checkedPos.equals("")) {
             holder.rb_select.setChecked(false);
         } else {
-            if (checkedPos.equals(movie.getAreaId())) {
+            if (checkedPos.equals(movie.getAreaName())) {
                 holder.rb_select.setChecked(true);
             } else {
                 holder.rb_select.setChecked(false);

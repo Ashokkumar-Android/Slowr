@@ -275,7 +275,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.txt_resend_otp:
-                if (resentCount != 3) {
+                if (resentCount != 2) {
                     resentCount++;
 
                     if (_fun.isInternetAvailable(ProfileActivity.this)) {

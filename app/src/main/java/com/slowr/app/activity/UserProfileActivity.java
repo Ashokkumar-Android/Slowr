@@ -77,6 +77,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         txt_name = findViewById(R.id.txt_name);
         txt_phone = findViewById(R.id.txt_phone);
         img_user_profile = findViewById(R.id.img_user_profile);
+        txt_page_title.setText("Profile");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(linearLayoutManager);

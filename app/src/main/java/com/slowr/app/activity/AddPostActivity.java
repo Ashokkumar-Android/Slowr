@@ -301,7 +301,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         childCategoryListAdapter = new ChildCategoryListAdapter(subCategoryChildList, getApplicationContext());
         attributeSelectAdapter = new AttributeSelectAdapter(attributeValueList, getApplicationContext());
         cityListAdapter = new CityListAdapter(cityList, getApplicationContext());
-        areaListAdapter = new AreaListAdapter(areaList, getApplicationContext());
+
         rentalDurationAdapter = new RentalDurationAdapter(rentalDurationList, getApplicationContext());
 
         spinnerAdapter = new ArrayAdapter<String>(this,
@@ -352,6 +352,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         CallBackFunction();
+
         edt_mobile_number.setText(Sessions.getSession(Constant.UserPhone, getApplicationContext()));
         doFilter();
         GetCity();
@@ -1053,17 +1054,19 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 if (cityId.equals("")) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.select_city));
                 } else {
+
                     txt_page_action.setVisibility(View.VISIBLE);
-                    isCity = true;
-                    areaListAdapter.getFilter().filter("");
+
+                    filterType = 5;
+                    areaListAdapter = new AreaListAdapter(areaList, AddPostActivity.this);
+                    areaCallBack(areaListAdapter);
                     rc_category.setAdapter(areaListAdapter);
                     ListVisible(true);
                     edt_search.setImeOptions(EditorInfo.IME_ACTION_DONE);
                     txt_page_title.setText(getString(R.string.txt_select) + " " + getString(R.string.txt_locality_select));
-                    filterType = 5;
-                    areaCallBack(areaListAdapter);
-                    edt_search.setText(areaId);
-                    areaListAdapter.getFilter().filter("");
+//                    edt_search.setText(areaId);
+//                    areaListAdapter.getFilter().filter("");
+                    isCity = true;
                 }
                 break;
             case R.id.layout_product_type:
@@ -1157,7 +1160,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.txt_resend_otp:
-                if (resentCount != 3) {
+                if (resentCount != 2) {
                     resentCount++;
                     if (_fun.isInternetAvailable(AddPostActivity.this)) {
                         reSendOTP();
@@ -1727,6 +1730,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         layout_list.setVisibility(View.GONE);
                         isPostView = false;
                         layout_post_details.setVisibility(View.VISIBLE);
+                        rc_category.setVisibility(View.VISIBLE);
+                        rc_service.setVisibility(View.GONE);
                         layout_product_type.setEnabled(false);
                         layout_selection_button.setVisibility(View.GONE);
                         if (dr.getEditDataModel().getCatGroup() == 1) {
@@ -2106,7 +2111,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        if (spinnerPopup!=null&&spinnerPopup.isShowing()) {
+        if (spinnerPopup != null && spinnerPopup.isShowing()) {
             if (isRequirement) {
                 Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
                 h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

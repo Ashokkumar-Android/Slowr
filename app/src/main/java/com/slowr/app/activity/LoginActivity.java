@@ -559,7 +559,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                 }
                 break;
             case R.id.txt_resend_otp:
-                if (resentCount != 3) {
+                if (resentCount != 2) {
                     resentCount++;
                     if (isForgotPass) {
 

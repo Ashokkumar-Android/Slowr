@@ -22,6 +22,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
     private List<AttributeItemModel> categoryList;
     Callback callback;
     Context ctx;
+    boolean isEditable = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_select_title;
@@ -93,6 +94,13 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             holder.layout_select.setVisibility(View.GONE);
             holder.layout_input.setVisibility(View.VISIBLE);
         }
+        if (isEditable) {
+            holder.edt_attributeValue.setEnabled(false);
+            holder.layout_drop_down.setEnabled(false);
+        } else {
+            holder.edt_attributeValue.setEnabled(true);
+            holder.layout_drop_down.setEnabled(true);
+        }
         holder.edt_attributeValue.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -123,6 +131,10 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+    public void SetEditable(boolean _isEditable) {
+        this.isEditable = _isEditable;
     }
 
     public void setCallback(Callback callback) {

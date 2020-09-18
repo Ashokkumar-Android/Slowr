@@ -664,10 +664,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                     isSearch = true;
                     serachView = 1;
                     if (adList.size() == 0) {
-                        layout_list_filter.setVisibility(View.GONE);
+                        rc_ad_list.setVisibility(View.GONE);
                         layout_requirement_ad.setVisibility(View.VISIBLE);
                     } else {
-                        layout_list_filter.setVisibility(View.VISIBLE);
+                        rc_ad_list.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.GONE);
                     }
 
@@ -1003,7 +1003,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                         }
                     }
                 }
-
+                if (selVal.equals("")) {
+                    selVal = "Any";
+                }
                 filterList.get(pos).setSelectedValue(selVal);
                 filterOptionAdapter.notifyDataSetChanged();
                 for (int k = 0; k < filterList.size(); k++) {

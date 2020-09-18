@@ -224,7 +224,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 break;
             case R.id.txt_resend_otp:
-                if (resentCount != 3) {
+                if (resentCount != 2) {
                     resentCount++;
                     reSendOTP();
                     edt_otp.setText("");

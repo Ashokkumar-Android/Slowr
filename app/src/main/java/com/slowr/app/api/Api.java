@@ -208,4 +208,11 @@ public interface Api {
     @GET("user/{prosperId}")
     Call<OtherProfileModel> getUserAdDetails(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
 
+
+    @GET("page/terms-conditions")
+    Call<String> getTC();
+
+    @GET("page/privacy-policy")
+    Call<String> getPrivacy();
+
 }

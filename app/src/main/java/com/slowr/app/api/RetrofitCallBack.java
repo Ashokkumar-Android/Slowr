@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.slowr.app.components.ViewDialog;
+import com.slowr.app.utils.Function;
 import com.slowr.app.utils.NoConnectivityException;
 
 import retrofit2.Call;
@@ -14,6 +15,7 @@ import retrofit2.Response;
 
 import static com.slowr.app.utils.Constant.Msg_Something;
 import static com.slowr.app.utils.Constant.SERVER_ERROR;
+import static com.slowr.app.utils.Constant.msg_Somethingwentwrong;
 
 
 public class RetrofitCallBack<T> implements Callback<T> {
@@ -44,7 +46,8 @@ public class RetrofitCallBack<T> implements Callback<T> {
     public void onResponse(Call<T> call, Response<T> response) {
         mCallback.onResponse(call, response);
         if (response.code() == SERVER_ERROR) {
-            Toast.makeText(mContext, Msg_Something, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, Msg_Something, Toast.LENGTH_SHORT).show();
+            Function.CustomMessage((Activity)mContext,Msg_Something);
         }
         if (isLoad)
             viewDialog.hideDialog();
@@ -59,7 +62,8 @@ public class RetrofitCallBack<T> implements Callback<T> {
         mCallback.onFailure(call, t);
         Log.d("Api Response error", t.getMessage());
         if (t instanceof NoConnectivityException) {
-            Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
+            Function.CustomMessage((Activity)mContext,msg_Somethingwentwrong);
 //            call.clone().enqueue(this);
         }
         if (isLoad)

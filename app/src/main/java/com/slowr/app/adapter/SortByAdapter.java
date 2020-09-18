@@ -45,12 +45,14 @@ public class SortByAdapter extends RecyclerView.Adapter<SortByAdapter.MyViewHold
                     rb_select.setChecked(true);
                     callback.itemClick(categoryListFilter.get(getAdapterPosition()));
                     checkedPos = categoryListFilter.get(getAdapterPosition()).getSortId();
+                    categoryListFilter.get(getAdapterPosition()).setSelect(true);
                     notifyDataSetChanged();
                     break;
                 case R.id.rb_select:
                     rb_select.setChecked(true);
                     callback.itemClick(categoryListFilter.get(getAdapterPosition()));
                     checkedPos = categoryListFilter.get(getAdapterPosition()).getSortId();
+                    categoryListFilter.get(getAdapterPosition()).setSelect(true);
                     notifyDataSetChanged();
                     break;
             }
@@ -111,7 +113,7 @@ public class SortByAdapter extends RecyclerView.Adapter<SortByAdapter.MyViewHold
 
     }
 
-    public  void clearValues() {
+    public void clearValues() {
         checkedPos = "";
         notifyDataSetChanged();
     }
