@@ -92,6 +92,7 @@
     <string name="txt_locality_select">Locality</string>
     <string name="txt_select_city">Select City</string>
     <string name="txt_rental_duration_select">Select Rental Duration</string>
+    <string name="txt_hiring_duration_select">Select Hiring Duration</string>
     <string name="txt_select_locality">Select Locality</string>
     <string name="txt_select_product">Select Product Type</string>
     <string name="txt_select_profession">Select Profession</string>
@@ -159,6 +160,7 @@
     <string name="nav_logout">Log out</string>
     <string name="nav_my_favorite">My Favorites</string>
     <string name="nav_notification">My Notifications</string>
+    <string name="nav_my_chat">My Chat</string>
     <string name="prosper_id">Prosper ID</string>
 
     <string name="txt_chat_now">Chat now</string>
@@ -303,6 +305,12 @@
     <string name="change_phone_message">*Change of mobile number need OTP verification</string>
 
     <string name="txt_skip">Skip</string>
+
+    <string name="type_message">Type your message</string>
+
+    <string name="txt_clear_chat">Clear chat</string>
+    <string name="txt_report_user">Report user</string>
+    <string name="txt_limit_reached">You have reached the limit</string>
 
 
     <string name="txt_policy">Listing Policy

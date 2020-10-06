@@ -35,6 +35,7 @@ import com.slowr.app.adapter.CityListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.chat.ProductChatActivity;
 import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.CityModel;
 import com.slowr.app.models.DefaultResponse;
@@ -66,7 +67,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     LinearLayout img_back;
     ImageView img_profile_pic;
     ImageView img_unverified_user_home;
-    ImageView img_unverified_user_nav;
     TextView txt_prosperId;
     TextView txt_prosperId_menu;
     LinearLayout layout_menu_header;
@@ -90,6 +90,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     MenuItem menuMyAds;
     MenuItem menuInvoice;
     MenuItem menuNotification;
+    MenuItem menuChat;
     int MY_PROFILE_CODE = 1299;
     int MY_POST_CODE = 1288;
     private Function _fun = new Function();
@@ -125,7 +126,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         txt_prosperId_menu = headerLayout.findViewById(R.id.txt_prosperId_menu);
         layout_menu_header = headerLayout.findViewById(R.id.layout_menu_header);
         img_profile_pic = headerLayout.findViewById(R.id.img_profile_pic);
-        img_unverified_user_nav = headerLayout.findViewById(R.id.img_unverified_user_nav);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -147,6 +147,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         menuMyAds = menu.findItem(R.id.nav_dash_board);
         menuInvoice = menu.findItem(R.id.nav_invoice);
         menuNotification = menu.findItem(R.id.nav_notification);
+        menuChat = menu.findItem(R.id.nav_my_chat);
 
 
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -158,14 +159,13 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuMyAds.setVisible(true);
             menuInvoice.setVisible(true);
             menuNotification.setVisible(true);
+            menuChat.setVisible(true);
             layout_menu_header.setVisibility(View.VISIBLE);
             txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
             txt_prosperId_menu.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
             if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                img_unverified_user_nav.setVisibility(View.VISIBLE);
                 img_unverified_user_home.setVisibility(View.VISIBLE);
             } else {
-                img_unverified_user_nav.setVisibility(View.GONE);
                 img_unverified_user_home.setVisibility(View.GONE);
             }
             Glide.with(this)
@@ -186,6 +186,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuMyAds.setVisible(false);
             menuInvoice.setVisible(false);
             menuNotification.setVisible(false);
+            menuChat.setVisible(false);
         }
     }
 
@@ -259,12 +260,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 ShowPopupProsperBase();
             }
         });
-        img_unverified_user_nav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopupProsperBase();
-            }
-        });
+
         txt_prosperId.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -274,12 +270,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        txt_prosperId_menu.setOnClickListener(new View.OnClickListener() {
+        layout_menu_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                    ShowPopupProsperBase();
-                }
+                Intent profile = new Intent(BaseActivity.this, ProfileActivity.class);
+                startActivityForResult(profile, MY_PROFILE_CODE);
             }
         });
     }
@@ -423,6 +418,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 Intent n = new Intent(BaseActivity.this, NotificationActivity.class);
                 startActivity(n);
                 break;
+            case R.id.nav_my_chat:
+                Intent c = new Intent(BaseActivity.this, ProductChatActivity.class);
+                startActivity(c);
+                break;
 
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -547,10 +546,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                         .placeholder(R.drawable.ic_default_profile)
                         .into(img_profile_pic);
                 if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                    img_unverified_user_nav.setVisibility(View.VISIBLE);
                     img_unverified_user_home.setVisibility(View.VISIBLE);
                 } else {
-                    img_unverified_user_nav.setVisibility(View.GONE);
                     img_unverified_user_home.setVisibility(View.GONE);
                 }
             } else if (requestCode == MY_POST_CODE) {

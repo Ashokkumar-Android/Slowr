@@ -12,7 +12,7 @@
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
         <item name="otpViewStyle">@style/OtpWidget.OtpView</item>
         <item name="colorControlNormal">@color/color_black_line</item>
-
+        <item name="fontFamily">@font/nunito_regular</item>
 
     </style>
 

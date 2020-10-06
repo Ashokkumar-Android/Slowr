@@ -134,8 +134,8 @@
                             android:id="@+id/txt_location_post"
                             style="@style/attribute_title"
                             android:text=""
-                            android:textSize="@dimen/size_twelve"
-                            android:textColor="@color/color_black" />
+                            android:textColor="@color/color_black"
+                            android:textSize="@dimen/size_twelve" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -160,7 +160,12 @@
                         android:textAllCaps="false"
                         android:textColor="@color/color_white"
                         android:textSize="@dimen/size_sixteen"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
+
+                    <View
+                        android:layout_width="10dp"
+                        android:layout_height="1dp" />
+
                     <Button
                         android:id="@+id/btn_call_now"
                         android:layout_width="wrap_content"
@@ -190,8 +195,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/size_twenty"
-                            android:src="@drawable/ic_share"
                             android:padding="2dp"
+                            android:src="@drawable/ic_share"
                             android:visibility="gone" />
 
                         <ImageView
@@ -199,8 +204,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/size_twenty"
-                            android:padding="2dp"
                             android:background="@drawable/circle_ripple_effect"
+                            android:padding="2dp"
                             android:src="@drawable/ic_favorite" />
 
                         <LinearLayout

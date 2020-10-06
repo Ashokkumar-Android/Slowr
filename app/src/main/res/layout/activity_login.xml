@@ -248,14 +248,6 @@
                         android:layout_marginLeft="@dimen/size_twenty_five"
                         android:src="@drawable/ic_fb_logo" />
 
-                    <ImageView
-                        android:id="@+id/main_linked_in_sign_in_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_marginLeft="@dimen/size_twenty_five"
-                        android:visibility="gone"
-                        android:src="@drawable/ic_in_logo" />
 
                     <ImageView
                         android:id="@+id/main_twitter_sign_in_button"

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/layout_txt_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="@dimen/size_ten"
+        android:background="@drawable/chat_right_txt_bg"
+        android:minWidth="100dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_right_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="@dimen/size_five"
+            android:fontFamily="@font/nunito_regular"
+            android:paddingLeft="@dimen/size_five"
+            android:paddingRight="@dimen/size_five"
+            android:text="@string/prosper_id"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_fifteen" />
+
+        <ImageView
+            android:id="@+id/img_right_chat"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="@dimen/size_five"
+            android:scaleType="centerInside"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txt_right_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/size_five"
+            android:layout_marginBottom="@dimen/size_five"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/prosper_id"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_ten" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_txt_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_ten"
+        android:background="@drawable/chat_left_txt_bg"
+        android:minWidth="100dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_left_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/size_five"
+            android:fontFamily="@font/nunito_regular"
+            android:paddingLeft="@dimen/size_five"
+            android:paddingRight="@dimen/size_five"
+            android:text="@string/prosper_id"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_fifteen" />
+        <ImageView
+            android:id="@+id/img_left_chat"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="@dimen/size_five"
+            android:scaleType="centerInside"
+            android:visibility="gone" />
+
+
+        <TextView
+            android:id="@+id/txt_left_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="@dimen/size_five"
+            android:layout_marginBottom="@dimen/size_five"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/prosper_id"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/size_ten" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

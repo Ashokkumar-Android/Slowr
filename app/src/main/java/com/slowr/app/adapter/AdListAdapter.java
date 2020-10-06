@@ -39,6 +39,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
         public ImageView img_share;
         LinearLayout layout_promote;
         LinearLayout layout_promoted;
+        LinearLayout layout_location;
         TextView txt_active_status;
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
@@ -61,11 +62,13 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
             img_top_page_mark = view.findViewById(R.id.img_top_page_mark);
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
             img_bg_gradient = view.findViewById(R.id.img_bg_gradient);
+            layout_location = view.findViewById(R.id.layout_location);
 
             layout_root.setOnClickListener(this);
             img_promote.setOnClickListener(this);
             img_share.setOnClickListener(this);
             img_favorite.setVisibility(View.GONE);
+            layout_location.setVisibility(View.GONE);
             layout_promote.setVisibility(View.VISIBLE);
             txt_active_status.setVisibility(View.VISIBLE);
             img_bg_gradient.setVisibility(View.VISIBLE);

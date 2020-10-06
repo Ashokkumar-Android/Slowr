@@ -6,8 +6,25 @@
     android:orientation="vertical"
     tools:context=".activity.AddPostActivity">
 
-    <include layout="@layout/layout_header" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <include layout="@layout/layout_header" />
+
+        <ToggleButton
+            android:id="@+id/tb_offer_need"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="@dimen/size_ten"
+            android:background="@drawable/ic_toogle_selector"
+            android:textColor="@color/color_white"
+            android:checked="false"
+            android:visibility="gone"
+            android:textOff=""
+            android:textOn="" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/layout_list"
@@ -69,6 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rc_service"
             android:layout_width="match_parent"
@@ -266,8 +284,8 @@
                                 android:id="@+id/txt_rental_duration_content"
                                 style="@style/attribute_content"
                                 android:layout_weight="1"
-                                android:singleLine="true"
-                                android:hint="@string/txt_rental_duration_select" />
+                                android:hint="@string/txt_rental_duration_select"
+                                android:singleLine="true" />
 
                             <ImageView
                                 android:id="@+id/img_drop_down"
@@ -359,8 +377,8 @@
                             android:id="@+id/txt_city_content"
                             style="@style/attribute_content"
                             android:layout_weight="1"
-                            android:singleLine="true"
-                            android:hint="@string/txt_select_city" />
+                            android:hint="@string/txt_select_city"
+                            android:singleLine="true" />
 
                         <ImageView
                             android:layout_width="15dp"
@@ -399,8 +417,8 @@
                             android:id="@+id/txt_area_content"
                             style="@style/attribute_content"
                             android:layout_weight="1"
-                            android:singleLine="true"
-                            android:hint="@string/txt_select_locality" />
+                            android:hint="@string/txt_select_locality"
+                            android:singleLine="true" />
 
                         <ImageView
                             android:layout_width="15dp"
@@ -450,7 +468,7 @@
                 <View
                     android:layout_width="@dimen/size_twenty"
                     android:layout_height="1dp"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <CheckBox
                     android:id="@+id/cb_mobile_number"
@@ -459,12 +477,12 @@
                     android:layout_weight="1"
                     android:button="@drawable/radio_button_selector"
                     android:checked="true"
-                    android:visibility="gone"
                     android:fontFamily="@font/nunito_regular"
                     android:padding="@dimen/size_five"
                     android:text="@string/txt_show_number"
                     android:textColor="@color/color_hind"
-                    android:textSize="@dimen/size_twelve" />
+                    android:textSize="@dimen/size_twelve"
+                    android:visibility="gone" />
             </LinearLayout>
 
 

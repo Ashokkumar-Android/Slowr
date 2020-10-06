@@ -37,4 +37,6 @@
     <color name="disabled_color">#44000000</color>
     <color name="error_color">#E7492E</color>
 
+    <color name="hint_txt_color">#AAA9A9</color>
+
 </resources>

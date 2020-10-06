@@ -25,7 +25,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
-        <activity android:name=".activity.UserProfileActivity"></activity>
+        <activity android:name=".chat.ChatListActivity"></activity>
+        <activity android:name=".chat.ProductChatActivity" />
+        <activity android:name=".chat.ChatActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity android:name=".activity.UserProfileActivity" />
         <activity
             android:name=".activity.SplashActivity"
             android:screenOrientation="portrait">
@@ -74,7 +78,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.HomeActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NotificationActivity"
             android:screenOrientation="portrait" />
@@ -104,9 +108,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.HomeActivityTemp"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.PaymentActivity"

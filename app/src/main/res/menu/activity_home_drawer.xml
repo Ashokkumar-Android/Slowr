@@ -27,6 +27,14 @@
 
     </group>
     <group
+        android:id="@+id/gp_nav_my_chat"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_my_chat"
+            android:title="@string/nav_my_chat" />
+
+    </group>
+    <group
         android:id="@+id/gp_nav_profile"
         android:checkableBehavior="single">
         <item

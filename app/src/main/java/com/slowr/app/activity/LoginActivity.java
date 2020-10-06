@@ -33,7 +33,6 @@ import com.slowr.app.components.otpview.OnOtpCompletionListener;
 import com.slowr.app.components.otpview.OtpView;
 import com.slowr.app.helper.FacebookHelper;
 import com.slowr.app.helper.GoogleSignInHelper;
-import com.slowr.app.helper.LinkedInSignInHelper;
 import com.slowr.app.helper.TwitterHelper;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.LoginResponse;
@@ -52,7 +51,7 @@ import java.util.HashMap;
 import retrofit2.Call;
 
 public class LoginActivity extends AppCompatActivity implements FacebookHelper.OnFbSignInListener, GoogleSignInHelper.OnGoogleSignInListener,
-        TwitterHelper.OnTwitterSignInListener, LinkedInSignInHelper.OnLinkedInSignInListener, View.OnClickListener {
+        TwitterHelper.OnTwitterSignInListener, View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
@@ -68,9 +67,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
     private TwitterHelper twitterHelper;
     private ImageView tSignInButton;
 
-    //-----------------------------------LinkedIn Sign In-----------------------------------//
-    private LinkedInSignInHelper linkedInSignInHelper;
-    private ImageView lSignInButton;
+
 
     private TextView btn_sign_up;
     private Button btn_sign_in;
@@ -263,16 +260,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
             }
         });
 
-        //----------------------------------Linked In Sign In Button ------------------------------//
-        linkedInSignInHelper = new LinkedInSignInHelper(this, this);
-        linkedInSignInHelper.connect();
-        lSignInButton = findViewById(R.id.main_linked_in_sign_in_button);
-        lSignInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                linkedInSignInHelper.signIn();
-            }
-        });
+
         MobileEmailCheckFunction();
         GetDeviceId();
     }
@@ -344,7 +332,6 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         googleSignInHelper.onActivityResult(requestCode, resultCode, data);
         fbConnectHelper.onActivityResult(requestCode, resultCode, data);
         twitterHelper.onActivityResult(requestCode, resultCode, data);
-        linkedInSignInHelper.onActivityResult(requestCode, resultCode, data);
         if (isFbLogin) {
             isFbLogin = false;
         }
@@ -406,31 +393,6 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
     }
 
-    @Override
-    public void onAPICallStarted() {
-        Log.i(TAG, "onAPICallStarted");
-    }
-
-    @Override
-    public void OnLinkedInSignInSuccess(String response) {
-        try {
-            JSONObject object = new JSONObject(response);
-            String firstName = object.has("firstName") ? object.getString("firstName") : "";
-            String id = object.has("id") ? object.getString("id") : "";
-            String lastName = object.has("lastName") ? object.getString("lastName") : "";
-            String emailAddress = object.has("emailAddress") ? object.getString("emailAddress") : "";
-//            userName.setText(firstName + lastName + "      id:" + id);
-//            email.setText(emailAddress);
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-    }
-
-    @Override
-    public void onLinkedInSignError(String error) {
-        Log.e(TAG, error);
-    }
 
     @Override
     public void onClick(View v) {

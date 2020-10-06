@@ -40,7 +40,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':linkedin-sdk')
     implementation project(':matisse')
     implementation project(':photoview')
     implementation 'androidx.appcompat:appcompat:1.2.0'

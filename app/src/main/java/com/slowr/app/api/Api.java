@@ -5,6 +5,8 @@ import com.slowr.app.models.AdModel;
 import com.slowr.app.models.AreaModel;
 import com.slowr.app.models.AttributeModel;
 import com.slowr.app.models.CategoryModel;
+import com.slowr.app.models.ChatClearModel;
+import com.slowr.app.models.ChatHistoryModel;
 import com.slowr.app.models.ChildCategoryModel;
 import com.slowr.app.models.CityModel;
 import com.slowr.app.models.DefaultResponse;
@@ -17,6 +19,7 @@ import com.slowr.app.models.LoginResponse;
 import com.slowr.app.models.NotificationModel;
 import com.slowr.app.models.OtherProfileModel;
 import com.slowr.app.models.PopularAdModel;
+import com.slowr.app.models.ProductChatModel;
 import com.slowr.app.models.ProfileModel;
 import com.slowr.app.models.PromotePriceModel;
 import com.slowr.app.models.ProsperIdModel;
@@ -24,12 +27,16 @@ import com.slowr.app.models.ReportResponsModel;
 import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SearchSuggistonModel;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -214,5 +221,29 @@ public interface Api {
 
     @GET("page/privacy-policy")
     Call<String> getPrivacy();
+
+    @GET("chat")
+    Call<ProductChatModel> getProductChat(@Header("Authorization") String contentRange);
+
+    @GET("chat-user/{categoryId}/{adId}")
+    Call<ProductChatModel> getChatList(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "adId", encoded = true) String adId, @Header("Authorization") String contentRange);
+
+
+    @POST("chat-message")
+    Call<ChatHistoryModel> chatSendMessage(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("chat-history")
+    Call<ChatHistoryModel> chatMessageHistory(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("clear-chat")
+    Call<ChatClearModel> clearChat(@Body Object params, @Header("Authorization") String contentRange);
+
+    @Multipart
+    @POST("user-profile")
+    Call<DefaultResponse> uploadImage(@Part MultipartBody.Part file, @Header("Authorization") String contentRange);
+
+    @Multipart
+    @POST("chat-files")
+    Call<ChatHistoryModel> uploadChatImage(@Part MultipartBody.Part file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
 
 }

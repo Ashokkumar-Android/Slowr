@@ -35,6 +35,7 @@ import com.slowr.app.adapter.ViewPostImageListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.chat.ChatActivity;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdDetailsModel;
 import com.slowr.app.models.EditAdModel;
@@ -462,6 +463,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 i.putExtra("AdType", 1);
                 i.putExtra("EditType", AdType);
                 startActivityForResult(i, EDIT_POST_CODE);
+
                 break;
             case R.id.btn_delete:
 

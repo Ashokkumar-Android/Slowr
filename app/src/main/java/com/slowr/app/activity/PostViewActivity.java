@@ -33,6 +33,7 @@ import com.slowr.app.adapter.ViewPostImageListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.chat.ChatActivity;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdDetailsModel;
@@ -83,6 +84,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String adId = "";
     String userProUrl = "";
     String userPhone = "";
+    String userId = "";
     String isFavorite = "0";
     String isLike = "0";
     int likeCount = 0;
@@ -157,6 +159,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         btn_call_now.setOnClickListener(this);
         txt_prosperId_post.setOnClickListener(this);
         txt_view_profile.setOnClickListener(this);
+        btn_chat_now.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(PostViewActivity.this)) {
             GetAdDetails();
@@ -297,6 +300,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             Log.i("ProsperId", userProsperId);
                             txt_prosperId_post.setText(userProsperId);
                             userProUrl = dr.getEditDataModel().getUserDetailsModel().getUserPhoto();
+                            userId = dr.getEditDataModel().getUserDetailsModel().getUserId();
                             Glide.with(PostViewActivity.this)
                                     .load(dr.getEditDataModel().getUserDetailsModel().getUserPhoto())
                                     .circleCrop()
@@ -460,6 +464,15 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 Intent i = new Intent(PostViewActivity.this, UserProfileActivity.class);
                 i.putExtra("prosperId", userProsperId);
                 startActivity(i);
+                break;
+            case R.id.btn_chat_now:
+                Intent c = new Intent(PostViewActivity.this, ChatActivity.class);
+                c.putExtra("CatId", catId);
+                c.putExtra("AdId", adId);
+                c.putExtra("RenterId", userId);
+                c.putExtra("ProsperId", userProsperId);
+                c.putExtra("ProURL", userProUrl);
+                startActivity(c);
                 break;
         }
     }

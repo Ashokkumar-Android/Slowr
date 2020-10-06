@@ -221,9 +221,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (_fun.checkPermission(ProfileActivity.this)) {
                     MatisseActivity.PAGE_FROM = 2;
                     Matisse.from(ProfileActivity.this)
-                            .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), false)
+                            .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
 //                            .choose(MimeType.of(MimeType.GIF), false)
 //                            .choose(MimeType.ofAll())
+
                             .countable(true)
                             .capture(true)
                             .theme(R.style.Matisse_Dracula)
@@ -234,7 +235,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             .thumbnailScale(0.85f)
                             .imageEngine(new GlideEngine())
                             .maxSelectable(1)
-
+                            .showSingleMediaType(true)
                             .forResult(50);
 
 
