@@ -40,6 +40,7 @@ public class Constant {
     public static final String CityName = "CityName";
     public static final String ImagePath = "ImagePath";
     public static final String UserVerified = "0";
+    public static final String IsFirst = "IsFirst";
 
 
 

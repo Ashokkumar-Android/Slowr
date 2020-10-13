@@ -25,19 +25,32 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
-        <activity android:name=".chat.ChatListActivity"></activity>
-        <activity android:name=".chat.ProductChatActivity" />
-        <activity android:name=".chat.ChatActivity"
-            android:windowSoftInputMode="adjustResize|stateVisible" />
-        <activity android:name=".activity.UserProfileActivity" />
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".activity.WelcomeActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".chat.ChatListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.ProductChatActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.ChatActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity
+            android:name=".activity.UserProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.SplashActivity"
+            android:screenOrientation="portrait">
+
         </activity>
         <activity
             android:name=".activity.PolicyActivity"
@@ -99,7 +112,8 @@
 
         <activity
             android:name=".activity.AddPostActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".activity.VerificationActivity"
             android:screenOrientation="portrait" />

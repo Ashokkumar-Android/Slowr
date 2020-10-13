@@ -39,6 +39,18 @@ public class ProductChatItemModel {
     @SerializedName("last_id")
     String lastId;
 
+    @SerializedName("read_count")
+    String unreadCount;
+
+    @SerializedName("lastmessage")
+    String lastMessage;
+
+    @SerializedName("is_verified")
+    String isVerified;
+
+    @SerializedName("file")
+    String isFile;
+
     public String getCatId() {
         return catId;
     }
@@ -133,5 +145,37 @@ public class ProductChatItemModel {
 
     public void setLastId(String lastId) {
         this.lastId = lastId;
+    }
+
+    public String getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(String unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(String isVerified) {
+        this.isVerified = isVerified;
+    }
+
+    public String getIsFile() {
+        return isFile;
+    }
+
+    public void setIsFile(String isFile) {
+        this.isFile = isFile;
     }
 }

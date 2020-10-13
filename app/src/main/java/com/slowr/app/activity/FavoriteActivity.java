@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.slowr.app.R;
 import com.slowr.app.adapter.HomeAdListAdapter;
@@ -32,13 +33,14 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class FavoriteActivity extends AppCompatActivity implements View.OnClickListener {
+public class FavoriteActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView rc_favorite;
     TextView txt_page_title;
     LinearLayout img_back;
     LinearLayout layout_no_result;
     Button btn_home_page;
+    SwipeRefreshLayout layout_swipe_refresh;
 
     HomeAdListAdapter homeAdListAdapter;
     ArrayList<AdItemModel> adList = new ArrayList<>();
@@ -63,6 +65,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         img_back = findViewById(R.id.img_back);
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_home_page = findViewById(R.id.btn_home_page);
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         txt_page_title.setText(getString(R.string.nav_my_favorite));
 
         listManager = new LinearLayoutManager(FavoriteActivity.this, RecyclerView.VERTICAL, false);
@@ -70,6 +73,8 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         rc_favorite.setItemAnimator(new DefaultItemAnimator());
         homeAdListAdapter = new HomeAdListAdapter(adList, FavoriteActivity.this);
         rc_favorite.setAdapter(homeAdListAdapter);
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
         if (_fun.isInternetAvailable(FavoriteActivity.this)) {
             getFavList();
         } else {
@@ -319,6 +324,24 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
                 setResult(RESULT_OK, intent);
                 isChange = false;
             }
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (_fun.isInternetAvailable(FavoriteActivity.this)) {
+            getFavList();
+        } else {
+            _fun.ShowNoInternetPopup(FavoriteActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    getFavList();
+                }
+            });
+
         }
     }
 }

@@ -1,62 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/page_bg"
     android:orientation="vertical"
     tools:context=".activity.TransactionActivity">
 
-    <include layout="@layout/layout_header" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rc_favorite"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        android:paddingTop="@dimen/size_five" />
     <LinearLayout
-        android:id="@+id/layout_no_result"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <include layout="@layout/layout_header" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_favorite"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/size_twenty"
-            app:cardBackgroundColor="@color/color_white"
-            app:cardCornerRadius="@dimen/size_ten">
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/size_five"
+            android:visibility="visible" />
 
-            <LinearLayout
+        <LinearLayout
+            android:id="@+id/layout_no_result"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/size_twenty">
+                android:layout_margin="@dimen/size_twenty"
+                app:cardBackgroundColor="@color/color_white"
+                app:cardCornerRadius="@dimen/size_ten">
 
-
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="@string/no_billings_invoices"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_eighteen" />
-
-                <ImageView
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_marginTop="@dimen/size_twenty"
-                    android:src="@drawable/no_bill" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="@dimen/size_twenty">
 
 
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/no_billings_invoices"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_eighteen" />
+
+                    <ImageView
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_marginTop="@dimen/size_twenty"
+                        android:src="@drawable/no_bill" />
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
     </LinearLayout>
-
-</LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.slowr.app.R;
@@ -36,7 +37,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class TransactionActivity extends AppCompatActivity implements View.OnClickListener {
+public class TransactionActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
     TextView txt_page_title;
     LinearLayout img_back;
     RecyclerView rc_favorite;
@@ -44,6 +45,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
     InvoiceAdapter invoiceAdapter;
     ArrayList<InvoiceItemModel> invoiceList = new ArrayList<>();
     LinearLayoutManager listManager;
+    SwipeRefreshLayout layout_swipe_refresh;
     HashMap<String, String> params = new HashMap<String, String>();
     private Function _fun = new Function();
     private PopupWindow spinnerPopup;
@@ -62,13 +64,14 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         img_back = findViewById(R.id.img_back);
         rc_favorite = findViewById(R.id.rc_favorite);
         layout_no_result = findViewById(R.id.layout_no_result);
-
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         listManager = new LinearLayoutManager(TransactionActivity.this, RecyclerView.VERTICAL, false);
         rc_favorite.setLayoutManager(listManager);
         rc_favorite.setItemAnimator(new DefaultItemAnimator());
         invoiceAdapter = new InvoiceAdapter(invoiceList, getApplicationContext());
         rc_favorite.setAdapter(invoiceAdapter);
-
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
         txt_page_title.setText(getString(R.string.transaction_history));
         img_back.setOnClickListener(this);
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
@@ -266,4 +269,27 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
             call.cancel();
         }
     };
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (_fun.isInternetAvailable(TransactionActivity.this)) {
+            getInvoice();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    _fun.ShowNoInternetPopup(TransactionActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getInvoice();
+                        }
+                    });
+                }
+            }, 200);
+
+        }
+    }
 }

@@ -91,6 +91,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String PageFrom = "";
     boolean unVerified = false;
     String userProsperId = "";
+    String chatId = "";
 
     View rootView = null;
     String imageStringArray = "";
@@ -217,6 +218,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     private void setCurrentImage(String url) {
         Glide.with(this)
                 .load(url)
+                .placeholder(R.drawable.ic_default_vertical)
+                .error(R.drawable.ic_default_vertical)
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -258,7 +261,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 
                             }
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), PostViewActivity.this);
-
+                            chatId = dr.getEditDataModel().getChatId();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());
                             isFavorite = editAdDetailsModel.getIsFavorite();
                             txt_like_count.setText(editAdDetailsModel.getLikeCount());
@@ -292,7 +295,11 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 }
 
                             } else {
-                                txt_price.setVisibility(View.GONE);
+                                if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
+                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                } else {
+                                    txt_price.setVisibility(View.GONE);
+                                }
                             }
 
                             txt_description.setText(editAdDetailsModel.getDescription());
@@ -345,7 +352,9 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             relatedAdList.clear();
                             relatedAdList.addAll(dr.getEditDataModel().getAdList());
                             popularAdListAdapter.notifyDataSetChanged();
-                            if (relatedAdList.size() == 0) {
+                            if (relatedAdList.size() != 0) {
+                                layout_relative_ad.setVisibility(View.VISIBLE);
+                            } else {
                                 layout_relative_ad.setVisibility(View.GONE);
                             }
                             if (editAdDetailsModel.getAdPromotion().equals("1")) {
@@ -466,13 +475,19 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 startActivity(i);
                 break;
             case R.id.btn_chat_now:
-                Intent c = new Intent(PostViewActivity.this, ChatActivity.class);
-                c.putExtra("CatId", catId);
-                c.putExtra("AdId", adId);
-                c.putExtra("RenterId", userId);
-                c.putExtra("ProsperId", userProsperId);
-                c.putExtra("ProURL", userProUrl);
-                startActivity(c);
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent c = new Intent(PostViewActivity.this, ChatActivity.class);
+                    c.putExtra("CatId", catId);
+                    c.putExtra("AdId", adId);
+                    c.putExtra("RenterId", userId);
+                    c.putExtra("ProsperId", userProsperId);
+                    c.putExtra("ProURL", userProUrl);
+                    c.putExtra("LastId", chatId);
+                    c.putExtra("UnVerified", unVerified);
+                    startActivity(c);
+                } else {
+                    Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+                }
                 break;
         }
     }

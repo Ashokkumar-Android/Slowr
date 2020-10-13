@@ -39,4 +39,8 @@
 
     <color name="hint_txt_color">#AAA9A9</color>
 
+    <color name="intro_one">#0066A6</color>
+    <color name="intro_two">#A8BF54</color>
+    <color name="intro_three">#FAB750</color>
+
 </resources>

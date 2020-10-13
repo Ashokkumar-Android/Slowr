@@ -264,6 +264,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             til_edt_name.setErrorEnabled(false);
         }
+        if (name.length()<3) {
+            til_edt_name.setError(getString(R.string.enter_name_minimum));
+            til_edt_name.requestFocus();
+            return;
+        } else {
+            til_edt_name.setErrorEnabled(false);
+        }
         if (!email.isEmpty() && !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             til_email.setError(getString(R.string.enter_email));
             til_email.requestFocus();

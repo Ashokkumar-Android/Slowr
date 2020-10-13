@@ -24,6 +24,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView txt_prosperId;
+        TextView txt_message_count;
+        TextView txt_new_message;
         LinearLayout layout_root;
         ImageView img_profile;
 
@@ -32,6 +34,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             txt_prosperId = view.findViewById(R.id.txt_prosperId);
             layout_root = view.findViewById(R.id.layout_root);
             img_profile = view.findViewById(R.id.img_profile);
+            txt_message_count = view.findViewById(R.id.txt_message_count);
+            txt_new_message = view.findViewById(R.id.txt_new_message);
 
             layout_root.setOnClickListener(this);
 
@@ -64,6 +68,19 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ProductChatItemModel chatModel = chatList.get(position);
         holder.txt_prosperId.setText(chatModel.getProsperId());
+
+        if (Integer.valueOf(chatModel.getUnreadCount()) == null || Integer.valueOf(chatModel.getUnreadCount()) == 0) {
+            holder.txt_message_count.setText(ctx.getString(R.string.txt_no_new_messages));
+            holder.txt_message_count.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+        } else {
+            holder.txt_message_count.setText(chatModel.getUnreadCount() + " " + ctx.getString(R.string.txt_new_messages));
+            holder.txt_message_count.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+        }
+        if(chatModel.getIsFile()!=null&&chatModel.getIsFile().equals("photo")){
+            holder.txt_new_message.setText(chatModel.getIsFile());
+        }else {
+            holder.txt_new_message.setText(chatModel.getLastMessage());
+        }
 
         Glide.with(ctx)
                 .load(chatModel.getAdImage())

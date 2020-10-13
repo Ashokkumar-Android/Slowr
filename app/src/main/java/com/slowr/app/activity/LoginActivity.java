@@ -962,6 +962,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 //                    showPopupWindow(btn_send_mail, "1");
                     layout_forgot_password.setVisibility(View.GONE);
                     layout_otp.setVisibility(View.VISIBLE);
+                    edt_otp.setText("");
                     if (isOTPMail) {
                         txt_otp_content.setText(getString(R.string.txt_otp_content_email));
                     } else {
@@ -1220,6 +1221,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                         isOTPView = true;
                     }
                     layout_otp.setVisibility(View.VISIBLE);
+                    edt_otp.setText("");
                     if (isOTPMail) {
                         txt_otp_content.setText(getString(R.string.txt_otp_content_email));
                     } else {

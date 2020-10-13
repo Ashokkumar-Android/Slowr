@@ -90,8 +90,11 @@
                         android:layout_marginLeft="@dimen/size_ten"
                         android:layout_marginRight="@dimen/size_ten"
                         android:fontFamily="@font/nunito_regular"
+                        android:background="@drawable/circle_blue_bg"
                         android:singleLine="true"
+                        android:gravity="center"
                         android:text=""
+                        android:padding="2dp"
                         android:textColor="@color/color_black"
                         android:textSize="@dimen/size_sixteen" />
 

@@ -36,7 +36,8 @@ public class EditDataModel {
     @SerializedName("user_details")
     private UserDetailsModel userDetailsModel;
 
-
+    @SerializedName("chat_id")
+    String chatId;
 
     @SerializedName("relatedProduct")
     private ArrayList<AdItemModel> adList;
@@ -140,5 +141,11 @@ public class EditDataModel {
         this.urlPath = urlPath;
     }
 
+    public String getChatId() {
+        return chatId;
+    }
 
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
+    }
 }

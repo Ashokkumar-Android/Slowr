@@ -38,6 +38,7 @@ public class AreaListAdapter extends RecyclerView.Adapter<AreaListAdapter.MyView
             rb_select = view.findViewById(R.id.rb_select);
             layout_root.setOnClickListener(this);
             rb_select.setOnClickListener(this);
+            rb_select.setVisibility(View.GONE);
         }
 
         @Override

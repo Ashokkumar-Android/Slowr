@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
@@ -27,11 +28,12 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class ChatListActivity extends AppCompatActivity implements View.OnClickListener {
+public class ChatListActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
 
     TextView txt_page_title;
     LinearLayout img_back;
     RecyclerView rc_chat_list;
+    SwipeRefreshLayout layout_swipe_refresh;
 
     ArrayList<ProductChatItemModel> productList = new ArrayList<>();
     ChatListAdapter chatListAdapter;
@@ -55,12 +57,15 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
         rc_chat_list = findViewById(R.id.rc_chat_list);
-
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_chat_list.setLayoutManager(linearLayoutManager);
         rc_chat_list.setItemAnimator(new DefaultItemAnimator());
         chatListAdapter = new ChatListAdapter(productList, this);
         rc_chat_list.setAdapter(chatListAdapter);
+
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
 
         txt_page_title.setText(getString(R.string.nav_my_chat));
         img_back.setOnClickListener(this);
@@ -85,6 +90,11 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
                 c.putExtra("ProsperId", userProsperId);
                 c.putExtra("ProURL", userProUrl);
                 c.putExtra("LastId", lastId);
+                if (productList.get(pos).getIsVerified().equals("0")) {
+                    c.putExtra("UnVerified", true);
+                } else {
+                    c.putExtra("UnVerified", false);
+                }
                 startActivity(c);
             }
         });
@@ -116,6 +126,7 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
                 ProductChatModel dr = response.body();
                 if (dr.isStatus()) {
                     productList.clear();
+                    chatListAdapter.notifyDataSetChanged();
                     productList.addAll(dr.getProductChatList());
                     chatListAdapter.notifyDataSetChanged();
 
@@ -155,5 +166,13 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        getChatList();
     }
 }

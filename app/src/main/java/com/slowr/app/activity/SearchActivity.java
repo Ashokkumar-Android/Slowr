@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.gson.JsonArray;
 import com.slowr.app.R;
@@ -53,7 +54,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class SearchActivity extends BaseActivity implements View.OnClickListener {
+public class SearchActivity extends BaseActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
     LinearLayout layout_ad_list;
     ImageView img_list;
     ImageView img_grid;
@@ -66,6 +67,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     Button btn_requirement_ad;
     TextView txt_page_title;
     EditText edt_search_suggestion;
+    SwipeRefreshLayout layout_swipe_refresh;
 
     RecyclerView rc_ad_list;
     RecyclerView rc_filter;
@@ -134,7 +136,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         rc_filter = findViewById(R.id.rc_filter);
         edt_search_suggestion = findViewById(R.id.edt_search_suggestion);
         txt_page_title.setText(getString(R.string.txt_search));
-
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         gridManager = new GridLayoutManager(SearchActivity.this, 2);
         listManager = new LinearLayoutManager(SearchActivity.this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(listManager);
@@ -151,7 +153,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         rc_filter.setItemAnimator(new DefaultItemAnimator());
         searchSuggistionAdapter = new SearchSuggistionAdapter(searchSuggestionList, getApplicationContext());
         rc_filter.setAdapter(searchSuggistionAdapter);
-
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
 
         img_back.setOnClickListener(this);
         img_list.setOnClickListener(this);
@@ -897,6 +900,45 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 getAdList(true);
                 isChanges = true;
             }
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (isCategory) {
+            currentPageNo = 1;
+            getAdList(true);
+        }else {
+
+            final String val = edt_search_suggestion.getText().toString();
+            if (val.length() > 1) {
+
+                if (_fun.isInternetAvailable(SearchActivity.this)) {
+                    getSearchSuggestion(val);
+                } else {
+                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getSearchSuggestion(val);
+                        }
+                    });
+                }
+            } else {
+                if (_fun.isInternetAvailable(SearchActivity.this)) {
+                    getRecentSearch();
+                } else {
+                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getRecentSearch();
+                        }
+                    });
+                }
+            }
+
         }
     }
 }

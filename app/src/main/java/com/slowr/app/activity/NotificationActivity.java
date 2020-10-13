@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.slowr.app.R;
 import com.slowr.app.adapter.NotificationAdapter;
@@ -29,12 +30,13 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 
-public class NotificationActivity extends AppCompatActivity implements View.OnClickListener {
+public class NotificationActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
     TextView txt_page_title;
     LinearLayout img_back;
     RecyclerView rc_notification;
     LinearLayout layout_no_result;
     Button btn_my_ads;
+    SwipeRefreshLayout layout_swipe_refresh;
     NotificationAdapter notificationAdapter;
     ArrayList<NotificationItemModel> notificationList = new ArrayList<>();
     private Function _fun = new Function();
@@ -55,7 +57,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         rc_notification = findViewById(R.id.rc_notification);
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_my_ads = findViewById(R.id.btn_my_ads);
-
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
 
         listManager = new LinearLayoutManager(NotificationActivity.this, RecyclerView.VERTICAL, false);
         rc_notification.setLayoutManager(listManager);
@@ -64,7 +66,8 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         rc_notification.setAdapter(notificationAdapter);
 
         txt_page_title.setText(getString(R.string.nav_notification));
-
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
             getNotificationList();
         } else {
@@ -176,6 +179,29 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
             case R.id.img_back:
                 finish();
                 break;
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (_fun.isInternetAvailable(NotificationActivity.this)) {
+            getNotificationList();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getNotificationList();
+                        }
+                    });
+                }
+            }, 200);
+
         }
     }
 }

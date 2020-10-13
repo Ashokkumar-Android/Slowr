@@ -186,6 +186,7 @@
                         android:background="@drawable/bg_blue_top_page"
                         android:gravity="center"
                         android:text="@string/txt_top_of_page"
+                        android:textSize="@dimen/size_fourteen"
                         android:textColor="@color/color_white" />
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
@@ -302,6 +303,7 @@
                         android:background="@drawable/bg_green_top_page"
                         android:gravity="center"
                         android:text="@string/txt_premium_caps"
+                        android:textSize="@dimen/size_fourteen"
                         android:textColor="@color/color_white" />
                 </androidx.cardview.widget.CardView>
             </FrameLayout>

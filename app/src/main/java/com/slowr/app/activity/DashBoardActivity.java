@@ -18,6 +18,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.slowr.app.R;
 import com.slowr.app.adapter.AdListAdapter;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 
-public class DashBoardActivity extends AppCompatActivity implements View.OnClickListener {
+public class DashBoardActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView rc_adPost;
     TextView txt_page_title;
@@ -46,6 +47,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     LinearLayout layout_no_result;
     Button btn_add_post;
     EditText edt_search_ad;
+    SwipeRefreshLayout layout_swipe_refresh;
     AdListAdapter adListAdapter;
     ArrayList<AdItemModel> adList = new ArrayList<>();
 
@@ -71,6 +73,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_add_post = findViewById(R.id.btn_add_post);
         edt_search_ad = findViewById(R.id.edt_search_ad);
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
 
         txt_page_title.setText(getString(R.string.nav_dash_board));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -80,6 +83,8 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         rc_adPost.setAdapter(adListAdapter);
         img_back.setOnClickListener(this);
         btn_add_post.setOnClickListener(this);
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
+        layout_swipe_refresh.setOnRefreshListener(this);
 //        getUserDetails();
 
         if (_fun.isInternetAvailable(DashBoardActivity.this)) {
@@ -201,7 +206,9 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
     private void getAdList() {
         Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
+
         RetrofitClient.getClient().create(Api.class).getPost(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+
                 .enqueue(new RetrofitCallBack(DashBoardActivity.this, adListResponse, true));
     }
 
@@ -237,6 +244,13 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                if (adList.size() == 0) {
+                    layout_root.setVisibility(View.GONE);
+                    layout_no_result.setVisibility(View.VISIBLE);
+                } else {
+                    layout_root.setVisibility(View.VISIBLE);
+                    layout_no_result.setVisibility(View.GONE);
+                }
 
             }
         }
@@ -246,6 +260,13 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (adList.size() == 0) {
+                layout_root.setVisibility(View.GONE);
+                layout_no_result.setVisibility(View.VISIBLE);
+            } else {
+                layout_root.setVisibility(View.VISIBLE);
+                layout_no_result.setVisibility(View.GONE);
+            }
         }
     };
 
@@ -277,6 +298,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(h);
         finish();
+
 //        } else {
 //            finish();
         super.onBackPressed();
@@ -303,6 +325,23 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 isChanges = true;
                 edt_search_ad.setText("");
             }
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (_fun.isInternetAvailable(DashBoardActivity.this)) {
+            getAdList();
+        } else {
+            _fun.ShowNoInternetPopup(DashBoardActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    getAdList();
+                }
+            });
         }
     }
 }

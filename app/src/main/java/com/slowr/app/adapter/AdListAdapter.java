@@ -162,7 +162,12 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
         } else {
-            holder.txt_price.setVisibility(View.GONE);
+            if ( movie.getAdDuration().equals("Custom")) {
+                holder.txt_price.setText(movie.getAdDuration());
+            } else {
+                holder.txt_price.setVisibility(View.GONE);
+            }
+
         }
         Glide.with(ctx)
                 .load(movie.getPhotoType())

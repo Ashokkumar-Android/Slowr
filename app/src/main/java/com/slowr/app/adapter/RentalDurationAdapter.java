@@ -99,4 +99,8 @@ public class RentalDurationAdapter extends RecyclerView.Adapter<RentalDurationAd
 
     }
 
+    public void setPosValues(int pos) {
+        checkedPos = pos;
+        notifyDataSetChanged();
+    }
 }

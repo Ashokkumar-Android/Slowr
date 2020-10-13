@@ -48,4 +48,11 @@ public class SubCategoryItemModel {
     public void setSubCategoryList(ArrayList<SubCategoryChildModel> subCategoryList) {
         this.subCategoryList = subCategoryList;
     }
+
+    public SubCategoryItemModel(String subcategoryId, String subcategoryName, String subcategorySlug, ArrayList<SubCategoryChildModel> subCategoryList) {
+        this.subcategoryId = subcategoryId;
+        this.subcategoryName = subcategoryName;
+        this.subcategorySlug = subcategorySlug;
+        this.subCategoryList = subCategoryList;
+    }
 }

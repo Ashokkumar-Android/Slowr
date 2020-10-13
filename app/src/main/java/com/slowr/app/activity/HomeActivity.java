@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.navigation.NavigationView;
@@ -64,7 +65,7 @@ import java.util.TimerTask;
 
 import retrofit2.Call;
 
-public class HomeActivity extends BaseActivity implements View.OnClickListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     ViewPager vp_banner;
     NestedScrollView layout_home;
     LinearLayout layout_search_list;
@@ -76,6 +77,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     LinearLayout layout_requirement_ad;
     LinearLayout layout_list_filter;
     Button btn_requirement_ad;
+    SwipeRefreshLayout layout_swipe_refresh;
 
     RecyclerView rc_product_list;
     RecyclerView rc_service_list;
@@ -166,6 +168,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         btn_requirement_ad = findViewById(R.id.btn_requirement_ad);
         layout_requirement_ad = findViewById(R.id.layout_requirement_ad);
         layout_list_filter = findViewById(R.id.layout_list_filter);
+        layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -197,13 +200,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
         filterOptionAdapter = new FilterOptionAdapter(filterList, getApplicationContext());
         filterSelectAdapter = new FilterSelectAdapter(filterSelectList, getApplicationContext());
         searchSuggistionAdapter = new SearchSuggistionAdapter(searchSuggestionList, getApplicationContext());
-
+        layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         img_back.setOnClickListener(this);
         img_list.setOnClickListener(this);
         img_grid.setOnClickListener(this);
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
         btn_requirement_ad.setOnClickListener(this);
+        layout_swipe_refresh.setOnRefreshListener(this);
         CallBackFunction();
 //        getCategory();
         setBanner();
@@ -378,6 +382,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                 sortByList.clear();
                 filterList.clear();
                 productType = "";
+                sortById = "";
+                if (sortByAdapter != null) {
+                    sortByAdapter.clearValues();
+                }
                 catId = categoryList.get(pos).getId();
                 currentPageNo = 1;
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
@@ -404,6 +412,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                 catId = serviceList.get(pos).getId();
                 currentPageNo = 1;
                 productType = "";
+                sortById = "";
+                if (sortByAdapter != null) {
+                    sortByAdapter.clearValues();
+                }
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
                     getAdList(true);
                 } else {
@@ -919,7 +931,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                 if (type == 1) {
 //                    rc_filter.setAdapter(sortByAdapter);
                     sortByAdapter.clearValues();
-
+                    sortById = "";
                 } else if (type == 2) {
                     for (int i = 0; i < filterList.size(); i++) {
                         filterList.get(i).setSelectedValue("Any");
@@ -1091,6 +1103,43 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                         }
                     });
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        if (layout_swipe_refresh.isRefreshing()) {
+            layout_swipe_refresh.setRefreshing(false);
+        }
+        if (isCategory) {
+            currentPageNo = 1;
+            if (_fun.isInternetAvailable(HomeActivity.this)) {
+                getAdList(true);
+            } else {
+                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        getAdList(true);
+                    }
+                });
+            }
+        } else {
+            if (_fun.isInternetAvailable(HomeActivity.this)) {
+                getHomeDetails();
+            } else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                getHomeDetails();
+                            }
+                        });
+                    }
+                }, 200);
+
             }
         }
     }

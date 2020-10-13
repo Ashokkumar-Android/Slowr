@@ -1,10 +1,11 @@
 package com.slowr.app.chat;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,11 +16,13 @@ import com.bumptech.glide.Glide;
 import com.slowr.app.R;
 import com.slowr.app.models.ProductChatItemModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.MyViewHolder> {
+public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.MyViewHolder> implements Filterable {
 
     private List<ProductChatItemModel> chatList;
+    private List<ProductChatItemModel> chatListFilter;
     Context ctx;
     CallBack callBack;
 
@@ -48,7 +51,7 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.layout_root:
-                    callBack.onItemClick(getAdapterPosition());
+                    callBack.onItemClick(chatListFilter.get(getAdapterPosition()));
                     break;
             }
 
@@ -57,6 +60,7 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
 
     public ProductChatAdapter(List<ProductChatItemModel> _categoryList, Context ctx) {
         this.chatList = _categoryList;
+        this.chatListFilter = _categoryList;
         this.ctx = ctx;
     }
 
@@ -69,7 +73,7 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        ProductChatItemModel chatModel = chatList.get(position);
+        ProductChatItemModel chatModel = chatListFilter.get(position);
         holder.txt_ad_title.setText(chatModel.getProductTitle());
         if (chatModel.getRentalFee() != null) {
             holder.txt_price.setVisibility(View.VISIBLE);
@@ -95,11 +99,25 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
                 .placeholder(R.drawable.ic_default_horizontal)
                 .into(holder.img_ad);
 
+        if (chatModel.getUnreadCount().equals("0")) {
+            holder.txt_new_message.setText(ctx.getString(R.string.txt_no_new_messages));
+            holder.txt_new_message.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+
+            holder.txt_message_count.setText(chatModel.getUnreadCount());
+            holder.txt_message_count.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+        } else {
+            holder.txt_new_message.setText(ctx.getString(R.string.txt_new_messages));
+            holder.txt_new_message.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+
+            holder.txt_message_count.setText(chatModel.getUnreadCount());
+            holder.txt_message_count.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return chatList.size();
+        return chatListFilter.size();
     }
 
     @Override
@@ -112,7 +130,41 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
     }
 
     public interface CallBack {
-        public void onItemClick(int pos);
+        public void onItemClick(ProductChatItemModel model);
     }
 
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    chatListFilter = chatList;
+                } else {
+                    List<ProductChatItemModel> filteredList = new ArrayList<>();
+                    for (ProductChatItemModel row : chatList) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getProductTitle().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    chatListFilter = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = chatListFilter;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                chatListFilter = (ArrayList<ProductChatItemModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 }

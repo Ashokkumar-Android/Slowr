@@ -33,4 +33,10 @@ public class SortByModel {
     public void setSelect(boolean select) {
         isSelect = select;
     }
+
+    public SortByModel(String sortId, String sortValue, boolean isSelect) {
+        this.sortId = sortId;
+        this.sortValue = sortValue;
+        this.isSelect = isSelect;
+    }
 }

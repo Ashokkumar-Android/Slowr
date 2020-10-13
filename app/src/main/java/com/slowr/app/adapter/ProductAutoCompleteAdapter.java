@@ -7,23 +7,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.slowr.app.R;
-import com.slowr.app.models.SubCategoryChildModel;
+import com.slowr.app.models.SubCategoryItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildModel> {
+public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemModel> {
     private Context context;
     private int resourceId;
-    private List<SubCategoryChildModel> items, tempItems, suggestions;
+    Callback callback;
+    private List<SubCategoryItemModel> items, tempItems, suggestions;
 
-    public ProductAutoCompleteAdapter(@NonNull Context context, int resourceId, ArrayList<SubCategoryChildModel> items) {
+    public ProductAutoCompleteAdapter(@NonNull Context context, int resourceId, ArrayList<SubCategoryItemModel> items) {
         super(context, resourceId, items);
         this.items = items;
         this.context = context;
@@ -41,9 +43,16 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildMod
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 view = inflater.inflate(resourceId, parent, false);
             }
-            SubCategoryChildModel fruit = getItem(position);
+            SubCategoryItemModel fruit = getItem(position);
             TextView name = (TextView) view.findViewById(R.id.txt_category_name);
-            name.setText(fruit.getChildCategoryName());
+            name.setText(fruit.getSubcategoryName());
+            LinearLayout linearLayout = view.findViewById(R.id.layout_root);
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callback.itemClick(fruit);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +61,7 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildMod
 
     @Nullable
     @Override
-    public SubCategoryChildModel getItem(int position) {
+    public SubCategoryItemModel getItem(int position) {
         return items.get(position);
     }
 
@@ -66,6 +75,16 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildMod
         return position;
     }
 
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    public interface Callback {
+        public void itemClick(SubCategoryItemModel model);
+
+
+    }
+
     @NonNull
     @Override
     public Filter getFilter() {
@@ -75,16 +94,16 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildMod
     private Filter fruitFilter = new Filter() {
         @Override
         public CharSequence convertResultToString(Object resultValue) {
-            SubCategoryChildModel fruit = (SubCategoryChildModel) resultValue;
-            return fruit.getChildCategoryName();
+            SubCategoryItemModel fruit = (SubCategoryItemModel) resultValue;
+            return fruit.getSubcategoryName();
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             if (charSequence != null) {
                 suggestions.clear();
-                for (SubCategoryChildModel fruit : tempItems) {
-                    if (fruit.getChildCategoryName().toLowerCase().startsWith(charSequence.toString().toLowerCase())) {
+                for (SubCategoryItemModel fruit : tempItems) {
+                    if (fruit.getSubcategoryName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
                         suggestions.add(fruit);
                     }
                 }
@@ -99,10 +118,10 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryChildMod
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            ArrayList<SubCategoryChildModel> tempValues = (ArrayList<SubCategoryChildModel>) filterResults.values;
+            ArrayList<SubCategoryItemModel> tempValues = (ArrayList<SubCategoryItemModel>) filterResults.values;
             if (filterResults != null && filterResults.count > 0) {
                 clear();
-                for (SubCategoryChildModel fruitObj : tempValues) {
+                for (SubCategoryItemModel fruitObj : tempValues) {
                     add(fruitObj);
                 }
                 notifyDataSetChanged();

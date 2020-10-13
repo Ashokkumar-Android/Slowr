@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -39,6 +38,7 @@ public class AttributeSelectAdapter extends RecyclerView.Adapter<AttributeSelect
             rb_select = view.findViewById(R.id.rb_select);
             layout_root.setOnClickListener(this);
             rb_select.setOnClickListener(this);
+            rb_select.setVisibility(View.GONE);
         }
 
         @Override

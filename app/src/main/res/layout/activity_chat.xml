@@ -42,15 +42,31 @@
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_fifteen" />
 
-                <TextView
-                    android:id="@+id/txt_prosperId"
+                <LinearLayout
+                    android:id="@+id/layout_prosper_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="AA1234"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/size_twenty" />
+                    android:gravity="center|bottom"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/txt_prosperId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="AA1234"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/size_twenty" />
+
+                    <ImageView
+                        android:id="@+id/img_unverified_user"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="7dp"
+                        android:layout_toRightOf="@+id/txt_prosperId_post"
+                        android:src="@drawable/ic_unverified_user" />
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -64,10 +80,10 @@
                     android:id="@+id/img_menu"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_chat_option"
+                    android:layout_marginRight="@dimen/size_fifteen"
                     android:background="@drawable/circle_ripple_effect"
                     android:padding="@dimen/size_ten"
-                    android:layout_marginRight="@dimen/size_fifteen"/>
+                    android:src="@drawable/ic_chat_option" />
 
             </LinearLayout>
 
@@ -97,29 +113,35 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_margin="@dimen/size_ten"
+            android:minHeight="45dp"
             app:cardBackgroundColor="@color/color_white"
             app:cardCornerRadius="@dimen/size_five">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <EditText
                     android:id="@+id/edt_message"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/size_fifteen"
                     android:layout_marginRight="@dimen/size_ten"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:fontFamily="@font/nunito_regular"
                     android:gravity="center|left"
+                    android:ems="10"
                     android:hint="@string/type_message"
-                    android:inputType="textCapSentences"
+                    android:inputType="textCapSentences|text|textMultiLine"
+                    android:maxLines="5"
+                    android:scrollbars="vertical"
+                    android:singleLine="false"
                     android:textColor="@color/color_black"
                     android:textColorHint="@color/hint_txt_color"
                     android:textSize="@dimen/size_sixteen" />

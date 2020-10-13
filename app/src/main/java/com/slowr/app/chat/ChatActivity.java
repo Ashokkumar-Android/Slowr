@@ -1,5 +1,7 @@
 package com.slowr.app.chat;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -12,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +31,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.slowr.app.R;
+import com.slowr.app.activity.HomeActivity;
+import com.slowr.app.activity.ImageViewActivity;
 import com.slowr.app.activity.ReportUsActivity;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
@@ -62,7 +67,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     EditText edt_message;
     ImageView img_send;
     ImageView img_menu;
+    ImageView img_unverified_user;
+    LinearLayout layout_prosper_id;
     boolean isSend = false;
+    boolean isUnVerified = false;
 
     HashMap<String, String> params = new HashMap<String, String>();
     private Function _fun = new Function();
@@ -76,6 +84,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     String prosperId = "";
     String lastId = "";
     String proUrl = "";
+    String PageFrom = "";
 
     String imgPath = "";
     Uri selectedImage;
@@ -100,6 +109,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         prosperId = getIntent().getStringExtra("ProsperId");
         proUrl = getIntent().getStringExtra("ProURL");
         lastId = getIntent().getStringExtra("LastId");
+        isUnVerified = getIntent().getBooleanExtra("UnVerified", false);
+        if (getIntent().hasExtra("PageFrom")) {
+            PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notifManager.cancelAll();
+        }
         if (lastId != null) {
             if (!lastId.equals(""))
                 messageId = lastId;
@@ -110,6 +125,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         img_send = findViewById(R.id.img_send);
         rc_chat = findViewById(R.id.rc_chat);
         img_menu = findViewById(R.id.img_menu);
+        img_unverified_user = findViewById(R.id.img_unverified_user);
+        layout_prosper_id = findViewById(R.id.layout_prosper_id);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_chat.setLayoutManager(linearLayoutManager);
@@ -117,14 +134,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatAdapter = new ChatAdapter(chatList, this);
         rc_chat.setAdapter(chatAdapter);
 
-
+        CallBackFunction();
         sendButtonEnable();
 
         img_send.setOnClickListener(this);
         img_menu.setOnClickListener(this);
+        layout_prosper_id.setOnClickListener(this);
         getMessageHistory(true);
         setUserDetails();
         callApiLoop();
+    }
+
+    private void CallBackFunction() {
+        chatAdapter.setCallBack(new ChatAdapter.CallBack() {
+            @Override
+            public void onImageClick(int pos) {
+                String imageStringArray = chatList.get(pos).getImgUrl();
+                Intent a = new Intent(ChatActivity.this, ImageViewActivity.class);
+                a.putExtra("ImgURL", imageStringArray);
+                a.putExtra("ImgPos", 0);
+                startActivity(a);
+            }
+        });
     }
 
     private void setUserDetails() {
@@ -135,6 +166,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 .error(R.drawable.ic_default_profile)
                 .placeholder(R.drawable.ic_default_profile)
                 .into(img_profile);
+
+        if (isUnVerified) {
+            img_unverified_user.setVisibility(View.VISIBLE);
+        } else {
+            img_unverified_user.setVisibility(View.GONE);
+        }
     }
 
     private void callApiLoop() {
@@ -170,18 +207,21 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         Log.i("params", params.toString());
 
-        if (_fun.isInternetAvailable(ChatActivity.this)) {
-            RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
-        } else {
-            _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
-                }
-            });
-        }
+        RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
+
+//        if (_fun.isInternetAvailable(ChatActivity.this)) {
+//            RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                    .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
+//        } else {
+//            _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
+//                @Override
+//                public void isInternet() {
+//                    RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                            .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
+//                }
+//            });
+//        }
     }
 
     private void sendButtonEnable() {
@@ -214,6 +254,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_send:
+                img_send.setEnabled(false);
                 if (isSend) {
                     sendMessage();
                 } else {
@@ -225,6 +266,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 popup.setOnMenuItemClickListener(ChatActivity.this);
                 popup.inflate(R.menu.activity_chat_menu);
                 popup.show();
+                break;
+            case R.id.layout_prosper_id:
+                if (isUnVerified) {
+                    ShowPopupProsper();
+                }
                 break;
         }
     }
@@ -250,6 +296,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     .forResult(50);
 
 
+        } else {
+            img_send.setEnabled(true);
         }
     }
 
@@ -269,13 +317,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (_fun.isInternetAvailable(ChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).chatSendMessage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, false));
+                    .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true));
         } else {
             _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).chatSendMessage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, false));
+                            .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true));
                 }
             });
         }
@@ -318,16 +366,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 if (dr.isStatus()) {
                     chatList.addAll(dr.getChatList());
                     chatAdapter.notifyDataSetChanged();
-
+                    img_send.setEnabled(true);
                     if (chatList.size() != 0) {
                         messageId = chatList.get(chatList.size() - 1).getChatId();
                         lastId = chatList.get(chatList.size() - 1).getLastId();
                         rc_chat.smoothScrollToPosition(chatList.size() - 1);
                     }
                 } else {
+                    img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
+                img_send.setEnabled(true);
                 e.printStackTrace();
             }
         }
@@ -388,7 +438,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     edt_message.setText("");
                     chatList.addAll(dr.getChatList());
                     chatAdapter.notifyDataSetChanged();
-
+                    img_send.setEnabled(true);
                     handler.removeCallbacks(runnable);
                     handler.postDelayed(runnable, delay);
                     if (chatList.size() != 0) {
@@ -397,9 +447,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         rc_chat.smoothScrollToPosition(chatList.size() - 1);
                     }
                 } else {
+                    img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
+                img_send.setEnabled(true);
                 e.printStackTrace();
             }
         }
@@ -410,6 +462,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d("TAG", t.getMessage());
             call.cancel();
+            img_send.setEnabled(true);
         }
     };
 
@@ -466,7 +519,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
 
             }
-
+            img_send.setEnabled(true);
 
         }
     }
@@ -485,6 +538,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         ViewPager vp_image_view = view.findViewById(R.id.vp_image_view);
         LinearLayout layout_back = view.findViewById(R.id.layout_back);
         LinearLayout layout_send = view.findViewById(R.id.layout_send);
+        layout_send.setVisibility(View.VISIBLE);
         vp_image_view.setVisibility(View.GONE);
         img_profile_pic.setVisibility(View.VISIBLE);
 
@@ -539,6 +593,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         handler.removeCallbacks(runnable);
+        if (PageFrom.equals("2")) {
+            Intent h = new Intent(ChatActivity.this, HomeActivity.class);
+            h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(h);
+        }
         finish();
         super.onBackPressed();
     }
@@ -555,5 +614,37 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return true;
+    }
+
+    public void ShowPopupProsper() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_unverified_user, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        TextView txt_content_two = view.findViewById(R.id.txt_content_two);
+        TextView txt_content = view.findViewById(R.id.txt_content);
+        LinearLayout layout_content_one = view.findViewById(R.id.layout_content_one);
+        Button btn_ok = view.findViewById(R.id.btn_ok);
+        layout_content_one.setVisibility(View.VISIBLE);
+        txt_content.setText(getString(R.string.txt_unverified_other));
+        txt_content_two.setText(getString(R.string.txt_unverified_other_two));
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    @Override
+    protected void onRestart() {
+        img_send.setEnabled(true);
+        super.onRestart();
     }
 }

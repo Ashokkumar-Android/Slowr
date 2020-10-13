@@ -171,8 +171,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             Glide.with(this)
                     .load(Sessions.getSession(Constant.UserProfile, getApplicationContext()))
                     .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .error(R.drawable.ic_default_profile)
                     .placeholder(R.drawable.ic_default_profile)
                     .into(img_profile_pic);
@@ -446,9 +444,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 if (dr.isStatus()) {
                     String cityId = Sessions.getSession(Constant.CityId, getApplicationContext());
                     String cityName = Sessions.getSession(Constant.CityName, getApplicationContext());
+
                     Sessions.clearSession(getApplicationContext());
                     Sessions.saveSession(Constant.CityId, cityId, getApplicationContext());
                     Sessions.saveSession(Constant.CityName, cityName, getApplicationContext());
+                    Sessions.saveSessionBool(Constant.IsFirst, true, getApplicationContext());
                     Intent h = new Intent(BaseActivity.this, HomeActivity.class);
                     h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(h);

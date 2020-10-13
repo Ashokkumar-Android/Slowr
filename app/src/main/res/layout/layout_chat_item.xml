@@ -6,6 +6,58 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/date_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/view_left"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:layout_marginLeft="@dimen/size_fifteen"
+                android:visibility="visible"
+                android:background="@color/hint_txt_color" />
+
+            <TextView
+                android:id="@+id/date_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"
+                android:text="date"
+                android:fontFamily="@font/roboto_regular"
+                android:textColor="@color/txt_gray"
+                android:textSize="@dimen/size_twelve"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:paddingLeft="9dp"
+                android:paddingRight="9dp"/>
+
+            <View
+                android:id="@+id/view_right"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:visibility="visible"
+                android:layout_marginRight="@dimen/size_fifteen"
+                android:background="@color/hint_txt_color" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layout_txt_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

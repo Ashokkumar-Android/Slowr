@@ -3,8 +3,10 @@ package com.slowr.app.firebase;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -18,10 +20,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.slowr.app.R;
 import com.slowr.app.activity.MyPostViewActivity;
-import com.slowr.app.activity.PostViewActivity;
 import com.slowr.app.activity.ProfileActivity;
-import com.slowr.app.utils.Constant;
-import com.slowr.app.utils.Sessions;
+import com.slowr.app.chat.ChatActivity;
 import com.squareup.picasso.Picasso;
 
 
@@ -81,7 +81,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             //Post
 //                            String userId = remoteMessage.getData().get("user_id");
 //                            if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
-                                notificationIntent = new Intent(getApplicationContext(), MyPostViewActivity.class);
+                            notificationIntent = new Intent(getApplicationContext(), MyPostViewActivity.class);
 //                            } else {
 //                                notificationIntent = new Intent(getApplicationContext(), PostViewActivity.class);
 //                            }
@@ -94,6 +94,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             notificationIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             notificationIntent.putExtra("PageFrom", "2");
+                            break;
+                        case "3":
+                            notificationIntent = new Intent(getApplicationContext(), ChatActivity.class);
+                            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            notificationIntent.putExtra("PageFrom", "2");
+                            notificationIntent.putExtra("CatId", remoteMessage.getData().get("category_id"));
+                            notificationIntent.putExtra("AdId", remoteMessage.getData().get("ads_id"));
+                            notificationIntent.putExtra("RenterId", remoteMessage.getData().get("user_id"));
+                            notificationIntent.putExtra("ProsperId", remoteMessage.getData().get("prosper_id"));
+                            notificationIntent.putExtra("ProURL", remoteMessage.getData().get("profile_image"));
+                            notificationIntent.putExtra("LastId", remoteMessage.getData().get("last_id"));
+                            media_url = remoteMessage.getData().get("profile_image");
+                            if (remoteMessage.getData().get("is_verified").equals("0")) {
+                                notificationIntent.putExtra("UnVerified", true);
+                            } else {
+                                notificationIntent.putExtra("UnVerified", false);
+                            }
+
                             break;
                     }
 //                    notificationIntent.putExtra("NotificationBoardId", notificationBoardId);
@@ -207,7 +225,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         PendingIntent.FLAG_ONE_SHOT);
 
                 String channelId = getString(R.string.default_notification_channel_id);
-                Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Uri defaultSoundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.slowr_tone);
+//                Uri defaultSoundUri = Uri. parse (ContentResolver. SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/raw/slowr_tone.mp3" ) ;
                 if (!media_url.equals("") && !media_url.equalsIgnoreCase("null") && media_url != null) {
                     notificationBuilder =
                             new NotificationCompat.Builder(this, channelId)
@@ -251,7 +270,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
                 notificationManager.notify((int) (System.currentTimeMillis()) /* ID of notification */, notificationBuilder.build());
-
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         } catch (IllegalStateException e) {

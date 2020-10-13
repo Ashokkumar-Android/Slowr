@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -18,28 +19,37 @@
         android:orientation="vertical">
 
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/layout_drop_down"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                 android:id="@+id/txt_select_content"
                 style="@style/attribute_content"
-                android:layout_weight="1"
-                android:fontFamily="@font/nunito_regular"
-                android:text="" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:dropDownAnchor="@id/viewDivider"
+                android:dropDownVerticalOffset="5dp"
+                android:imeOptions="actionNext"
+                android:paddingRight="@dimen/button_box_height"
+                android:singleLine="true" />
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+            <TextView
+                android:id="@+id/txt_brand_count"
+                style="@style/attribute_content"
                 android:layout_gravity="center|right"
-                android:rotation="270"
-                android:src="@drawable/ic_backarrow" />
-        </LinearLayout>
+                android:layout_marginRight="@dimen/size_five"
+                android:text="@string/txt_pro_count"
+                android:textColor="@color/color_hind"
+                android:textSize="@dimen/size_ten" />
+        </FrameLayout>
 
-        <View style="@style/attribute_line" />
+        <View
+            android:id="@+id/viewDivider"
+            style="@style/attribute_line" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,15 +58,30 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/edt_attributeValue"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:inputType="text|textCapSentences"
-            android:textSize="@dimen/size_fifteen" />
+            android:layout_height="wrap_content">
 
+            <EditText
+                android:id="@+id/edt_attributeValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:inputType="text|textCapSentences"
+                android:maxLength="50"
+                android:paddingRight="@dimen/button_box_height"
+                android:textSize="@dimen/size_fifteen" />
+
+            <TextView
+                android:id="@+id/txt_product_count"
+                style="@style/attribute_content"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/size_five"
+                android:text="@string/txt_pro_count"
+                android:textColor="@color/color_hind"
+                android:textSize="@dimen/size_ten" />
+        </FrameLayout>
 
         <View style="@style/attribute_line" />
 

@@ -74,6 +74,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     Button btn_delete;
     Button btn_promote;
     Button btn_call_now;
+    Button btn_chat_now;
     LinearLayout layout_promoted;
     ImageView img_top_page_mark;
     ImageView txt_premium_mark;
@@ -104,7 +105,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String imageStringArray = "";
     int imgSelectPos = 0;
     String userPhone = "";
-
+    String chatId = "";
     boolean isUnverified = false;
 
     boolean isPageChange = false;
@@ -122,6 +123,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         adId = getIntent().getStringExtra("AdId");
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notifManager.cancelAll();
         }
         txt_ad_title = findViewById(R.id.txt_ad_title);
         txt_price = findViewById(R.id.txt_price);
@@ -153,6 +156,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         img_unverified_user = findViewById(R.id.img_unverified_user);
         btn_call_now = findViewById(R.id.btn_call_now);
         layout_chat_call = findViewById(R.id.layout_chat_call);
+        btn_chat_now = findViewById(R.id.btn_chat_now);
         txt_page_title.setText(getString(R.string.nav_dash_board));
 
 
@@ -176,6 +180,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         img_unverified_user.setOnClickListener(this);
         btn_call_now.setOnClickListener(this);
         txt_prosperId.setOnClickListener(this);
+        btn_chat_now.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
             GetAdDetails();
@@ -193,8 +198,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }, 200);
 
         }
-        NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notifManager.cancelAll();
+
     }
 
     private void CallBackFunction() {
@@ -256,7 +260,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                         if (dr.getEditDataModel().getAdDetailsModel() != null) {
                             layout_root.setVisibility(View.VISIBLE);
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
-                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), MyPostViewActivity.this);
+                            chatId = dr.getEditDataModel().getChatId();
+//                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), MyPostViewActivity.this);
                             AdType = editAdDetailsModel.getAdType();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());
                             isFavorite = editAdDetailsModel.getIsFavorite();
@@ -293,7 +298,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                     txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 }
                             } else {
-                                txt_price.setVisibility(View.GONE);
+                                if ( editAdDetailsModel.getRentalDuration().equals("Custom")) {
+                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                } else {
+                                    txt_price.setVisibility(View.GONE);
+                                }
                             }
                             txt_description.setText(editAdDetailsModel.getDescription());
                             userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
@@ -463,7 +472,6 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 i.putExtra("AdType", 1);
                 i.putExtra("EditType", AdType);
                 startActivityForResult(i, EDIT_POST_CODE);
-
                 break;
             case R.id.btn_delete:
 
@@ -596,6 +604,21 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             case R.id.txt_prosperId:
                 if (isUnverified) {
                     ShowPopupProsper();
+                }
+                break;
+            case R.id.btn_chat_now:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent c = new Intent(MyPostViewActivity.this, ChatActivity.class);
+                    c.putExtra("CatId", catId);
+                    c.putExtra("AdId", adId);
+                    c.putExtra("RenterId", userId);
+                    c.putExtra("ProsperId", userProsperId);
+                    c.putExtra("ProURL", userProUrl);
+                    c.putExtra("LastId", chatId);
+                    c.putExtra("UnVerified", isUnverified);
+                    startActivity(c);
+                } else {
+                    Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
                 }
                 break;
         }

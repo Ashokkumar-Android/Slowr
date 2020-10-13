@@ -39,9 +39,13 @@ import com.slowr.matisse.engine.impl.GlideEngine;
 import com.slowr.matisse.internal.entity.CaptureStrategy;
 import com.slowr.matisse.ui.MatisseActivity;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
@@ -92,6 +96,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     boolean isImageChanged = false;
     boolean isEmail = false;
     String PageFrom = "";
+    MultipartBody.Part chatImage = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +221,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 layout_profile_details.setVisibility(View.GONE);
                 img_profile_pic.setEnabled(true);
                 isEditView = true;
+                edt_name.setText(txt_user_name.getText().toString());
+                edt_email.setText(txt_email.getText().toString());
+                edt_phone_number.setText(txt_user_mobile.getText().toString());
                 break;
             case R.id.img_profile_pic:
                 if (_fun.checkPermission(ProfileActivity.this)) {
@@ -407,13 +415,32 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void saveProfileImage() {
-        if (!params.isEmpty()) {
-            params.clear();
+//        if (!params.isEmpty()) {
+//            params.clear();
+//        }
+//        params.put("avator", imgPath);
+//        Log.i("Params", params.toString());
+//        RetrofitClient.getClient().create(Api.class).uploadProfileImage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+
+        //creating a file
+        File file = new File(imgPath);
+        final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        chatImage = MultipartBody.Part.createFormData("avator", file.getName(), requestFile);
+
+        if (_fun.isInternetAvailable(ProfileActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).uploadImage(chatImage, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+        } else {
+            _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).uploadImage(chatImage, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+                }
+            });
         }
-        params.put("avator", imgPath);
-        Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).uploadProfileImage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+
     }
 
     private void verifyOTP(String otp) {
@@ -519,14 +546,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     btn_edit.setVisibility(View.VISIBLE);
                     txt_prosperId.setText(dr.getUserDetailsModel().getProsperId());
                     txt_user_name.setText(dr.getUserDetailsModel().getUserName());
-                    edt_name.setText(dr.getUserDetailsModel().getUserName());
+
                     txt_user_mobile.setText(dr.getUserDetailsModel().getUserMobile());
-                    edt_phone_number.setText(dr.getUserDetailsModel().getUserMobile());
+
                     if (dr.getUserDetailsModel().getUserMobile() != null) {
                         currentMobileNumber = dr.getUserDetailsModel().getUserMobile();
                     }
                     txt_email.setText(dr.getUserDetailsModel().getUserEmail());
-                    edt_email.setText(dr.getUserDetailsModel().getUserEmail());
+
                     if (dr.getUserDetailsModel().getUserMobile() != null && !dr.getUserDetailsModel().getUserMobile().equals(""))
                         if (dr.getUserDetailsModel().getIsMobileVerified().equals("1")) {
                             txt_user_mobile_verify.setText("Verified");
@@ -553,8 +580,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     Glide.with(ProfileActivity.this)
                             .load(dr.getUserDetailsModel().getUserPhoto())
                             .circleCrop()
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
                             .placeholder(R.drawable.ic_default_profile)
                             .error(R.drawable.ic_default_profile)
                             .into(img_profile_pic);
@@ -598,7 +623,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 selectedImage = data.getData();
                 if (slist.size() > 0) {
                     for (int i = 0; i < slist.size(); i++) {
-                        imgPath = Function.getBase64String(slist.get(i));
+//                        imgPath = Function.getBase64String(slist.get(i));
+                        imgPath = slist.get(i);
                         isImageChanged = true;
                         Glide.with(this)
                                 .load(slist.get(i))
