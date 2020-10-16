@@ -2,12 +2,15 @@ package com.slowr.app.api;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.slowr.app.activity.HomeActivity;
 import com.slowr.app.components.ViewDialog;
+import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.NoConnectivityException;
+import com.slowr.app.utils.Sessions;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,6 +18,7 @@ import retrofit2.Response;
 
 import static com.slowr.app.utils.Constant.Msg_Something;
 import static com.slowr.app.utils.Constant.SERVER_ERROR;
+import static com.slowr.app.utils.Constant.Unauthorized_Error;
 import static com.slowr.app.utils.Constant.msg_Somethingwentwrong;
 
 
@@ -47,7 +51,18 @@ public class RetrofitCallBack<T> implements Callback<T> {
         mCallback.onResponse(call, response);
         if (response.code() == SERVER_ERROR) {
 //            Toast.makeText(mContext, Msg_Something, Toast.LENGTH_SHORT).show();
-            Function.CustomMessage((Activity)mContext,Msg_Something);
+            Function.CustomMessage((Activity) mContext, Msg_Something);
+        } else if (response.code() == Unauthorized_Error) {
+            String cityId = Sessions.getSession(Constant.CityId, mContext);
+            String cityName = Sessions.getSession(Constant.CityName, mContext);
+
+            Sessions.clearSession(mContext);
+            Sessions.saveSession(Constant.CityId, cityId, mContext);
+            Sessions.saveSession(Constant.CityName, cityName, mContext);
+            Sessions.saveSessionBool(Constant.IsFirst, true, mContext);
+            Intent h = new Intent(mContext, HomeActivity.class);
+            h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            mContext.startActivity(h);
         }
         if (isLoad)
             viewDialog.hideDialog();
@@ -63,7 +78,7 @@ public class RetrofitCallBack<T> implements Callback<T> {
         Log.d("Api Response error", t.getMessage());
         if (t instanceof NoConnectivityException) {
 //            Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-            Function.CustomMessage((Activity)mContext,msg_Somethingwentwrong);
+            Function.CustomMessage((Activity) mContext, msg_Somethingwentwrong);
 //            call.clone().enqueue(this);
         }
         if (isLoad)

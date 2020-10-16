@@ -235,7 +235,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 break;
             case R.id.btn_verify_otp:
                 if (otp.length() == 0) {
-                    Function.CustomMessage(SignupActivity.this,"Enter OTP");
+                    Function.CustomMessage(SignupActivity.this, "Enter OTP");
                 } else {
                     verifyOTP(otp);
                 }
@@ -264,7 +264,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             til_edt_name.setErrorEnabled(false);
         }
-        if (name.length()<3) {
+        if (name.length() < 3) {
             til_edt_name.setError(getString(R.string.enter_name_minimum));
             til_edt_name.requestFocus();
             return;
@@ -446,6 +446,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         params.put("password", password);
         params.put("password_confirmation", password);
         params.put("fcm_token", fbToken);
+        params.put("platform", "2");
 
         Log.i("params", params.toString());
 
@@ -475,7 +476,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 if (dr.isStatus()) {
                     sendOTP();
                 } else {
-                    Function.CustomMessage(SignupActivity.this,dr.getMessage());
+                    Function.CustomMessage(SignupActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -506,7 +507,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     layout_otp.setVisibility(View.VISIBLE);
                     isOTPView = true;
                 } else {
-                    Function.CustomMessage(SignupActivity.this,dr.getMessage());
+                    Function.CustomMessage(SignupActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -530,7 +531,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             try {
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
-                    Function.CustomMessage(SignupActivity.this,dr.getMessage());
+                    Function.CustomMessage(SignupActivity.this, dr.getMessage());
                 } else {
                     sendOTP();
                 }
@@ -562,7 +563,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 //                    isOTPView = false;
                     Register();
                 } else {
-                    Function.CustomMessage(SignupActivity.this,dr.getMessage());
+                    Function.CustomMessage(SignupActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -588,6 +589,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 LoginResponse dr = response.body();
                 if (dr.isStatus()) {
                     Sessions.saveSessionBool(Constant.LoginFlag, true, getApplicationContext());
+                    Sessions.saveSessionBool(Constant.LoginType, false, getApplicationContext());
                     Sessions.saveSession(Constant.UserToken, "Bearer " + dr.getToken(), getApplicationContext());
                     Sessions.saveSession(Constant.UserId, dr.getUserId(), getApplicationContext());
                     Sessions.saveSession(Constant.UserName, dr.getName(), getApplicationContext());
@@ -600,7 +602,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(signup);
                     finish();
                 } else {
-                    Function.CustomMessage(SignupActivity.this,dr.getMessage());
+                    Function.CustomMessage(SignupActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -1029,6 +1029,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 //                subCategoryChildList.clear();
 //                subCategoryChildList.addAll(model.getSubCategoryList());
                 txt_product_type_content.setText(model.getSubcategoryName().trim());
+                txt_product_type_content.setSelection(txt_product_type_content.getText().toString().length());
                 if (tabNo == 1) {
                     productTitle = model.getSubcategoryName().trim();
                     if (AdType == 2) {
@@ -1106,7 +1107,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void itemClick(SubCategoryItemModel model) {
                 txt_product_type_content.setText(model.getSubcategoryName());
                 txt_product_type_content.dismissDropDown();
-
+                txt_product_type_content.setSelection(txt_product_type_content.getText().toString().length());
                 if (tabNo == 1) {
                     productTitle = model.getSubcategoryName().trim();
                     if (AdType == 2) {
@@ -1957,6 +1958,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
                             txt_area_content.setText(model.getAreaName());
                             txt_area_content.dismissDropDown();
+                            txt_area_content.setSelection(txt_area_content.getText().toString().length());
                             areaId = model.getAreaName();
                         }
                     });

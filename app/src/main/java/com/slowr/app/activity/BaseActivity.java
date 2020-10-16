@@ -38,6 +38,7 @@ import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.chat.ProductChatActivity;
 import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.CityModel;
+import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
@@ -69,6 +70,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     ImageView img_unverified_user_home;
     TextView txt_prosperId;
     TextView txt_prosperId_menu;
+    TextView txt_total_count;
     LinearLayout layout_menu_header;
 //    SearchCallBack searchCallBack;
 
@@ -95,6 +97,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     int MY_POST_CODE = 1288;
     private Function _fun = new Function();
 
+    TextView txtChatUnread;
+    TextView txtNotificationUnread;
+
+    public static BaseActivity instance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +112,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void doDeclaration() {
+        instance = this;
         txt_page_title = findViewById(R.id.txt_page_title);
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -121,6 +129,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         txt_location = findViewById(R.id.txt_location);
         txt_prosperId = findViewById(R.id.txt_prosperId);
         img_unverified_user_home = findViewById(R.id.img_unverified_user_home);
+        txt_total_count = findViewById(R.id.txt_total_count);
         txt_page_title.setText(getString(R.string.txt_select_city));
         headerLayout = navigationView.getHeaderView(0);
         txt_prosperId_menu = headerLayout.findViewById(R.id.txt_prosperId_menu);
@@ -148,6 +157,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         menuInvoice = menu.findItem(R.id.nav_invoice);
         menuNotification = menu.findItem(R.id.nav_notification);
         menuChat = menu.findItem(R.id.nav_my_chat);
+        LinearLayout viewChat = (LinearLayout) menuChat.getActionView();
+        LinearLayout viewNotification = (LinearLayout) menuNotification.getActionView();
+
+        txtChatUnread = (TextView) viewChat.findViewById(R.id.txt_unread_count);
+        txtNotificationUnread = (TextView) viewNotification.findViewById(R.id.txt_unread_count);
 
 
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -174,6 +188,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     .error(R.drawable.ic_default_profile)
                     .placeholder(R.drawable.ic_default_profile)
                     .into(img_profile_pic);
+            callUnreadCount();
         } else {
             layout_login.setVisibility(View.VISIBLE);
             layout_prosper.setVisibility(View.GONE);
@@ -186,6 +201,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuNotification.setVisible(false);
             menuChat.setVisible(false);
         }
+
     }
 
     private void ClickFunction() {
@@ -432,6 +448,22 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 .enqueue(new RetrofitCallBack(BaseActivity.this, logoutApi, true));
     }
 
+    public void callUnreadCount() {
+        if (_fun.isInternetAvailable(BaseActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getNotificationUnreadCount(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false));
+        } else {
+            _fun.ShowNoInternetPopup(BaseActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getNotificationUnreadCount(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false));
+                }
+            });
+        }
+
+    }
+
     retrofit2.Callback<DefaultResponse> logoutApi = new retrofit2.Callback<DefaultResponse>() {
         @Override
         public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
@@ -488,6 +520,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     if (cityList.size() != 0) {
                         cityList.clear();
                     }
+                    CityItemModel cityItemModel = new CityItemModel();
+                    cityItemModel.setCityId("");
+                    cityItemModel.setCityName("All India");
+                    cityList.add(cityItemModel);
                     cityList.addAll(dr.getCityList());
 
                 } else {
@@ -504,7 +540,53 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             call.cancel();
         }
     };
+    retrofit2.Callback<CountModel> unReadApi = new retrofit2.Callback<CountModel>() {
+        @Override
+        public void onResponse(Call<CountModel> call, retrofit2.Response<CountModel> response) {
 
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                CountModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (dr.getUnreadCountModel().getChatCount() == null || dr.getUnreadCountModel().getChatCount().equals("0")) {
+                        txtChatUnread.setVisibility(View.GONE);
+                    } else {
+                        txtChatUnread.setVisibility(View.VISIBLE);
+                        txtChatUnread.setText(dr.getUnreadCountModel().getChatCount());
+                    }
+
+                    if (dr.getUnreadCountModel().getNotificationCount() == null || dr.getUnreadCountModel().getNotificationCount().equals("0")) {
+                        txtNotificationUnread.setVisibility(View.GONE);
+                    } else {
+                        txtNotificationUnread.setVisibility(View.VISIBLE);
+                        txtNotificationUnread.setText(dr.getUnreadCountModel().getNotificationCount());
+                    }
+                    if (dr.getUnreadCountModel().getChatCount().equals("0") && dr.getUnreadCountModel().getNotificationCount().equals("0")) {
+                        txt_total_count.setVisibility(View.GONE);
+                    } else {
+                        txt_total_count.setVisibility(View.VISIBLE);
+                        String totalCount = String.valueOf(Integer.valueOf(dr.getUnreadCountModel().getChatCount()) + Integer.valueOf(dr.getUnreadCountModel().getNotificationCount()));
+                        txt_total_count.setText(totalCount);
+                    }
+
+
+                } else {
+                    Function.CustomMessage(BaseActivity.this, dr.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -562,6 +644,14 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     public void finish() {
         super.finish();
         overridePendingTransitionExit();
+    }
+
+    @Override
+    protected void onRestart() {
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            callUnreadCount();
+        }
+        super.onRestart();
     }
 
     @Override

@@ -19,7 +19,7 @@
         <LinearLayout
             android:id="@+id/layout_search_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
@@ -30,16 +30,22 @@
                 android:layout_margin="@dimen/size_ten"
                 android:background="@drawable/bg_edt_login"
                 android:drawableRight="@drawable/ic_search"
+                android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:paddingLeft="@dimen/size_ten"
                 android:paddingRight="@dimen/size_ten"
-                android:textSize="@dimen/size_fifteen" />
+
+                android:textSize="@dimen/size_fifteen">
+
+                <requestFocus />
+            </EditText>
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_filter"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout

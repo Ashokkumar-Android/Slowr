@@ -9,6 +9,7 @@ import com.slowr.app.models.ChatClearModel;
 import com.slowr.app.models.ChatHistoryModel;
 import com.slowr.app.models.ChildCategoryModel;
 import com.slowr.app.models.CityModel;
+import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
 import com.slowr.app.models.GSTModel;
@@ -202,6 +203,9 @@ public interface Api {
     @GET("email/verification-otp")
     Call<DefaultResponse> getEmailVerificationOTP(@Header("Authorization") String contentRange);
 
+    @POST("read-notification")
+    Call<DefaultResponse> ReadNotification(@Body Object params, @Header("Authorization") String contentRange);
+
     @POST("email/verification")
     Call<DefaultResponse> OTPVerificationEmail(@Body Object params, @Header("Authorization") String contentRange);
 
@@ -246,4 +250,7 @@ public interface Api {
     @POST("chat-files")
     Call<ChatHistoryModel> uploadChatImage(@Part MultipartBody.Part file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
 
+
+    @GET("chat-notification-count")
+    Call<CountModel> getNotificationUnreadCount(@Header("Authorization") String contentRange);
 }

@@ -30,14 +30,33 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/img_nav_menu"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_alignParentLeft="true"
                         android:layout_centerInParent="true"
-                        android:layout_marginLeft="@dimen/size_fifteen"
-                        android:src="@drawable/ic_menu" />
+                        android:layout_marginLeft="@dimen/size_fifteen">
+
+                        <ImageView
+                            android:id="@+id/img_nav_menu"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center|left"
+                            android:src="@drawable/ic_menu" />
+
+                        <TextView
+                            android:id="@+id/txt_total_count"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="right|top"
+                            android:background="@drawable/circle_orange_bg"
+                            android:fontFamily="@font/nunito_regular"
+                            android:textColor="@color/color_white"
+                            android:visibility="gone"
+                            android:gravity="center"
+                            android:layout_marginLeft="@dimen/size_fifteen"
+                            android:textSize="@dimen/size_ten" />
+                    </FrameLayout>
 
                     <ImageView
                         android:layout_width="100dp"
@@ -52,8 +71,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="@dimen/size_fifteen"
                         android:gravity="center"
-                        android:visibility="visible"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="visible">
 
                         <TextView
                             style="@style/attribute_title"
@@ -83,8 +102,9 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center|bottom">
+                            android:gravity="center|bottom"
+                            android:orientation="horizontal">
+
                             <TextView
                                 android:id="@+id/txt_prosperId"
                                 style="@style/txt_title"

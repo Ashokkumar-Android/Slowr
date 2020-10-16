@@ -76,7 +76,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         layout_swipe_refresh.setOnRefreshListener(this);
         if (_fun.isInternetAvailable(FavoriteActivity.this)) {
-            getFavList();
+            getFavList(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -84,7 +84,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
                     _fun.ShowNoInternetPopup(FavoriteActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getFavList();
+                            getFavList(true);
                         }
                     });
                 }
@@ -169,9 +169,9 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 //        startActivityForResult(p, VIEW_POST_CODE);
     }
 
-    private void getFavList() {
+    private void getFavList(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getFavorites(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(FavoriteActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(FavoriteActivity.this, adListResponse, isLoad));
 
     }
 
@@ -183,6 +183,9 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
             PopularAdModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
@@ -210,6 +213,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+
             }
         }
 //        }
@@ -218,6 +222,9 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
         }
     };
     retrofit2.Callback<DefaultResponse> addFavorite = new retrofit2.Callback<DefaultResponse>() {
@@ -310,12 +317,12 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         if (resultCode == RESULT_OK) {
             if (requestCode == VIEW_POST_CODE) {
                 if (_fun.isInternetAvailable(FavoriteActivity.this)) {
-                    getFavList();
+                    getFavList(true);
                 } else {
                     _fun.ShowNoInternetPopup(FavoriteActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getFavList();
+                            getFavList(true);
                         }
                     });
 
@@ -329,16 +336,14 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (_fun.isInternetAvailable(FavoriteActivity.this)) {
-            getFavList();
+            getFavList(false);
         } else {
             _fun.ShowNoInternetPopup(FavoriteActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
-                    getFavList();
+                    getFavList(false);
                 }
             });
 

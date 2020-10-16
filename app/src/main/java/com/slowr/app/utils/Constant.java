@@ -14,6 +14,7 @@ public class Constant {
     public static final String tag_string_req = "string_req";
     public static final int PERMISSION_REQUEST_CODE = 1111;
     public static final int SERVER_ERROR = 500;
+    public static final int Unauthorized_Error = 401;
     /// Local Database.
 
 
@@ -29,6 +30,7 @@ public class Constant {
 
 
     public static final String LoginFlag = "LoginFlag";
+    public static final String LoginType = "LoginType";
     public static final String UserId = "UserId";
     public static final String UserToken = "UserToken";
     public static final String UserName = "UserName";

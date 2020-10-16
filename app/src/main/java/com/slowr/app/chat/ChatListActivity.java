@@ -69,7 +69,7 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
 
         txt_page_title.setText(getString(R.string.nav_my_chat));
         img_back.setOnClickListener(this);
-        getChatList();
+        getChatList(true);
         CallBackFunction();
     }
 
@@ -100,16 +100,16 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
         });
     }
 
-    private void getChatList() {
+    private void getChatList(boolean isLoad) {
         if (_fun.isInternetAvailable(ChatListActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getChatList(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, true));
+                    .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad));
         } else {
             _fun.ShowNoInternetPopup(ChatListActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getChatList(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, true));
+                            .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad));
                 }
             });
         }
@@ -123,6 +123,9 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
 
 
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 ProductChatModel dr = response.body();
                 if (dr.isStatus()) {
                     productList.clear();
@@ -149,7 +152,7 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     protected void onRestart() {
-        getChatList();
+        getChatList(true);
         super.onRestart();
     }
 
@@ -170,9 +173,7 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
-        getChatList();
+
+        getChatList(false);
     }
 }

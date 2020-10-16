@@ -125,6 +125,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                 public void itemClick(AttributeSelectModel model) {
                     holder.txt_select_content.setText(model.getAttributeValue());
                     holder.txt_select_content.dismissDropDown();
+                    holder.txt_select_content.setSelection(holder.txt_select_content.getText().toString().length());
                 }
             });
 

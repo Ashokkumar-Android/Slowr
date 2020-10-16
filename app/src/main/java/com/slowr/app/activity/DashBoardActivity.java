@@ -88,7 +88,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 //        getUserDetails();
 
         if (_fun.isInternetAvailable(DashBoardActivity.this)) {
-            getAdList();
+            getAdList(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -96,7 +96,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                     _fun.ShowNoInternetPopup(DashBoardActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getAdList();
+                            getAdList(true);
                         }
                     });
                 }
@@ -204,12 +204,12 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-    private void getAdList() {
+    private void getAdList(boolean isLoader) {
         Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
 
         RetrofitClient.getClient().create(Api.class).getPost(Sessions.getSession(Constant.UserToken, getApplicationContext()))
 
-                .enqueue(new RetrofitCallBack(DashBoardActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(DashBoardActivity.this, adListResponse, isLoader));
     }
 
     retrofit2.Callback<AdModel> adListResponse = new retrofit2.Callback<AdModel>() {
@@ -220,6 +220,9 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
             AdModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
                     adList.clear();
                     adList.addAll(dr.getAdList());
@@ -260,6 +263,9 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
             if (adList.size() == 0) {
                 layout_root.setVisibility(View.GONE);
                 layout_no_result.setVisibility(View.VISIBLE);
@@ -311,12 +317,12 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         if (resultCode == RESULT_OK) {
             if (requestCode == MY_POST_VIEW_CODE) {
                 if (_fun.isInternetAvailable(DashBoardActivity.this)) {
-                    getAdList();
+                    getAdList(true);
                 } else {
                     _fun.ShowNoInternetPopup(DashBoardActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getAdList();
+                            getAdList(true);
                         }
                     });
                 }
@@ -330,16 +336,14 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (_fun.isInternetAvailable(DashBoardActivity.this)) {
-            getAdList();
+            getAdList(false);
         } else {
             _fun.ShowNoInternetPopup(DashBoardActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
-                    getAdList();
+                    getAdList(false);
                 }
             });
         }

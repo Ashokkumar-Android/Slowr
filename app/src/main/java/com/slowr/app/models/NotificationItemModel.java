@@ -30,6 +30,9 @@ public class NotificationItemModel {
     @SerializedName("created_at")
     Date notificationDate;
 
+    @SerializedName("is_read")
+    String isRead;
+
     public String getNotificationId() {
         return notificationId;
     }
@@ -92,5 +95,13 @@ public class NotificationItemModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(String isRead) {
+        this.isRead = isRead;
     }
 }

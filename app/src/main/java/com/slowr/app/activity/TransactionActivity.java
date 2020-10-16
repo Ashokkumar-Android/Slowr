@@ -1,5 +1,8 @@
 package com.slowr.app.activity;
 
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -51,6 +54,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
     private PopupWindow spinnerPopup;
 
     String invoiceId = "";
+    String PageFrom = "";
+    String NotificationId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,13 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void doDeclaration() {
+        if (getIntent().hasExtra("PageFrom")) {
+            PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationId = getIntent().getStringExtra("NotificationId");
+            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notifManager.cancelAll();
+            ReadNotification(NotificationId);
+        }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
         rc_favorite = findViewById(R.id.rc_favorite);
@@ -75,7 +87,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         txt_page_title.setText(getString(R.string.transaction_history));
         img_back.setOnClickListener(this);
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
-            getInvoice();
+            getInvoice(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -83,7 +95,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
                     _fun.ShowNoInternetPopup(TransactionActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getInvoice();
+                            getInvoice(true);
                         }
                     });
                 }
@@ -93,7 +105,15 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
         CallBackFunction();
     }
-
+    private void ReadNotification(String noteId) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_id", noteId);
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+    }
     private void CallBackFunction() {
         invoiceAdapter.setCallback(new InvoiceAdapter.Callback() {
             @Override
@@ -104,9 +124,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
-    private void getInvoice() {
+    private void getInvoice(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getInvoice(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(TransactionActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(TransactionActivity.this, adListResponse, isLoad));
 
     }
 
@@ -118,6 +138,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
             InvoiceModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
@@ -158,13 +181,43 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
             layout_no_result.setVisibility(View.VISIBLE);
             rc_favorite.setVisibility(View.GONE);
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
         }
     };
+    retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
 
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_back:
+                if (PageFrom.equals("2")) {
+                    Intent h = new Intent(TransactionActivity.this, HomeActivity.class);
+                    h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(h);
+                }
                 finish();
                 break;
         }
@@ -172,6 +225,11 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onBackPressed() {
+        if (PageFrom.equals("2")) {
+            Intent h = new Intent(TransactionActivity.this, HomeActivity.class);
+            h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(h);
+        }
         finish();
         super.onBackPressed();
     }
@@ -272,11 +330,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
-            getInvoice();
+            getInvoice(false);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -284,7 +340,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
                     _fun.ShowNoInternetPopup(TransactionActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getInvoice();
+                            getInvoice(false);
                         }
                     });
                 }

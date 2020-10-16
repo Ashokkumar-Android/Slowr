@@ -23,6 +23,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_home"
         app:itemTextAppearance="@style/txt_nav_sub_title"
-        app:menu="@menu/activity_home_drawer" />
+        app:menu="@menu/activity_home_drawer"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

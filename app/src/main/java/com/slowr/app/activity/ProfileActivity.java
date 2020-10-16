@@ -1,5 +1,7 @@
 package com.slowr.app.activity;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -97,6 +99,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     boolean isEmail = false;
     String PageFrom = "";
     MultipartBody.Part chatImage = null;
+    String NotificationId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +111,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void doDeclaration() {
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationId = getIntent().getStringExtra("NotificationId");
+            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notifManager.cancelAll();
+            ReadNotification(NotificationId);
         }
         txt_page_title = findViewById(R.id.txt_page_title);
         txt_prosperId = findViewById(R.id.txt_prosperId);
@@ -186,8 +193,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 return false;
             }
         });
+        if(Sessions.getSessionBool(Constant.LoginType,ProfileActivity.this)){
+            txt_change_password.setVisibility(View.INVISIBLE);
+        }
     }
-
+    private void ReadNotification(String noteId) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_id", noteId);
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+    }
     private void getUserDetails() {
         RetrofitClient.getClient().create(Api.class).getProfileDetails(Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(ProfileActivity.this, profileDetails, true));
@@ -927,7 +945,29 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             call.cancel();
         }
     };
+    retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
 
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
     private void callOTP() {
         String phone = edt_phone_number.getText().toString().trim();
         if (!params.isEmpty()) {

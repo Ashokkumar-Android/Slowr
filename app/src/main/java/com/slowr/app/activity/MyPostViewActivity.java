@@ -106,6 +106,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     int imgSelectPos = 0;
     String userPhone = "";
     String chatId = "";
+    String NotificationId = "";
     boolean isUnverified = false;
 
     boolean isPageChange = false;
@@ -123,8 +124,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         adId = getIntent().getStringExtra("AdId");
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationId = getIntent().getStringExtra("NotificationId");
             NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notifManager.cancelAll();
+            ReadNotification(NotificationId);
         }
         txt_ad_title = findViewById(R.id.txt_ad_title);
         txt_price = findViewById(R.id.txt_price);
@@ -199,6 +202,15 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
         }
 
+    }
+    private void ReadNotification(String noteId) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_id", noteId);
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
     }
 
     private void CallBackFunction() {
@@ -683,7 +695,29 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true));
         }
     }
+    retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
 
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
     private void callAddLike() {
 
         if (isLike.equals("0")) {

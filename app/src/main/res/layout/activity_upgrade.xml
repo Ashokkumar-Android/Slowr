@@ -451,7 +451,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/size_twenty"
+            android:layout_margin="@dimen/size_ten"
             app:cardBackgroundColor="@color/color_white"
             app:cardCornerRadius="@dimen/size_ten">
 
@@ -460,7 +460,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/size_twenty">
+                android:padding="@dimen/size_fifteen">
 
                 <TextView
                     android:layout_width="wrap_content"

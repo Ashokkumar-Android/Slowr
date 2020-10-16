@@ -62,9 +62,25 @@ public class Function {
 
 
     public boolean isInternetAvailable(Context cont) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) cont.getSystemService(cont.getApplicationContext().CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+        boolean isInt = false;
+//        ConnectivityManager connectivityManager = (ConnectivityManager) cont.getSystemService(cont.getApplicationContext().CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+
+        ConnectivityManager cm = (ConnectivityManager) cont.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                isInt = true;
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                isInt = true;      // connected to mobile data
+            }
+        } else {
+            isInt = false; // not connected to the internet
+        }
+        return isInt;
     }
 
 

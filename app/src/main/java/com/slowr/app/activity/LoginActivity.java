@@ -874,11 +874,15 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         params.put("provider", provider);
         params.put("providerId", providerId);
         params.put("fcm_token", fbToken);
+        params.put("platform", "2");
+
         Log.i("Param", params.toString());
         if (loginWith.equals("1")) {
             isMobileLogin = true;
+            Sessions.saveSessionBool(Constant.LoginType, false, getApplicationContext());
         } else {
             isMobileLogin = false;
+            Sessions.saveSessionBool(Constant.LoginType, true, getApplicationContext());
         }
 
 
@@ -1078,7 +1082,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         Log.i("Params", params.toString());
 
-
+        Sessions.saveSessionBool(Constant.LoginType, false, getApplicationContext());
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).verifyOTPLogin(params)
                     .enqueue(new RetrofitCallBack(LoginActivity.this, mobileLogin, true));

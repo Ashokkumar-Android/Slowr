@@ -82,7 +82,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 break;
         }
 //        holder.txt_date.setText(movie.getInvoiceDate());
-
+        if (movie.getIsRead().equals("1")) {
+            holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+            holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+        }else {
+            holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.color_black));
+            holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.color_black));
+        }
 
     }
 

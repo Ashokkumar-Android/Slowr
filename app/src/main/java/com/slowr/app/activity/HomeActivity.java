@@ -47,6 +47,7 @@ import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.CategoryItemModel;
+import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.FiltersModel;
 import com.slowr.app.models.HomeAdsModel;
@@ -212,7 +213,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 //        getCategory();
         setBanner();
         if (_fun.isInternetAvailable(HomeActivity.this)) {
-            getHomeDetails();
+            getHomeDetails(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -220,7 +221,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getHomeDetails();
+                            getHomeDetails(true);
                         }
                     });
                 }
@@ -251,14 +252,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-    private void getHomeDetails() {
+    private void getHomeDetails(boolean isLoad) {
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
         Log.i("Params", params.toString());
         RetrofitClient.getClient().create(Api.class).getHomeDetails(params)
-                .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, true));
+                .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
     }
 
 
@@ -605,6 +606,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
             HomeDetailsModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (response.isSuccessful()) {
 
                     layout_home.setVisibility(View.VISIBLE);
@@ -615,6 +619,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     categoryList.clear();
                     categoryList.addAll(dr.getProductList());
                     cityList.clear();
+                    CityItemModel cityItemModel = new CityItemModel();
+                    cityItemModel.setCityId("");
+                    cityItemModel.setCityName("All India");
+                    cityList.add(cityItemModel);
                     cityList.addAll(dr.getCityList());
                     homeAdList.clear();
                     homeAdList.addAll(dr.getHomeAdsList());
@@ -632,6 +640,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
         }
     };
     retrofit2.Callback<HomeFilterAdModel> adListResponse = new retrofit2.Callback<HomeFilterAdModel>() {
@@ -642,6 +653,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
             HomeFilterAdModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
@@ -696,6 +710,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
         }
     };
     retrofit2.Callback<DefaultResponse> addFavorite = new retrofit2.Callback<DefaultResponse>() {
@@ -1109,24 +1126,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (isCategory) {
             currentPageNo = 1;
             if (_fun.isInternetAvailable(HomeActivity.this)) {
-                getAdList(true);
+                getAdList(false);
             } else {
                 _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                     @Override
                     public void isInternet() {
-                        getAdList(true);
+                        getAdList(false);
                     }
                 });
             }
         } else {
             if (_fun.isInternetAvailable(HomeActivity.this)) {
-                getHomeDetails();
+                getHomeDetails(false);
             } else {
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -1134,7 +1149,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                getHomeDetails();
+                                getHomeDetails(false);
                             }
                         });
                     }

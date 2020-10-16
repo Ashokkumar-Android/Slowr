@@ -74,7 +74,7 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
 
         txt_page_title.setText(getString(R.string.nav_my_chat));
         img_back.setOnClickListener(this);
-        getProductHistory();
+        getProductHistory(true);
         CallBackFunction();
         doFilter();
     }
@@ -113,18 +113,18 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
         });
     }
 
-    private void getProductHistory() {
+    private void getProductHistory(boolean isLoad) {
 
 
         if (_fun.isInternetAvailable(ProductChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getProductChat(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, true));
+                    .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad));
         } else {
             _fun.ShowNoInternetPopup(ProductChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getProductChat(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, true));
+                            .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad));
                 }
             });
         }
@@ -138,6 +138,9 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
 
 
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 ProductChatModel dr = response.body();
                 if (dr.isStatus()) {
                     productList.clear();
@@ -178,7 +181,7 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     protected void onRestart() {
-        getProductHistory();
+        getProductHistory(true);
         super.onRestart();
     }
 
@@ -199,9 +202,7 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
-        getProductHistory();
+
+        getProductHistory(false);
     }
 }

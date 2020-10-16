@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +54,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class SearchActivity extends BaseActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
+public class SearchActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     LinearLayout layout_ad_list;
     ImageView img_list;
     ImageView img_grid;
@@ -162,22 +162,22 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
         btn_requirement_ad.setOnClickListener(this);
-        if (_fun.isInternetAvailable(SearchActivity.this)) {
-            getRecentSearch();
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getRecentSearch();
-                        }
-                    });
-                }
-            }, 200);
-
-        }
+//        if (_fun.isInternetAvailable(SearchActivity.this)) {
+//            getRecentSearch();
+//        } else {
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+//                        @Override
+//                        public void isInternet() {
+//                            getRecentSearch();
+//                        }
+//                    });
+//                }
+//            }, 200);
+//
+//        }
 
         CallBackFunction();
         SearchFunction();
@@ -196,8 +196,6 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void Pageination() {
-
-
         //Friends
         if (rc_ad_list.getLayoutManager() instanceof LinearLayoutManager) {
             if (!isGrid) {
@@ -249,66 +247,85 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
     private void SearchFunction() {
 
-        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                final String val = edt_search_suggestion.getText().toString();
-                if (val.length() > 1) {
-
-                    if (_fun.isInternetAvailable(SearchActivity.this)) {
-                        getSearchSuggestion(val);
-                    } else {
-                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                getSearchSuggestion(val);
-                            }
-                        });
-                    }
-                } else {
-                    if (_fun.isInternetAvailable(SearchActivity.this)) {
-                        getRecentSearch();
-                    } else {
-                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                getRecentSearch();
-                            }
-                        });
-                    }
-                }
-//                if (val.length() != 0) {
-//                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete_image, 0);
+//        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                final String val = edt_search_suggestion.getText().toString();
+//                if (val.length() > 1) {
+//
+//                    if (_fun.isInternetAvailable(SearchActivity.this)) {
+//                        getSearchSuggestion(val);
+//                    } else {
+//                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+//                            @Override
+//                            public void isInternet() {
+//                                getSearchSuggestion(val);
+//                            }
+//                        });
+//                    }
 //                } else {
-//                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0);
+//                    if (_fun.isInternetAvailable(SearchActivity.this)) {
+//                        getRecentSearch();
+//                    } else {
+//                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+//                            @Override
+//                            public void isInternet() {
+//                                getRecentSearch();
+//                            }
+//                        });
+//                    }
 //                }
+////                if (val.length() != 0) {
+//////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete_image, 0);
+//////                } else {
+//////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0);
+//////                }
+//            }
+//        });
+        edt_search_suggestion.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
+                    searchSugeistionValue = edt_search_suggestion.getText().toString();
+//                    txt_page_title.setText(searchSugeistionValue);
+                    currentPageNo = 1;
+                    getAdList(true);
+
+                    return true;
+                }
+                return false;
             }
         });
 
-//        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                final int DRAWABLE_RIGHT = 2;
-//
-//                if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-//
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
+        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        Function.hideSoftKeyboard(SearchActivity.this, edt_search);
+                        searchSugeistionValue = edt_search_suggestion.getText().toString();
+//                        txt_page_title.setText(searchSugeistionValue);
+                        currentPageNo = 1;
+                        getAdList(true);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -510,11 +527,13 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
             HomeFilterAdModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
 //                    Sessions.saveSession(Constant.ImagePath, dr.getUrlPath(), SearchActivity.this);
-
                     currentPageNo = dr.getAdListModel().getCurrentPage();
                     lastPageNo = dr.getAdListModel().getLastPage();
                     isLoading = false;
@@ -539,10 +558,10 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                     } else {
                         homeAdListAdapter.notifyDataSetChanged();
                     }
-                    layout_search_list.setVisibility(View.GONE);
+//                    layout_search_list.setVisibility(View.GONE);
                     layout_ad_list.setVisibility(View.VISIBLE);
-                    txt_page_title.setText(searchSugeistionValue);
-                    isSearch = true;
+//                    txt_page_title.setText(searchSugeistionValue);
+//                    isSearch = true;
                     serachView = 1;
                     if (adList.size() == 0) {
                         layout_list_filter.setVisibility(View.GONE);
@@ -553,7 +572,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                     }
 
                 } else {
-                    Function.CustomMessage(SearchActivity.this,dr.getMessage());
+                    Function.CustomMessage(SearchActivity.this, dr.getMessage());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -565,6 +584,9 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
         }
     };
     retrofit2.Callback<DefaultResponse> addFavorite = new retrofit2.Callback<DefaultResponse>() {
@@ -905,39 +927,37 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (isCategory) {
             currentPageNo = 1;
-            getAdList(true);
-        }else {
+            getAdList(false);
+        } else {
 
-            final String val = edt_search_suggestion.getText().toString();
-            if (val.length() > 1) {
-
-                if (_fun.isInternetAvailable(SearchActivity.this)) {
-                    getSearchSuggestion(val);
-                } else {
-                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getSearchSuggestion(val);
-                        }
-                    });
-                }
-            } else {
-                if (_fun.isInternetAvailable(SearchActivity.this)) {
-                    getRecentSearch();
-                } else {
-                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getRecentSearch();
-                        }
-                    });
-                }
-            }
+//            final String val = edt_search_suggestion.getText().toString();
+//            if (val.length() > 1) {
+//
+//                if (_fun.isInternetAvailable(SearchActivity.this)) {
+//                    getSearchSuggestion(val);
+//                } else {
+//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+//                        @Override
+//                        public void isInternet() {
+//                            getSearchSuggestion(val);
+//                        }
+//                    });
+//                }
+//            } else {
+//                if (_fun.isInternetAvailable(SearchActivity.this)) {
+//                    getRecentSearch();
+//                } else {
+//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+//                        @Override
+//                        public void isInternet() {
+//                            getRecentSearch();
+//                        }
+//                    });
+//                }
+//            }
 
         }
     }

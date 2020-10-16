@@ -20,6 +20,7 @@ import com.slowr.app.adapter.NotificationAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.NotificationItemModel;
 import com.slowr.app.models.NotificationModel;
 import com.slowr.app.utils.Constant;
@@ -27,10 +28,11 @@ import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class NotificationActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
+public class NotificationActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     TextView txt_page_title;
     LinearLayout img_back;
     RecyclerView rc_notification;
@@ -41,7 +43,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
     ArrayList<NotificationItemModel> notificationList = new ArrayList<>();
     private Function _fun = new Function();
     LinearLayoutManager listManager;
+    HashMap<String, Object> params = new HashMap<String, Object>();
 
+    int readPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +73,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         layout_swipe_refresh.setOnRefreshListener(this);
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
-            getNotificationList();
+            getNotificationList(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -77,7 +81,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                     _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getNotificationList();
+                            getNotificationList(true);
                         }
                     });
                 }
@@ -93,6 +97,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         notificationAdapter.setCallback(new NotificationAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
+                readPos = pos;
+                String noteId = notificationList.get(pos).getNotificationId();
+                String isRead = notificationList.get(pos).getIsRead();
                 if (notificationList.get(pos).getNotificationType().equals("2")) {
                     String catId = notificationList.get(pos).getCatId();
                     String adId = notificationList.get(pos).getAdId();
@@ -110,16 +117,32 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 } else if (notificationList.get(pos).getNotificationType().equals("1")) {
                     Intent profile = new Intent(NotificationActivity.this, ProfileActivity.class);
                     startActivity(profile);
+                } else if (notificationList.get(pos).getNotificationType().equals("4")) {
+                    Intent not = new Intent(NotificationActivity.this, TransactionActivity.class);
+                    startActivity(not);
+                }
+                if (isRead.equals("0")) {
+                    ReadNotification(noteId);
                 }
             }
         });
     }
 
 
-    private void getNotificationList() {
+    private void getNotificationList(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getNotificationList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(NotificationActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(NotificationActivity.this, adListResponse, isLoad));
 
+    }
+
+    private void ReadNotification(String noteId) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_id", noteId);
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
     }
 
     retrofit2.Callback<NotificationModel> adListResponse = new retrofit2.Callback<NotificationModel>() {
@@ -130,6 +153,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
             NotificationModel dr = response.body();
             try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
@@ -146,7 +172,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                         rc_notification.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    Function.CustomMessage(NotificationActivity.this,dr.getMessage());
+                    Function.CustomMessage(NotificationActivity.this, dr.getMessage());
                     if (notificationList.size() == 0) {
                         layout_no_result.setVisibility(View.VISIBLE);
                         rc_notification.setVisibility(View.GONE);
@@ -154,6 +180,36 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                         layout_no_result.setVisibility(View.GONE);
                         rc_notification.setVisibility(View.VISIBLE);
                     }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
+        }
+    };
+
+    retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                    notificationList.get(readPos).setIsRead("1");
+                    notificationAdapter.notifyItemChanged(readPos);
+                } else {
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -184,11 +240,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onRefresh() {
-        if (layout_swipe_refresh.isRefreshing()) {
-            layout_swipe_refresh.setRefreshing(false);
-        }
+
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
-            getNotificationList();
+            getNotificationList(false);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -196,7 +250,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                     _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getNotificationList();
+                            getNotificationList(false);
                         }
                     });
                 }

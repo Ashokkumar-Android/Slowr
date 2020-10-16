@@ -3,7 +3,6 @@ package com.slowr.app.firebase;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
@@ -19,8 +18,10 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.slowr.app.R;
+import com.slowr.app.activity.BaseActivity;
 import com.slowr.app.activity.MyPostViewActivity;
 import com.slowr.app.activity.ProfileActivity;
+import com.slowr.app.activity.TransactionActivity;
 import com.slowr.app.chat.ChatActivity;
 import com.squareup.picasso.Picasso;
 
@@ -89,11 +90,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             notificationIntent.putExtra("PageFrom", "2");
                             notificationIntent.putExtra("CatId", remoteMessage.getData().get("category_id"));
                             notificationIntent.putExtra("AdId", remoteMessage.getData().get("ads_id"));
+                            notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
                             break;
                         case "1":
                             notificationIntent = new Intent(getApplicationContext(), ProfileActivity.class);
                             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             notificationIntent.putExtra("PageFrom", "2");
+                            notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
                             break;
                         case "3":
                             notificationIntent = new Intent(getApplicationContext(), ChatActivity.class);
@@ -112,6 +115,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 notificationIntent.putExtra("UnVerified", false);
                             }
 
+                            break;
+                        case "4":
+                            notificationIntent = new Intent(getApplicationContext(), TransactionActivity.class);
+                            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            notificationIntent.putExtra("PageFrom", "2");
+                            notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
                             break;
                     }
 //                    notificationIntent.putExtra("NotificationBoardId", notificationBoardId);
@@ -277,7 +286,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                if (BaseActivity.instance != null) {
+                    BaseActivity.instance.callUnreadCount();
+                }
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
