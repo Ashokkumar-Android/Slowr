@@ -141,8 +141,20 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         }
         params.put("notification_id", noteId);
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
+
+
+        if (_fun.isInternetAvailable(NotificationActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
+        } else {
+            _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
+                }
+            });
+        }
     }
 
     retrofit2.Callback<NotificationModel> adListResponse = new retrofit2.Callback<NotificationModel>() {

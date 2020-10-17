@@ -203,14 +203,25 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         }
 
     }
+
     private void ReadNotification(String noteId) {
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("notification_id", noteId);
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
+        if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
+        } else {
+            _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
+                }
+            });
+        }
     }
 
     private void CallBackFunction() {
@@ -310,7 +321,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                     txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 }
                             } else {
-                                if ( editAdDetailsModel.getRentalDuration().equals("Custom")) {
+                                if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
                                     txt_price.setText(editAdDetailsModel.getRentalDuration());
                                 } else {
                                     txt_price.setVisibility(View.GONE);
@@ -695,6 +706,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true));
         }
     }
+
     retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
         @Override
         public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
@@ -718,6 +730,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             call.cancel();
         }
     };
+
     private void callAddLike() {
 
         if (isLike.equals("0")) {

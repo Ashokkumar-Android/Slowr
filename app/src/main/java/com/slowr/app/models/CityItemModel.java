@@ -10,6 +10,11 @@ public class CityItemModel {
     @SerializedName("city")
     private String cityName;
 
+    @SerializedName("price")
+    private String cityPrice;
+
+    boolean isSelect = false;
+
     public String getCityId() {
         return cityId;
     }
@@ -24,5 +29,21 @@ public class CityItemModel {
 
     public void setCityName(String cityName) {
         this.cityName = cityName;
+    }
+
+    public String getCityPrice() {
+        return cityPrice;
+    }
+
+    public void setCityPrice(String cityPrice) {
+        this.cityPrice = cityPrice;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
     }
 }

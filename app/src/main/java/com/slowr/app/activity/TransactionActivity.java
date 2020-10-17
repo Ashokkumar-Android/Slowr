@@ -111,8 +111,19 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         }
         params.put("notification_id", noteId);
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+
+        if (_fun.isInternetAvailable(TransactionActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+        } else {
+            _fun.ShowNoInternetPopup(TransactionActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+                }
+            });
+        }
     }
     private void CallBackFunction() {
         invoiceAdapter.setCallback(new InvoiceAdapter.Callback() {

@@ -561,6 +561,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void afterTextChanged(Editable s) {
                 int desValue = txt_area_content.getText().toString().length();
                 txt_area_count.setText(getString(R.string.txt_pro_count, String.valueOf(desValue)));
+                areaId = txt_area_content.getText().toString();
                 if (desValue == 50) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
                 }

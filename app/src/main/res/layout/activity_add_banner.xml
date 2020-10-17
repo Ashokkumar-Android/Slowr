@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AddBannerActivity">
+
+    <include layout="@layout/layout_header" />
+
+    <ScrollView
+        android:id="@+id/layout_banner_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/size_fifteen">
+
+            <LinearLayout
+                android:id="@+id/layout_product_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_ten"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txt_product_type_title"
+                    style="@style/attribute_title"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/txt_banner_title" />
+
+                <FrameLayout
+                    android:id="@+id/layout_product_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/edt_banner_title"
+                        style="@style/attribute_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/txt_enter_banner_title"
+                        android:imeOptions="actionNext"
+                        android:maxLength="60"
+                        android:paddingRight="@dimen/button_box_height"
+                        android:singleLine="true" />
+
+                    <TextView
+                        android:id="@+id/txt_title_count"
+                        style="@style/attribute_content"
+                        android:layout_gravity="center|right"
+                        android:layout_marginRight="@dimen/size_five"
+                        android:text="@string/txt_pro_count"
+                        android:textColor="@color/color_hind"
+                        android:textSize="@dimen/size_ten" />
+
+                </FrameLayout>
+
+                <View style="@style/attribute_line" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/attribute_title"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_banner_duration" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_five"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_from_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_calender"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_from"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_sixteen" />
+
+                    <View style="@style/attribute_line" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/size_twenty"
+                    android:layout_height="1dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_to_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableRight="@drawable/ic_calender"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_to"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_sixteen" />
+
+                    <View style="@style/attribute_line" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="@style/txt_create_post"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_description_man" />
+
+            <EditText
+                android:id="@+id/edt_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_five"
+                android:background="@drawable/bg_description"
+                android:gravity="top"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="100"
+                android:minHeight="60dp"
+                android:padding="@dimen/size_ten"
+                android:textSize="@dimen/size_fifteen" />
+
+            <TextView
+                android:id="@+id/txt_description_count"
+                style="@style/attribute_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="@dimen/size_five"
+                android:text="@string/txt_des_count"
+                android:textColor="@color/color_hind" />
+
+            <TextView
+                android:id="@+id/txt_guid_line"
+                style="@style/txt_create_post"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_sample_guide"
+                android:textSize="@dimen/size_sixteen" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/attribute_title"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/txt_city" />
+
+                <LinearLayout
+                    android:id="@+id/layout_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txt_city_content"
+                        style="@style/attribute_content"
+                        android:layout_weight="1"
+                        android:hint="@string/txt_select_city"
+                        android:singleLine="true" />
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center|right"
+                        android:rotation="270"
+                        android:src="@drawable/ic_forward"
+                        android:tint="@color/colorPrimary" />
+                </LinearLayout>
+
+                <View style="@style/attribute_line" />
+            </LinearLayout>
+
+
+            <TextView
+                style="@style/txt_create_post"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_upload_image" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/btn_add_image"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:background="@drawable/add_image_pluse"
+                        android:fontFamily="@font/nunito_regular"
+                        android:padding="30dp"
+                        android:src="@drawable/ic_add_image" />
+                    <ImageView
+                        android:id="@+id/img_banner_view"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:scaleType="centerCrop"/>
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                    <Button
+                        android:id="@+id/btn_preview_banner"
+                        android:layout_width="200dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="@dimen/size_forty_five"
+                        android:background="@drawable/bg_green_view"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_preview_banner"
+                        android:textAllCaps="false"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_sixteen" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/txt_create_post"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_summary"
+                android:textSize="@dimen/size_twenty" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_fifteen"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_summary_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="Banner Ad posted Location Coimbatore, Peelamedu duration 10 days"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_sixteen" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0.6"
+                    android:gravity="bottom"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/size_five">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/txt_rupee_simpal"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textSize="@dimen/size_eighteen" />
+
+                        <TextView
+                            android:id="@+id/txt_total_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/size_five"
+                            android:layout_marginTop="@dimen/size_fifteen"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="50"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textSize="@dimen/size_twenty_six" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/size_fifteen"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_inc_tax"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_eighteen" />
+
+                    <Button
+                        android:id="@+id/btn_confirm"
+                        style="@style/LoginButtonStyle"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/size_fifteen"
+                        android:layout_marginBottom="@dimen/size_twenty"
+                        android:background="@drawable/bg_orenge"
+                        android:text="@string/txt_confirm"
+                        android:textSize="@dimen/size_fourteen" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/txt_create_post"
+            android:layout_gravity="top|center"
+            android:layout_marginTop="@dimen/size_twenty"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/txt_description" />
+
+        <LinearLayout
+            android:id="@+id/layout_banner_bg"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginTop="@dimen/size_ten"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.4"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/size_twenty"
+                android:paddingTop="@dimen/size_fifteen"
+                android:paddingBottom="@dimen/size_fifteen">
+
+                <TextView
+                    android:id="@+id/txt_banner_title"
+                    style="@style/attribute_title"
+                    android:text="Renting @ ₹1800/day"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_fourteen" />
+
+
+                <TextView
+                    style="@style/attribute_title"
+                    android:text="Prosper ID"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_ten" />
+
+                <TextView
+                    android:id="@+id/txt_prosperId"
+                    style="@style/attribute_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="AB1234"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/size_eighteen" />
+
+                <TextView
+                    android:id="@+id/txt_banner_content"
+                    style="@style/attribute_title"
+                    android:layout_marginTop="@dimen/size_five"
+                    android:text="EPSON projector for office use."
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_fourteen" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/img_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="@dimen/size_ten"
+                    android:layout_marginRight="@dimen/size_ten"
+                    android:src="@drawable/ic_default_vertical" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_color_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/size_ten" />
+
+        <TextView
+            style="@style/txt_create_post"
+            android:layout_gravity="top|center"
+            android:layout_marginTop="@dimen/size_twenty"
+            android:fontFamily="@font/nunito_regular"
+            android:text="@string/txt_choose_background_color" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_white"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+
+        <EditText
+            android:id="@+id/edt_list_search"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="@dimen/size_ten"
+            android:background="@drawable/bg_edt_login"
+            android:drawableRight="@drawable/ic_search"
+            android:inputType="text"
+            android:paddingLeft="@dimen/size_ten"
+            android:paddingRight="@dimen/size_ten"
+            android:textSize="@dimen/size_fifteen" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

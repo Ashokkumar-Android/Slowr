@@ -9,6 +9,7 @@ import com.slowr.app.models.ChatClearModel;
 import com.slowr.app.models.ChatHistoryModel;
 import com.slowr.app.models.ChildCategoryModel;
 import com.slowr.app.models.CityModel;
+import com.slowr.app.models.ColorModel;
 import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
@@ -253,4 +254,7 @@ public interface Api {
 
     @GET("chat-notification-count")
     Call<CountModel> getNotificationUnreadCount(@Header("Authorization") String contentRange);
+
+    @GET("banner/color/code")
+    Call<ColorModel> getColorCode(@Header("Authorization") String contentRange);
 }

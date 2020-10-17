@@ -28,6 +28,14 @@
 
     </group>
     <group
+        android:id="@+id/gp_nav_banners"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_banners"
+            android:title="@string/nav_my_banners" />
+
+    </group>
+    <group
         android:id="@+id/gp_nav_my_chat"
         android:checkableBehavior="single"
         >

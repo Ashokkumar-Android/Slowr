@@ -93,6 +93,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     MenuItem menuInvoice;
     MenuItem menuNotification;
     MenuItem menuChat;
+    MenuItem menuBanner;
     int MY_PROFILE_CODE = 1299;
     int MY_POST_CODE = 1288;
     private Function _fun = new Function();
@@ -157,6 +158,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         menuInvoice = menu.findItem(R.id.nav_invoice);
         menuNotification = menu.findItem(R.id.nav_notification);
         menuChat = menu.findItem(R.id.nav_my_chat);
+        menuBanner = menu.findItem(R.id.nav_banners);
         LinearLayout viewChat = (LinearLayout) menuChat.getActionView();
         LinearLayout viewNotification = (LinearLayout) menuNotification.getActionView();
 
@@ -174,6 +176,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuInvoice.setVisible(true);
             menuNotification.setVisible(true);
             menuChat.setVisible(true);
+            menuBanner.setVisible(true);
             layout_menu_header.setVisibility(View.VISIBLE);
             txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
             txt_prosperId_menu.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
@@ -200,6 +203,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuInvoice.setVisible(false);
             menuNotification.setVisible(false);
             menuChat.setVisible(false);
+            menuBanner.setVisible(false);
         }
 
     }
@@ -435,6 +439,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_my_chat:
                 Intent c = new Intent(BaseActivity.this, ProductChatActivity.class);
                 startActivity(c);
+                break;
+            case R.id.nav_banners:
+                Intent b = new Intent(BaseActivity.this, AddBannerActivity.class);
+                startActivity(b);
                 break;
 
         }

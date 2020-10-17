@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
@@ -193,19 +192,32 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 return false;
             }
         });
-        if(Sessions.getSessionBool(Constant.LoginType,ProfileActivity.this)){
+        if (Sessions.getSessionBool(Constant.LoginType, ProfileActivity.this)) {
             txt_change_password.setVisibility(View.INVISIBLE);
         }
     }
+
     private void ReadNotification(String noteId) {
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("notification_id", noteId);
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+
+        if (_fun.isInternetAvailable(ProfileActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+        } else {
+            _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+                }
+            });
+        }
     }
+
     private void getUserDetails() {
         RetrofitClient.getClient().create(Api.class).getProfileDetails(Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(ProfileActivity.this, profileDetails, true));
@@ -968,6 +980,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             call.cancel();
         }
     };
+
     private void callOTP() {
         String phone = edt_phone_number.getText().toString().trim();
         if (!params.isEmpty()) {
