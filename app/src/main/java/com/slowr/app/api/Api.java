@@ -260,5 +260,5 @@ public interface Api {
 
     @Multipart
     @POST("banner")
-    Call<ChatHistoryModel> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
+    Call<ChatHistoryModel> AddBanner(@Part MultipartBody.Part file, @Part("title") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
 }
