@@ -257,4 +257,8 @@ public interface Api {
 
     @GET("banner/color/code")
     Call<ColorModel> getColorCode(@Header("Authorization") String contentRange);
+
+    @Multipart
+    @POST("banner")
+    Call<ChatHistoryModel> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
 }
