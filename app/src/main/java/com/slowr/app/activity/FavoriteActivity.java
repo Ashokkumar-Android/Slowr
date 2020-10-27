@@ -46,7 +46,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
     ArrayList<AdItemModel> adList = new ArrayList<>();
     LinearLayoutManager listManager;
     HashMap<String, Object> params = new HashMap<String, Object>();
-
+///dgdfg
     int favPosition = 0;
     int VIEW_POST_CODE = 1299;
     boolean isChange = false;
