@@ -112,8 +112,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         isUnVerified = getIntent().getBooleanExtra("UnVerified", false);
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
-            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notifManager.cancelAll();
+
         }
         if (lastId != null) {
             if (!lastId.equals(""))
@@ -143,6 +142,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         getMessageHistory(true);
         setUserDetails();
         callApiLoop();
+        NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifManager.cancelAll();
     }
 
     private void CallBackFunction() {
@@ -593,6 +594,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         handler.removeCallbacks(runnable);
+        handler = null;
         if (PageFrom.equals("2")) {
             Intent h = new Intent(ChatActivity.this, HomeActivity.class);
             h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

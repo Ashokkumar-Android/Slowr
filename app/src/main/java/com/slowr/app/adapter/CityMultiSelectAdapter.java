@@ -22,12 +22,13 @@ public class CityMultiSelectAdapter extends RecyclerView.Adapter<CityMultiSelect
 
     private List<CityItemModel> categoryList;
     private List<CityItemModel> categoryListFilter;
-//    Callback callback;
+    //    Callback callback;
     Context ctx;
     String checkedPos = "";
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_category_name;
+        public TextView txt_price;
         public LinearLayout layout_root;
         public RadioButton rb_select;
 
@@ -36,8 +37,10 @@ public class CityMultiSelectAdapter extends RecyclerView.Adapter<CityMultiSelect
             txt_category_name = view.findViewById(R.id.txt_category_name);
             layout_root = view.findViewById(R.id.layout_root);
             rb_select = view.findViewById(R.id.rb_select);
+            txt_price = view.findViewById(R.id.txt_price);
             layout_root.setOnClickListener(this);
             rb_select.setOnClickListener(this);
+            txt_price.setVisibility(View.VISIBLE);
             rb_select.setVisibility(View.VISIBLE);
         }
 
@@ -91,6 +94,7 @@ public class CityMultiSelectAdapter extends RecyclerView.Adapter<CityMultiSelect
         CityItemModel movie = categoryListFilter.get(position);
 
         holder.txt_category_name.setText(movie.getCityName().trim());
+        holder.txt_price.setText(ctx.getString(R.string.txt_rupee_simpal)+" "+movie.getCityPrice()+"/Per Day");
         if (movie.isSelect()) {
             holder.rb_select.setChecked(true);
         } else {

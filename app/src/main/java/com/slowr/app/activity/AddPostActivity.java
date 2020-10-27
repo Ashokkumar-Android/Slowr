@@ -1763,7 +1763,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         areaListAdapter.setCallback(new AreaListAdapter.Callback() {
             @Override
             public void itemClick(AreaItemModel model) {
-                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
+//                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
                 txt_area_content.setText(model.getAreaName());
                 areaId = model.getAreaName();
                 ListVisible(false);
@@ -2149,6 +2149,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                 break;
                             }
                         }
+                        txt_area_content.setFocusableInTouchMode(true);
                         edt_mobile_number.setText(editAdDetailsModel.getMobile());
                         postMobileNum = editAdDetailsModel.getMobile();
                         if (editAdDetailsModel.getIsNegotiable().equals("1")) {

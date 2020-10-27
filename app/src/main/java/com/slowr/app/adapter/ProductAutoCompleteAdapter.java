@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,6 +46,8 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemMode
             }
             SubCategoryItemModel fruit = getItem(position);
             TextView name = (TextView) view.findViewById(R.id.txt_category_name);
+            RadioButton rb_select = (RadioButton) view.findViewById(R.id.rb_select);
+            rb_select.setVisibility(View.GONE);
             name.setText(fruit.getSubcategoryName());
             LinearLayout linearLayout = view.findViewById(R.id.layout_root);
             linearLayout.setOnClickListener(new View.OnClickListener() {

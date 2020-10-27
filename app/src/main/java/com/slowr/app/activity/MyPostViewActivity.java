@@ -125,8 +125,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
             NotificationId = getIntent().getStringExtra("NotificationId");
-            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notifManager.cancelAll();
+
             ReadNotification(NotificationId);
         }
         txt_ad_title = findViewById(R.id.txt_ad_title);
@@ -201,7 +200,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }, 200);
 
         }
-
+        NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifManager.cancelAll();
     }
 
     private void ReadNotification(String noteId) {

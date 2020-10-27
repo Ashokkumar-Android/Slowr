@@ -32,8 +32,7 @@
                     <androidx.viewpager.widget.ViewPager
                         android:id="@+id/vp_banner"
                         android:layout_width="match_parent"
-                        android:layout_height="130dp"
-                        android:layout_marginTop="@dimen/size_ten" />
+                        android:layout_height="130dp"/>
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView

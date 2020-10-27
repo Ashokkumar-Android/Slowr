@@ -4,6 +4,7 @@ package com.slowr.app.api;
 import com.slowr.app.models.AdModel;
 import com.slowr.app.models.AreaModel;
 import com.slowr.app.models.AttributeModel;
+import com.slowr.app.models.BannerModel;
 import com.slowr.app.models.CategoryModel;
 import com.slowr.app.models.ChatClearModel;
 import com.slowr.app.models.ChatHistoryModel;
@@ -13,6 +14,7 @@ import com.slowr.app.models.ColorModel;
 import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
+import com.slowr.app.models.EditBannerModel;
 import com.slowr.app.models.GSTModel;
 import com.slowr.app.models.HomeDetailsModel;
 import com.slowr.app.models.HomeFilterAdModel;
@@ -132,7 +134,7 @@ public interface Api {
     Call<HomeFilterAdModel> getHomeAds(@Body Object params, @Header("Authorization") String contentRange);
 
     @POST("home")
-    Call<HomeDetailsModel> getHomeDetails(@Body Object params);
+    Call<HomeDetailsModel> getHomeDetails(@Body Object params, @Header("Authorization") String contentRange);
 
     @GET("adsview/{categoryId}/{id}")
     Call<EditAdModel> getHomeAdDetails(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String contentRange);
@@ -258,7 +260,20 @@ public interface Api {
     @GET("banner/color/code")
     Call<ColorModel> getColorCode(@Header("Authorization") String contentRange);
 
+    @GET("banner/listing")
+    Call<BannerModel> getBannerList(@Header("Authorization") String contentRange);
+
+    @GET("banner/edit/{id}")
+    Call<EditBannerModel> getBannerDetails(@Path(value = "id", encoded = true) String bannerId, @Header("Authorization") String contentRange);
+
+    @GET("banner/delete/{id}")
+    Call<DefaultResponse> getBannerDelete(@Path(value = "id", encoded = true) String bannerId, @Header("Authorization") String contentRange);
+
     @Multipart
-    @POST("banner")
-    Call<ChatHistoryModel> AddBanner(@Part MultipartBody.Part file, @Part("title") RequestBody adId, @Part("category_id") RequestBody catId, @Part("render_id") RequestBody renderId, @Part("chat_id") RequestBody chatId, @Header("Authorization") String contentRange);
+    @POST("promotion")
+    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("from") RequestBody fromDate, @Part("to") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("transaction_id") RequestBody paymentId, @Part("type") RequestBody promotionType, @Header("Authorization") String contentRange);
+
+    @Multipart
+    @POST("banner/update")
+    Call<DefaultResponse> UpdateBanner(@Part MultipartBody.Part file, @Part("title") RequestBody bannerTitle, @Part("banner_id") RequestBody bannerId, @Part("description") RequestBody bannerDecs, @Part("colour_code") RequestBody colorCode, @Header("Authorization") String contentRange);
 }

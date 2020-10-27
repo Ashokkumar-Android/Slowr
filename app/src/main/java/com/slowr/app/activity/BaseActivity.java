@@ -1,5 +1,6 @@
 package com.slowr.app.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -408,16 +410,43 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(ab);
                 break;
             case R.id.nav_logout:
-                if (_fun.isInternetAvailable(BaseActivity.this)) {
-                    callLogout();
-                } else {
-                    _fun.ShowNoInternetPopup(BaseActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            callLogout();
-                        }
-                    });
-                }
+
+                AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
+                        BaseActivity.this);
+
+                alertDialog2.setTitle("Logout");
+
+                alertDialog2.setMessage(getString(R.string.logout_message));
+
+                alertDialog2.setPositiveButton("YES",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                if (_fun.isInternetAvailable(BaseActivity.this)) {
+                                    callLogout();
+                                } else {
+                                    _fun.ShowNoInternetPopup(BaseActivity.this, new Function.NoInternetCallBack() {
+                                        @Override
+                                        public void isInternet() {
+                                            callLogout();
+                                        }
+                                    });
+                                }
+
+
+                            }
+                        });
+
+                alertDialog2.setNegativeButton("NO",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                dialog.cancel();
+                            }
+                        });
+
+                alertDialog2.show();
+
 
                 break;
             case R.id.nav_profile:
@@ -441,7 +470,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(c);
                 break;
             case R.id.nav_banners:
-                Intent b = new Intent(BaseActivity.this, AddBannerActivity.class);
+                Intent b = new Intent(BaseActivity.this, BannerActivity.class);
                 startActivity(b);
                 break;
 
@@ -528,9 +557,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     if (cityList.size() != 0) {
                         cityList.clear();
                     }
-                    CityItemModel cityItemModel = new CityItemModel();
-                    cityItemModel.setCityId("");
-                    cityItemModel.setCityName("All India");
+                    CityItemModel cityItemModel = new CityItemModel("","All India","",false);
+
                     cityList.add(cityItemModel);
                     cityList.addAll(dr.getCityList());
 

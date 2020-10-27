@@ -253,6 +253,7 @@
                         android:background="@android:color/transparent"
                         android:dropDownAnchor="@id/dropdownDivider"
                         android:dropDownVerticalOffset="5dp"
+                        android:maxLength="50"
                         android:hint="@string/txt_select_product"
                         android:imeOptions="actionNext"
                         android:paddingRight="@dimen/button_box_height"
@@ -466,6 +467,7 @@
                             android:focusableInTouchMode="false"
                             android:hint="@string/txt_select_locality"
                             android:imeOptions="actionNext"
+                            android:maxLength="50"
                             android:paddingRight="@dimen/button_box_height"
                             android:singleLine="true" />
 

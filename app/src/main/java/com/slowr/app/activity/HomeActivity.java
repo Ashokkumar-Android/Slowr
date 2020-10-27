@@ -46,6 +46,7 @@ import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.AdItemModel;
+import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.CategoryItemModel;
 import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.DefaultResponse;
@@ -100,6 +101,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     ArrayList<FiltersModel> filterList = new ArrayList<>();
     ArrayList<SortByModel> filterSelectList = new ArrayList<>();
     ArrayList<SuggistionItem> searchSuggestionList = new ArrayList<>();
+    ArrayList<BannerItemModel> bannerList = new ArrayList<>();
 
     BannerAdapter bannerAdapter;
     private static int currentPage = 0;
@@ -258,7 +260,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
         params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).getHomeDetails(params)
+        RetrofitClient.getClient().create(Api.class).getHomeDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
     }
 
@@ -465,7 +467,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void setBanner() {
-        bannerAdapter = new BannerAdapter(HomeActivity.this);
+        bannerAdapter = new BannerAdapter(HomeActivity.this, bannerList);
         vp_banner.setAdapter(bannerAdapter);
         // Auto start of viewpager
         final Handler handler = new Handler();
@@ -483,7 +485,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             public void run() {
                 handler.post(Update);
             }
-        }, 3000, 3000);
+        }, 1000, 2000);
         vp_banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -498,6 +500,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             @Override
             public void onPageScrollStateChanged(int state) {
 
+            }
+        });
+        bannerAdapter.setCallBack(new BannerAdapter.CallBack() {
+            @Override
+            public void onItemClick(int pos) {
+                String userProsperId = bannerList.get(pos).getProsperId();
+                if (userProsperId != null) {
+                    Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
+                    i.putExtra("prosperId", userProsperId);
+                    startActivity(i);
+                }
             }
         });
     }
@@ -612,23 +625,25 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 if (response.isSuccessful()) {
 
                     layout_home.setVisibility(View.VISIBLE);
-//                    Log.i("ImagePathUrl", dr.getImgPath());
-//                    Sessions.saveSession(Constant.ImagePath, dr.getImgPath(), HomeActivity.this);
                     serviceList.clear();
                     serviceList.addAll(dr.getServiceList());
                     categoryList.clear();
                     categoryList.addAll(dr.getProductList());
                     cityList.clear();
-                    CityItemModel cityItemModel = new CityItemModel();
-                    cityItemModel.setCityId("");
-                    cityItemModel.setCityName("All India");
+                    CityItemModel cityItemModel = new CityItemModel("", "All India", "", false);
                     cityList.add(cityItemModel);
                     cityList.addAll(dr.getCityList());
                     homeAdList.clear();
-                    homeAdList.addAll(dr.getHomeAdsList());
+                    if (dr.getHomeAdsList() != null)
+                        homeAdList.addAll(dr.getHomeAdsList());
+                    bannerList.clear();
+                    bannerList.addAll(dr.getBannerList());
+                    NUM_PAGES = bannerList.size();
+                    currentPage = 0;
                     productCategoryListAdapter.notifyDataSetChanged();
                     serviceCategoryListAdapter.notifyDataSetChanged();
                     homeCustomListAdapter.notifyDataSetChanged();
+                    bannerAdapter.notifyDataSetChanged();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -657,9 +672,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     layout_swipe_refresh.setRefreshing(false);
                 }
                 if (dr.isStatus()) {
-
-//                    Log.i("ImagePathUrl", dr.getUrlPath());
-//                    Sessions.saveSession(Constant.ImagePath, dr.getUrlPath(), HomeActivity.this);
                     currentPageNo = dr.getAdListModel().getCurrentPage();
                     lastPageNo = dr.getAdListModel().getLastPage();
                     isLoading = false;

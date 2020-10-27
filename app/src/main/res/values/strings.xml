@@ -80,6 +80,7 @@
 
     <string name="txt_add_post">Post Ad</string>
     <string name="txt_update_post">Update Ad</string>
+    <string name="txt_update_banner">Update</string>
     <string name="txt_select">Select</string>
     <string name="txt_type">Type</string>
     <string name="txt_category">Category</string>
@@ -121,8 +122,8 @@
     <string name="txt_pro_count">%1$s/50</string>
     <string name="txt_title_count">%1$s/60</string>
 
-    <string name="select_product_type">Select Product Type</string>
-    <string name="select_profession">Select Profession</string>
+    <string name="select_product_type">Enter Product Type</string>
+    <string name="select_profession">Enter Profession</string>
     <string name="enter_fee">Enter fee</string>
     <string name="enter_mobile_number">Enter Mobile Number</string>
     <string name="enter_valid_mobile_number">Enter a valid Mobile Number</string>
@@ -240,6 +241,7 @@
     <string name="txt_active">ACTIVE</string>
     <string name="txt_in_active">IN ACTIVE</string>
     <string name="txt_in_review">IN REVIEW</string>
+    <string name="txt_expired">EXPIRED</string>
 
     <string name="search_prosper_id">(eg, AA1234)</string>
     <string name="transaction_history">Invoices</string>
@@ -256,6 +258,8 @@
     <string name="enter_gst_no">Enter the GSTIN</string>
 
     <string name="ad_delete_message">Are you sure you want to delete this Ad?</string>
+    <string name="banner_delete_message">Are you sure you want to delete this Banner?</string>
+    <string name="logout_message">Are you sure you want to Logout?</string>
 
     <string name="txt_please_login">Please Login.</string>
 
@@ -331,7 +335,7 @@
     <string name="start">GOT IT</string>
 
     <string name="you_cannot_edit">You can\'t edit this content</string>
-    <string name="txt_banner">Banner</string>
+    <string name="txt_banner">My Banners</string>
     <string name="txt_banner_title">Banner Title *</string>
     <string name="txt_banner_duration">Banner Duration *</string>
     <string name="txt_enter_banner_title">Enter Banner Title</string>
@@ -345,5 +349,13 @@
     <string name="txt_sample_guide">To advertise in particular city select the city. To advertise in particular locality select both city and locality. Price as per selection.</string>
 
     <string name="txt_choose_background_color">Choose background colour</string>
+
+    <string name="enter_banner_description">Enter Banner Description</string>
+    <string name="txt_upload_banner_image">Upload Banner Image</string>
+    <string name="txt_renew">Renew</string>
+    <string name="txt_banner_background_color">Banner colour background</string>
+    <string name="txt_customise">Customise</string>
+    <string name="banner_ad_preview">Banner Ad Preview</string>
+    <string name="txt_delete">Delete</string>
 
 </resources>

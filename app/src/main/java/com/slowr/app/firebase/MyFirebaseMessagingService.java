@@ -3,6 +3,7 @@ package com.slowr.app.firebase;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
@@ -130,104 +131,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-//                notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-////                    if (notificationManager.getNotificationChannels().size() < 2) {
-//                        NotificationChannel groupChannel = new NotificationChannel("bundle_channel_id", "bundle_channel_name", NotificationManager.IMPORTANCE_LOW);
-//                        notificationManager.createNotificationChannel(groupChannel);
-//                        NotificationChannel channel = new NotificationChannel("channel_id", "channel_name", NotificationManager.IMPORTANCE_DEFAULT);
-//                        notificationManager.createNotificationChannel(channel);
-////                    }
-//                }
-//
-//                PendingIntent pendingIntent = PendingIntent.getActivity(this, bundleNotificationId, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
-//                NotificationCompat.Builder builder = null;
-//                NotificationCompat.Builder Summerybuilder = null;
-//                Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-////                media_url = media_url.replace("DefaultProfileUrl", "");
-////
-//
-//                if (singleNotificationId == bundleNotificationId)
-//                    singleNotificationId = bundleNotificationId + 1;
-//                else
-//                    singleNotificationId++;
-//
-//                PendingIntent singlePendingIntent = PendingIntent.getActivity(this, singleNotificationId, notificationIntent, PendingIntent.FLAG_ONE_SHOT);
-//                if (!media_url.equals("") && !media_url.equalsIgnoreCase("null") && media_url != null) {
-//                    builder = new NotificationCompat.Builder(this, "bundle_channel_id")
-////                            .setStyle(new NotificationCompat.BigTextStyle().bigText(msg_text).setBigContentTitle(msg_title))
-//                            .setSmallIcon(R.drawable.ic_slowr_logo)
-//                            .setLargeIcon(Picasso.with(this).load(media_url).error(R.drawable.ic_slowr_logo).get())
-////                            .setCustomContentView(contentViewSmall)
-////                            .setCustomBigContentView(contentViewBig)
-//
-//                            .setStyle(new NotificationCompat.BigTextStyle()
-//                                    .bigText(msg_text))
-//                            .setContentTitle(msg_title)
-//                            .setContentText(msg_text)
-//                            .setPriority(android.app.Notification.PRIORITY_MAX)
-//                            .setAutoCancel(true)
-//                            .setSound(alarmSound)
-//                            .setGroup(bundle_notification_id)
-//                            .setGroupSummary(true)
-//                            .setContentIntent(pendingIntent);
-//
-//
-//                    Summerybuilder = new NotificationCompat.Builder(this, "channel_id")
-////                            .setStyle(new NotificationCompat.BigTextStyle().bigText(msg_text).setBigContentTitle(msg_title))
-//                            .setSmallIcon(R.drawable.ic_slowr_logo)
-//                            .setLargeIcon(Picasso.with(this).load(media_url).error(R.drawable.ic_slowr_logo).get())
-////                            .setCustomContentView(contentViewSmall)
-////                            .setCustomBigContentView(contentViewBig)
-//                            .setStyle(new NotificationCompat.BigTextStyle()
-//                                    .bigText(msg_text))
-//                            .setContentTitle(msg_title)
-//                            .setContentText(msg_text)
-//                            .setPriority(android.app.Notification.PRIORITY_MAX)
-//                            .setAutoCancel(true)
-//                            .setSound(alarmSound)
-//                            .setGroup(bundle_notification_id)
-//                            .setGroupSummary(false)
-//                            .setContentIntent(singlePendingIntent);
-//
-//                } else {
-//                    builder = new NotificationCompat.Builder(this, "bundle_channel_id")
-//                            /*  .setStyle(new NotificationCompat.BigTextStyle()
-//                                      .bigText(msg_text).
-//                                              setBigContentTitle(msg_title))*/
-//                            .setSmallIcon(R.drawable.ic_slowr_logo)
-//                            .setPriority(android.app.Notification.PRIORITY_MAX)
-////                            .setCustomContentView(contentViewSmall)
-//
-//                            .setStyle(new NotificationCompat.BigTextStyle()
-//                                    .bigText(msg_text))
-//                            .setContentTitle(msg_title)
-//                            .setContentText(msg_text)
-//                            .setGroup(bundle_notification_id)
-//                            .setGroupSummary(true)
-//                            .setSound(alarmSound)
-//                            .setContentIntent(pendingIntent);
-//                    Summerybuilder = new NotificationCompat.Builder(this, "channel_id")
-//                            /*  .setStyle(new NotificationCompat.BigTextStyle()
-//                                      .bigText(msg_text).
-//                                              setBigContentTitle(msg_title))*/
-//                            .setSmallIcon(R.drawable.ic_slowr_logo)
-//                            .setPriority(android.app.Notification.PRIORITY_MAX)
-////                            .setCustomContentView(contentViewSmall)
-//
-//                            .setStyle(new NotificationCompat.BigTextStyle()
-//                                    .bigText(msg_text))
-//                            .setContentTitle(msg_title)
-//                            .setContentText(msg_text)
-//                            .setGroup(bundle_notification_id)
-//                            .setGroupSummary(false)
-//                            .setSound(alarmSound)
-//                            .setContentIntent(singlePendingIntent);
-//                }
-//
-//                notificationManager.notify(singleNotificationId, Summerybuilder.build());
-//                notificationManager.notify(bundleNotificationId, builder.build());
+
 
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, notificationIntent,
@@ -236,6 +140,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String channelId = getString(R.string.default_notification_channel_id);
                 Uri defaultSoundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.slowr_tone);
 //                Uri defaultSoundUri = Uri. parse (ContentResolver. SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/raw/slowr_tone.mp3" ) ;
+
                 if (!media_url.equals("") && !media_url.equalsIgnoreCase("null") && media_url != null) {
                     notificationBuilder =
                             new NotificationCompat.Builder(this, channelId)
@@ -281,8 +186,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 notificationManager.notify((int) (System.currentTimeMillis()) /* ID of notification */, notificationBuilder.build());
                 try {
                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
-                    r.play();
+//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
+//                    r.play();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -19,6 +19,9 @@ public class HomeDetailsModel {
     @SerializedName("custom_options")
     ArrayList<HomeAdsModel> homeAdsList;
 
+    @SerializedName("bannerList")
+    ArrayList<BannerItemModel> bannerList;
+
 
     public ArrayList<CategoryItemModel> getProductList() {
         return productList;
@@ -50,5 +53,13 @@ public class HomeDetailsModel {
 
     public void setHomeAdsList(ArrayList<HomeAdsModel> homeAdsList) {
         this.homeAdsList = homeAdsList;
+    }
+
+    public ArrayList<BannerItemModel> getBannerList() {
+        return bannerList;
+    }
+
+    public void setBannerList(ArrayList<BannerItemModel> bannerList) {
+        this.bannerList = bannerList;
     }
 }

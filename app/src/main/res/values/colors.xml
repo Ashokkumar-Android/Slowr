@@ -6,6 +6,7 @@
     <color name="color_accent">#0F4C81</color>
     <color name="window_background">#ffffff</color>
     <color name="color_white">#ffffff</color>
+    <color name="color_white_trans">#99FFFFFF</color>
     <color name="color_black">#000000</color>
     <color name="color_black_line">#28000000</color>
     <color name="color_gray">#D3D3D3</color>

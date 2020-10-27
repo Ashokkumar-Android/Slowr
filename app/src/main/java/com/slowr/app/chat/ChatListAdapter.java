@@ -76,7 +76,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             holder.txt_message_count.setText(chatModel.getUnreadCount() + " " + ctx.getString(R.string.txt_new_messages));
             holder.txt_message_count.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
         }
-        if(chatModel.getIsFile()!=null&&chatModel.getIsFile().equals("photo")){
+        if(chatModel.getIsFile()!=null&&chatModel.getIsFile().equals("Photo")){
             holder.txt_new_message.setText(chatModel.getIsFile());
         }else {
             holder.txt_new_message.setText(chatModel.getLastMessage());

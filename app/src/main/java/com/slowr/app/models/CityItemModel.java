@@ -46,4 +46,11 @@ public class CityItemModel {
     public void setSelect(boolean select) {
         isSelect = select;
     }
+
+    public CityItemModel(String cityId, String cityName, String cityPrice, boolean isSelect) {
+        this.cityId = cityId;
+        this.cityName = cityName;
+        this.cityPrice = cityPrice;
+        this.isSelect = isSelect;
+    }
 }

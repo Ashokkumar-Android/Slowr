@@ -26,7 +26,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
 
     private List<AdItemModel> categoryList;
     Callback callback;
-    Context ctx;
+    Activity ctx;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_ad_title;
@@ -70,7 +70,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                         callback.onFavoriteClick(getAdapterPosition());
 //                        Function.bounceAnimateImageView(true, img_favorite);
                     } else {
-                        Function.CustomMessage((Activity) ctx, ctx.getString(R.string.my_ad_favorite));
+                        Function.CustomMessage(ctx, ctx.getString(R.string.my_ad_favorite));
                     }
                     break;
 
@@ -79,7 +79,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
         }
     }
 
-    public HomeAdListAdapter(List<AdItemModel> _categoryList, Context ctx) {
+    public HomeAdListAdapter(List<AdItemModel> _categoryList, Activity ctx) {
         this.categoryList = _categoryList;
         this.ctx = ctx;
     }
@@ -144,27 +144,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                 .placeholder(R.drawable.ic_default_horizontal)
                 .into(holder.img_ad);
 
-//        if (!movie.getPhotoType().isEmpty()) {
-//            JSONArray jsonArray = null;
-//            try {
-//                jsonArray = new JSONArray(movie.getPhotoType());
-//                String[] strArr = new String[jsonArray.length()];
-//                String imgPath = "";
-//                if (strArr.length != 0) {
-//
-//                    for (int i = 0; i < jsonArray.length(); i++) {
-//                        strArr[i] = jsonArray.getString(i);
-//                    }
-//                    imgPath = Sessions.getSession(Constant.ImagePath, ctx) + "/" + strArr[0];
-//
-//
-//                    Log.i("ImagePath", imgPath);
-//
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
+
     }
 
     @Override

@@ -82,7 +82,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(linearLayoutManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, getApplicationContext());
+        homeAdListAdapter = new HomeAdListAdapter(adList,UserProfileActivity.this);
         rc_ad_list.setAdapter(homeAdListAdapter);
         if (_fun.isInternetAvailable(UserProfileActivity.this)) {
             getAdList();
@@ -278,7 +278,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 } else {
                     Function.CustomMessage(UserProfileActivity.this, dr.getMessage());
                 }
-
+                adList.get(favPosition).setProgress(false);
 
             } catch (Exception e) {
                 e.printStackTrace();

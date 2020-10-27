@@ -33,6 +33,7 @@
                 android:background="@android:color/transparent"
                 android:dropDownAnchor="@id/viewDivider"
                 android:dropDownVerticalOffset="5dp"
+                android:maxLength="50"
                 android:imeOptions="actionNext"
                 android:paddingRight="@dimen/button_box_height"
                 android:singleLine="true" />

@@ -1,18 +1,26 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.bumptech.glide.Glide;
 import com.slowr.app.R;
+import com.slowr.app.models.BannerItemModel;
 
 import java.util.ArrayList;
+
+import jp.wasabeef.glide.transformations.BlurTransformation;
+
+import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 
 public class BannerAdapter extends PagerAdapter {
@@ -20,13 +28,13 @@ public class BannerAdapter extends PagerAdapter {
 
     private LayoutInflater inflater;
     private Context context;
+    ArrayList<BannerItemModel> bannerList;
+    CallBack callBack;
 
-
-    public BannerAdapter(Context context) {
+    public BannerAdapter(Context context, ArrayList<BannerItemModel> _bannerList) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-
-
+        this.bannerList = _bannerList;
     }
 
     @Override
@@ -36,7 +44,7 @@ public class BannerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return bannerList.size();
     }
 
     @Override
@@ -44,40 +52,37 @@ public class BannerAdapter extends PagerAdapter {
         View imageLayout = inflater.inflate(R.layout.layout_banner_item, view, false);
 
         assert imageLayout != null;
-        final ImageView img_banner = imageLayout
-                .findViewById(R.id.img_banner);
+        ImageView img_banner = imageLayout.findViewById(R.id.img_banner);
+        ImageView defult_one = imageLayout.findViewById(R.id.defult_one);
         TextView txt_prosperId = imageLayout.findViewById(R.id.txt_prosperId);
         TextView txt_banner_content = imageLayout.findViewById(R.id.txt_banner_content);
         TextView txt_banner_price = imageLayout.findViewById(R.id.txt_banner_price);
         TextView txt_banner_like = imageLayout.findViewById(R.id.txt_banner_like);
-
-
-        switch (position) {
-            case 0:
-                img_banner.setImageResource(R.drawable.ic_banner_one);
-                txt_prosperId.setText("AB1234");
-                txt_banner_content.setText("Luxury cars for daily rent");
-                txt_banner_price.setText("Renting @ ₹1800/day");
-                txt_banner_like.setText("4536");
-                break;
-            case 1:
-                img_banner.setImageResource(R.drawable.ic_banner_two);
-                txt_prosperId.setText("BC4386");
-                txt_banner_content.setText("Cricket kits for rental");
-                txt_banner_price.setText("Renting @ ₹500/day");
-                txt_banner_like.setText("2864");
-                break;
-            case 2:
-                img_banner.setImageResource(R.drawable.ic_banner_three);
-                txt_prosperId.setText("AB5689");
-                txt_banner_content.setText("We provide home cleaning service");
-                txt_banner_price.setText("Service @ ₹900");
-                txt_banner_like.setText("763");
-                break;
-        }
-
+        LinearLayout layout_root = imageLayout.findViewById(R.id.layout_root);
+        BannerItemModel bannerItemModel = bannerList.get(position);
+        txt_prosperId.setText(bannerItemModel.getProsperId());
+        txt_banner_content.setText(bannerItemModel.getBannerTitle());
+        txt_banner_price.setText(bannerItemModel.getDescription());
+        layout_root.setBackgroundColor(Color.parseColor(bannerItemModel.getColorCode()));
+        Glide.with(context)
+                .load(bannerItemModel.getBannerImage())
+                .error(R.drawable.ic_default_horizontal)
+                .placeholder(R.drawable.ic_default_horizontal)
+                .into(img_banner);
         view.addView(imageLayout, 0);
-
+        imageLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bannerItemModel.getProsperId() != null)
+                    callBack.onItemClick(position);
+            }
+        });
+//        Glide.with(context)
+//                .load(bannerItemModel.getBannerImage())
+//                .transform(new BlurTransformation())
+//                .error(R.drawable.ic_default_horizontal)
+//                .placeholder(R.drawable.ic_default_horizontal)
+//                .into(defult_one);
 
         return imageLayout;
     }
@@ -96,5 +101,12 @@ public class BannerAdapter extends PagerAdapter {
         return null;
     }
 
+    public void setCallBack(CallBack callBack) {
+        this.callBack = callBack;
+    }
+
+    public interface CallBack {
+        public void onItemClick(int pos);
+    }
 
 }
