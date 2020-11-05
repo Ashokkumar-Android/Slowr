@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.like.LikeButton;
 import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
 
@@ -34,7 +35,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
         public TextView txt_like_count;
         public LinearLayout layout_root;
         public ImageView img_ad;
-        public ImageView img_favorite;
+        public LikeButton img_favorite;
         public ImageView img_promote;
         public ImageView img_share;
         LinearLayout layout_promote;
@@ -86,6 +87,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 case R.id.img_share:
                     callback.onShareClick(categoryListFilter.get(getAdapterPosition()));
                     break;
+
 
             }
 
@@ -149,7 +151,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
             holder.txt_price.setVisibility(View.VISIBLE);
             String price = "";
             if (movie.getAdFee().contains(".")) {
-                String tempPrice[] = movie.getAdFee().split("\\.");
+                String[] tempPrice = movie.getAdFee().split("\\.");
                 price = tempPrice[0];
             } else {
                 price = movie.getAdFee();
@@ -157,13 +159,21 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
 
             Log.i("Fave", movie.getIsFavorite());
             if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                holder.txt_price.setText(movie.getAdDuration());
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
             } else {
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
         } else {
             if ( movie.getAdDuration().equals("Custom")) {
-                holder.txt_price.setText(movie.getAdDuration());
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
             } else {
                 holder.txt_price.setVisibility(View.GONE);
             }
@@ -192,11 +202,11 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
     }
 
     public interface Callback {
-        public void itemClick(AdItemModel model);
+        void itemClick(AdItemModel model);
 
-        public void onShareClick(AdItemModel model);
+        void onShareClick(AdItemModel model);
 
-        public void onPromoteClick(AdItemModel model);
+        void onPromoteClick(AdItemModel model);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.slowr.app.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
@@ -27,6 +30,10 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.slowr.app.R;
 import com.slowr.app.adapter.PopularAdListAdapter;
 import com.slowr.app.adapter.ViewPostImageListAdapter;
@@ -47,7 +54,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 
-public class PostViewActivity extends BaseActivity implements View.OnClickListener {
+public class PostViewActivity extends BaseActivity implements View.OnClickListener, OnLikeListener {
 
     TextView txt_ad_title;
     TextView txt_price;
@@ -63,7 +70,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     RecyclerView rc_related_ad_list;
     RecyclerView rc_image_list;
     ImageView img_share;
-    ImageView img_favorite;
+    LikeButton img_favorite;
     ImageView img_like;
     ImageView img_user_profile;
     ImageView img_unverified_user;
@@ -92,6 +99,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     boolean unVerified = false;
     String userProsperId = "";
     String chatId = "";
+    String adTitle = "";
+    String catGroup = "";
 
     View rootView = null;
     String imageStringArray = "";
@@ -102,7 +111,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        FrameLayout contentFrameLayout = findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.fragment_post_view, contentFrameLayout);
 
         doDeclaration();
@@ -151,7 +160,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         rc_image_list.setItemAnimator(new DefaultItemAnimator());
         postImageListAdapter = new ViewPostImageListAdapter(PostViewActivity.this, shareImageList);
         rc_image_list.setAdapter(postImageListAdapter);
-        img_favorite.setOnClickListener(this);
+        img_favorite.setOnLikeListener(this);
         img_share.setOnClickListener(this);
         layout_like.setOnClickListener(this);
         img_ad_view.setOnClickListener(this);
@@ -179,6 +188,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 
         }
 
+
     }
 
     private void CallBackFunction() {
@@ -202,17 +212,25 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             public void itemClick(AdItemModel model) {
                 String catId = model.getCatId();
                 String adId = model.getAdId();
-                changeFragment(catId, adId);
+                String userId = model.getUserId();
+                changeFragment(catId, adId, userId);
             }
         });
     }
 
-    void changeFragment(String catId, String adId) {
-        Intent p = new Intent(PostViewActivity.this, PostViewActivity.class);
-        p.putExtra("CatId", catId);
-        p.putExtra("AdId", adId);
-        startActivity(p);
-        finish();
+    void changeFragment(String catId, String adId, String _userId) {
+
+        if (_userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+            Intent p = new Intent(PostViewActivity.this, MyPostViewActivity.class);
+            p.putExtra("CatId", catId);
+            p.putExtra("AdId", adId);
+            startActivity(p);
+        } else {
+            Intent p = new Intent(PostViewActivity.this, PostViewActivity.class);
+            p.putExtra("CatId", catId);
+            p.putExtra("AdId", adId);
+            startActivity(p);
+        }
     }
 
     private void setCurrentImage(String url) {
@@ -257,21 +275,21 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             layout_root.setVisibility(View.VISIBLE);
 
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
-                            if (dr.getEditDataModel().getCatGroup() == 1) {
 
-                            }
+                            catGroup = dr.getEditDataModel().getCatGroup();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), PostViewActivity.this);
                             chatId = dr.getEditDataModel().getChatId();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());
+                            adTitle = editAdDetailsModel.getAdTitle().trim();
                             isFavorite = editAdDetailsModel.getIsFavorite();
                             txt_like_count.setText(editAdDetailsModel.getLikeCount());
                             likeCount = Integer.valueOf(editAdDetailsModel.getLikeCount());
                             isLike = editAdDetailsModel.getIsLike();
                             txt_location_post.setText(editAdDetailsModel.getAreaName() + ", " + editAdDetailsModel.getCityName());
                             if (isFavorite.equals("0")) {
-                                img_favorite.setImageResource(R.drawable.ic_favorite);
+                                img_favorite.setLiked(false);
                             } else {
-                                img_favorite.setImageResource(R.drawable.ic_fav_select);
+                                img_favorite.setLiked(true);
                             }
                             if (isLike.equals("0")) {
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
@@ -282,21 +300,29 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 txt_price.setVisibility(View.VISIBLE);
                                 String price = "";
                                 if (editAdDetailsModel.getRentalFee().contains(".")) {
-                                    String tempPrice[] = editAdDetailsModel.getRentalFee().split("\\.");
+                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
                                     price = tempPrice[0];
                                 } else {
                                     price = editAdDetailsModel.getRentalFee();
                                 }
 
                                 if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                    if(catGroup.equals("1")){
+                                        txt_price.setText(getString(R.string.custom_rent));
+                                    }else {
+                                        txt_price.setText(getString(R.string.custom_hire));
+                                    }
                                 } else {
                                     txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 }
 
                             } else {
                                 if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                    if(catGroup.equals("1")){
+                                        txt_price.setText(getString(R.string.custom_rent));
+                                    }else {
+                                        txt_price.setText(getString(R.string.custom_hire));
+                                    }
                                 } else {
                                     txt_price.setVisibility(View.GONE);
                                 }
@@ -404,6 +430,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
+                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup);
                 break;
             case R.id.img_favorite:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -463,6 +490,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             case R.id.btn_call_now:
                 if (_fun.checkPermission2(PostViewActivity.this))
                     Function.CallNow(PostViewActivity.this, userPhone);
+
                 break;
             case R.id.txt_prosperId_post:
                 if (unVerified) {
@@ -540,10 +568,10 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 if (dr.isStatus()) {
                     if (isFavorite.equals("0")) {
                         isFavorite = "1";
-                        img_favorite.setImageResource(R.drawable.ic_fav_select);
+//                        img_favorite.setImageResource(R.drawable.ic_fav_select);
                     } else {
                         isFavorite = "0";
-                        img_favorite.setImageResource(R.drawable.ic_favorite);
+//                        img_favorite.setImageResource(R.drawable.ic_favorite);
                     }
                     Function.CustomMessage(PostViewActivity.this, dr.getMessage());
                     Intent intent = new Intent();
@@ -644,5 +672,51 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     protected void onResume() {
         isPageChange = false;
         super.onResume();
+    }
+
+    @Override
+    public void liked(LikeButton likeButton) {
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+                Function.CustomMessage(PostViewActivity.this, getString(R.string.my_ad_favorite));
+                img_favorite.setLiked(false);
+            } else {
+                callAddFavorite();
+            }
+        } else {
+            Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+        }
+    }
+
+    @Override
+    public void unLiked(LikeButton likeButton) {
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+                Function.CustomMessage(PostViewActivity.this, getString(R.string.my_ad_favorite));
+                img_favorite.setLiked(false);
+            } else {
+                callAddFavorite();
+            }
+        } else {
+            Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean result = false;
+        for (int i = 0; i < Constant.Permissions2.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(PostViewActivity.this, Constant.Permissions2[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if(result){
+            Function.CallNow(PostViewActivity.this, userPhone);
+        }
     }
 }

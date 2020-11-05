@@ -9,6 +9,7 @@
         android:id="@+id/txt_select_title"
         style="@style/attribute_title"
         android:layout_marginTop="@dimen/size_ten"
+        android:layout_marginLeft="@dimen/size_five"
         android:fontFamily="@font/nunito_regular"
         android:text="" />
 
@@ -30,10 +31,10 @@
                 style="@style/attribute_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:dropDownAnchor="@id/viewDivider"
+                android:dropDownAnchor="@id/txt_select_content"
                 android:dropDownVerticalOffset="5dp"
                 android:maxLength="50"
+                android:inputType="textCapSentences"
                 android:imeOptions="actionNext"
                 android:paddingRight="@dimen/button_box_height"
                 android:singleLine="true" />
@@ -50,7 +51,8 @@
 
         <View
             android:id="@+id/viewDivider"
-            style="@style/attribute_line" />
+            style="@style/attribute_line"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <LinearLayout
@@ -67,8 +69,6 @@
                 android:id="@+id/edt_attributeValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:inputType="text|textCapSentences"
                 android:maxLength="50"
                 android:paddingRight="@dimen/button_box_height"
@@ -84,7 +84,8 @@
                 android:textSize="@dimen/size_ten" />
         </FrameLayout>
 
-        <View style="@style/attribute_line" />
+        <View style="@style/attribute_line"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

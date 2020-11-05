@@ -14,7 +14,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/layout_header" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include layout="@layout/layout_header" />
+
+            <Button
+                android:id="@+id/btn_add_post_header"
+                android:layout_width="70dp"
+                android:layout_height="28dp"
+                android:layout_gravity="right|center"
+                android:background="@drawable/bg_orenge"
+                android:fontFamily="@font/nunito_regular"
+                android:gravity="center"
+                android:text="@string/post_ad"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                android:layout_marginRight="@dimen/size_fifteen"
+                android:textColor="@color/color_white"
+                android:textSize="@dimen/size_thirteen" />
+
+        </FrameLayout>
+
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/layout_root"

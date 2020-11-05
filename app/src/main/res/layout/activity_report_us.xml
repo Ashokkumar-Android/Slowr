@@ -10,238 +10,249 @@
 
     <include layout="@layout/layout_header" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="@dimen/size_twenty">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/layout_report_details"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:padding="@dimen/size_twenty">
 
             <LinearLayout
+                android:id="@+id/layout_report_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="3dp"
                 android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    style="@style/attribute_title"
-                    android:layout_marginLeft="3dp"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="@string/txt_report_type"
-                    android:textSize="@dimen/size_twelve"
-                    android:visibility="gone" />
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginRight="3dp"
+                    android:orientation="vertical"
                     android:visibility="gone">
 
-                    <Spinner
-                        android:id="@+id/sp_report_type"
+                    <TextView
+                        style="@style/attribute_title"
+                        android:layout_marginLeft="3dp"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_report_type"
+                        android:textSize="@dimen/size_twelve"
+                        android:visibility="gone" />
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:gravity="bottom"
-                        android:spinnerMode="dialog" />
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
-                    <ImageView
-                        android:id="@+id/img_drop_down"
-                        android:layout_width="15dp"
-                        android:layout_height="15dp"
-                        android:layout_gravity="center|right"
-                        android:rotation="270"
-                        android:src="@drawable/ic_backarrow" />
+                        <Spinner
+                            android:id="@+id/sp_report_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:gravity="bottom"
+                            android:spinnerMode="dialog" />
+
+                        <ImageView
+                            android:id="@+id/img_drop_down"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_gravity="center|right"
+                            android:rotation="270"
+                            android:src="@drawable/ic_backarrow" />
+                    </LinearLayout>
+
+                    <View
+                        style="@style/attribute_line"
+                        android:layout_marginLeft="3dp" />
                 </LinearLayout>
 
-                <View
-                    style="@style/attribute_line"
-                    android:layout_marginLeft="3dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_edt_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:hint="@string/txt_report_type"
+                    android:textColorHint="@color/color_black">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_report_typ"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="@string/name_digits"
+                        android:focusableInTouchMode="false"
+                        android:fontFamily="@font/nunito_regular"
+                        android:importantForAutofill="no"
+                        android:inputType="textPersonName|textCapSentences"
+                        android:singleLine="true"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_fifteen"
+                        app:hintTextColor="@color/color_black" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_edt_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:hint="@string/enter_your_name"
+                    android:textColorHint="@color/color_black">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:digits="@string/name_digits"
+                        android:fontFamily="@font/nunito_regular"
+                        android:imeOptions="actionNext"
+                        android:inputType="textPersonName|textCapSentences"
+                        android:maxLength="50"
+                        android:singleLine="true"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_fifteen"
+                        app:hintTextColor="@color/color_black" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/til_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/nunito_regular"
+                    android:hint="@string/enter_your_email_man"
+                    android:textColorHint="@color/color_black">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:imeOptions="actionNext"
+                        android:importantForAutofill="auto"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_fifteen"
+                        app:hintTextColor="@color/color_black" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/txt_create_post"
+                        android:layout_marginTop="@dimen/size_fifteen"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingLeft="3dp"
+                        android:text="@string/txt_comments" />
+
+                    <EditText
+                        android:id="@+id/edt_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:layout_marginRight="3dp"
+                        android:background="@drawable/bg_description"
+                        android:gravity="top"
+                        android:inputType="textCapSentences|text|textMultiLine"
+                        android:maxLength="200"
+                        android:minHeight="80dp"
+                        android:padding="@dimen/size_ten"
+                        android:textSize="@dimen/size_fifteen" />
+
+                    <TextView
+                        android:id="@+id/txt_description_count"
+                        style="@style/attribute_content"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="@dimen/size_five"
+                        android:text="@string/txt_des_count"
+                        android:textColor="@color/color_hind" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_submit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:paddingLeft="@dimen/size_forty"
+                    android:paddingRight="@dimen/size_forty"
+                    android:text="@string/txt_submit"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_sixteen" />
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_edt_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:fontFamily="@font/nunito_regular"
-                android:hint="@string/txt_report_type"
-                android:textColorHint="@color/color_black">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_report_typ"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:digits="@string/name_digits"
-                    android:focusableInTouchMode="false"
-                    android:fontFamily="@font/nunito_regular"
-                    android:inputType="textPersonName|textCapSentences"
-                    android:singleLine="true"
-                    android:importantForAutofill="no"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_fifteen"
-                    app:hintTextColor="@color/color_black" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_edt_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:fontFamily="@font/nunito_regular"
-                android:hint="@string/enter_your_name"
-                android:textColorHint="@color/color_black">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:digits="@string/name_digits"
-                    android:fontFamily="@font/nunito_regular"
-                    android:inputType="textPersonName|textCapSentences"
-                    android:maxLength="50"
-                    android:singleLine="true"
-                    android:imeOptions="actionNext"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_fifteen"
-                    app:hintTextColor="@color/color_black" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/nunito_regular"
-                android:hint="@string/enter_your_email_man"
-                android:textColorHint="@color/color_black">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:importantForAutofill="auto"
-                    android:inputType="textEmailAddress"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_fifteen"
-                    android:imeOptions="actionNext"
-                    app:hintTextColor="@color/color_black" />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
+                android:id="@+id/layout_report_success"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
-                    style="@style/txt_create_post"
-                    android:layout_marginTop="@dimen/size_fifteen"
-                    android:fontFamily="@font/nunito_regular"
-                    android:paddingLeft="3dp"
-                    android:text="@string/txt_comments" />
-
-                <EditText
-                    android:id="@+id/edt_description"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="3dp"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/txt_report_submitted"
+                    android:textColor="@color/txt_orange"
+                    android:textSize="@dimen/size_twenty_four" />
+
+                <TextView
+                    android:id="@+id/txt_ticket_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"
-                    android:layout_marginRight="3dp"
-                    android:background="@drawable/bg_description"
-                    android:gravity="top"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:maxLength="200"
-                    android:minHeight="80dp"
-                    android:padding="@dimen/size_ten"
-                    android:textSize="@dimen/size_fifteen" />
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="Ticket ID : 01523478965"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:text="@string/txt_allow_process"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+                <Button
+                    android:id="@+id/btn_continue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:paddingLeft="@dimen/size_forty"
+                    android:paddingRight="@dimen/size_forty"
+                    android:text="@string/txt_home_page"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_sixteen" />
+
+
             </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_submit"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/size_twenty"
-                android:background="@drawable/bg_orenge"
-                android:fontFamily="@font/nunito_regular"
-                android:paddingLeft="@dimen/size_forty"
-                android:paddingRight="@dimen/size_forty"
-                android:text="@string/txt_submit"
-                android:textAllCaps="false"
-                android:textColor="@color/color_white"
-                android:textSize="@dimen/size_sixteen" />
         </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/layout_report_success"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_regular"
-                android:text="@string/txt_report_submitted"
-                android:textColor="@color/txt_orange"
-                android:textSize="@dimen/size_twenty_four" />
-
-            <TextView
-                android:id="@+id/txt_ticket_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:fontFamily="@font/nunito_regular"
-                android:text="Ticket ID : 01523478965"
-                android:textColor="@color/color_black"
-                android:textSize="@dimen/size_eighteen" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:fontFamily="@font/nunito_regular"
-                android:gravity="center"
-                android:text="@string/txt_allow_process"
-                android:textColor="@color/color_black"
-                android:textSize="@dimen/size_eighteen" />
-
-            <Button
-                android:id="@+id/btn_continue"
-                android:layout_width="wrap_content"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/size_twenty"
-                android:background="@drawable/bg_orenge"
-                android:fontFamily="@font/nunito_regular"
-                android:paddingLeft="@dimen/size_forty"
-                android:paddingRight="@dimen/size_forty"
-                android:text="@string/txt_home_page"
-                android:textAllCaps="false"
-                android:textColor="@color/color_white"
-                android:textSize="@dimen/size_sixteen" />
-
-
-        </LinearLayout>
-    </LinearLayout>
-
+    </ScrollView>
 </LinearLayout>

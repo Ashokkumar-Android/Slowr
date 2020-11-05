@@ -123,13 +123,14 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             attributesAutoCompleteAdapter.setCallback(new AttributesAutoCompleteAdapter.Callback() {
                 @Override
                 public void itemClick(AttributeSelectModel model) {
-                    holder.txt_select_content.setText(model.getAttributeValue());
+                    holder.txt_select_content.setText(model.getAttributeValue().trim());
                     holder.txt_select_content.dismissDropDown();
                     holder.txt_select_content.setSelection(holder.txt_select_content.getText().toString().length());
                 }
             });
 
         } else {
+            holder.edt_attributeValue.setHint("Type" + " " + movie.getName());
             holder.layout_select.setVisibility(View.GONE);
             holder.layout_input.setVisibility(View.VISIBLE);
         }
@@ -216,7 +217,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
         void attributeEnterValue(String val, int pos);
     }

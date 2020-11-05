@@ -31,6 +31,9 @@ import com.slowr.app.models.ReportResponsModel;
 import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SearchSuggistonModel;
 
+import java.util.HashMap;
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -108,6 +111,11 @@ public interface Api {
 
     @POST("post/store")
     Call<DefaultResponse> savePost(@Body Object params, @Header("Authorization") String contentRange);
+
+
+    @Multipart
+    @POST("post/store")
+    Call<DefaultResponse> savePostForm(@Part MultipartBody.Part[] file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Query("attributeId") HashMap<String, String> attributeId, @Query("attributeValue") HashMap<String, String> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
 
     @POST("report-us")
     Call<ReportResponsModel> saveReport(@Body Object params);
@@ -244,6 +252,9 @@ public interface Api {
 
     @POST("clear-chat")
     Call<ChatClearModel> clearChat(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("service-exists")
+    Call<DefaultResponse> serviceCheck(@Body Object params, @Header("Authorization") String contentRange);
 
     @Multipart
     @POST("user-profile")

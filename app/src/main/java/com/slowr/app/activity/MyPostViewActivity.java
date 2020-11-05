@@ -4,7 +4,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +33,13 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.slowr.app.R;
 import com.slowr.app.adapter.ViewPostImageListAdapter;
 import com.slowr.app.api.Api;
@@ -49,7 +59,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class MyPostViewActivity extends AppCompatActivity implements View.OnClickListener {
+public class MyPostViewActivity extends AppCompatActivity implements View.OnClickListener, OnLikeListener {
 
     TextView txt_ad_title;
     TextView txt_price;
@@ -63,7 +73,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     ImageView img_ad_view;
     RecyclerView rc_image_list;
     ImageView img_share;
-    ImageView img_favorite;
+    LikeButton img_favorite;
     ImageView img_like;
     LinearLayout layout_like;
     LinearLayout layout_action_button;
@@ -97,6 +107,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String userProUrl = "";
     String userId = "";
     String userProsperId = "";
+    String adTitle = "";
     int EDIT_POST_CODE = 1299;
     int likeCount = 0;
     int favCount = 0;
@@ -107,6 +118,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String userPhone = "";
     String chatId = "";
     String NotificationId = "";
+    String catGroup = "";
     boolean isUnverified = false;
 
     boolean isPageChange = false;
@@ -115,19 +127,27 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.my_post_view);
         doDeclaration();
     }
 
+
     private void doDeclaration() {
-        catId = getIntent().getStringExtra("CatId");
-        adId = getIntent().getStringExtra("AdId");
+
+        if (getIntent().hasExtra("CatId")) {
+            catId = getIntent().getStringExtra("CatId");
+        }
+        if (getIntent().hasExtra("AdId")) {
+            adId = getIntent().getStringExtra("AdId");
+        }
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
             NotificationId = getIntent().getStringExtra("NotificationId");
 
             ReadNotification(NotificationId);
         }
+        reciveDeepLink();
         txt_ad_title = findViewById(R.id.txt_ad_title);
         txt_price = findViewById(R.id.txt_price);
         txt_location = findViewById(R.id.txt_location);
@@ -167,7 +187,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         rc_image_list.setItemAnimator(new DefaultItemAnimator());
         postImageListAdapter = new ViewPostImageListAdapter(MyPostViewActivity.this, shareImageList);
         rc_image_list.setAdapter(postImageListAdapter);
-        img_favorite.setOnClickListener(this);
+//        img_favorite.setOnClickListener(this);
+        img_favorite.setOnLikeListener(this);
         img_share.setOnClickListener(this);
         layout_like.setOnClickListener(this);
 //        img_like.setOnClickListener(this);
@@ -184,6 +205,15 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_prosperId.setOnClickListener(this);
         btn_chat_now.setOnClickListener(this);
         CallBackFunction();
+        if (!catId.equals(""))
+            CallApi();
+
+        NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notifManager.cancelAll();
+
+    }
+
+    private void CallApi() {
         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
             GetAdDetails();
         } else {
@@ -200,8 +230,42 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }, 200);
 
         }
-        NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notifManager.cancelAll();
+    }
+
+    private void reciveDeepLink() {
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            String pageLink = String.valueOf(deepLink);
+                            Log.i("Link", pageLink);
+                            pageLink = pageLink.replaceAll("//", "~");
+                            pageLink = pageLink.replaceAll("/", "~");
+                            Log.i("Link", pageLink);
+                            if (pageLink.contains("https:~www.slowr.in~")) {
+                                pageLink = pageLink.replace("https:~www.slowr.in~", "");
+                            }
+                            Log.i("Link", pageLink);
+                            String[] ids = pageLink.split("~");
+                            catId = ids[0];
+                            adId = ids[1];
+                            PageFrom = "2";
+                            CallApi();
+                        }
+
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAG", "getDynamicLink:onFailure", e);
+                    }
+                });
     }
 
     private void ReadNotification(String noteId) {
@@ -284,9 +348,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             layout_root.setVisibility(View.VISIBLE);
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
                             chatId = dr.getEditDataModel().getChatId();
+                            catGroup = dr.getEditDataModel().getCatGroup();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), MyPostViewActivity.this);
                             AdType = editAdDetailsModel.getAdType();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());
+                            adTitle = editAdDetailsModel.getAdTitle().trim();
                             isFavorite = editAdDetailsModel.getIsFavorite();
                             txt_like_count.setText(editAdDetailsModel.getLikeCount());
                             likeCount = Integer.valueOf(editAdDetailsModel.getLikeCount());
@@ -295,9 +361,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             isLike = editAdDetailsModel.getIsLike();
                             txt_location.setText(editAdDetailsModel.getAreaName() + ", " + editAdDetailsModel.getCityName());
                             if (isFavorite.equals("0")) {
-                                img_favorite.setImageResource(R.drawable.ic_favorite);
+                                img_favorite.setLiked(false);
                             } else {
-                                img_favorite.setImageResource(R.drawable.ic_fav_select);
+                                img_favorite.setLiked(true);
                             }
                             if (isLike.equals("0")) {
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
@@ -308,7 +374,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_price.setVisibility(View.VISIBLE);
                                 String price = "";
                                 if (editAdDetailsModel.getRentalFee().contains(".")) {
-                                    String tempPrice[] = editAdDetailsModel.getRentalFee().split("\\.");
+                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
                                     price = tempPrice[0];
                                 } else {
                                     price = editAdDetailsModel.getRentalFee();
@@ -316,13 +382,22 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
 //                            txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                    if(catGroup.equals("1")){
+                                        txt_price.setText(getString(R.string.custom_rent));
+                                    }else {
+                                        txt_price.setText(getString(R.string.custom_hire));
+                                    }
+//                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
                                 } else {
                                     txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 }
                             } else {
                                 if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+                                    if(catGroup.equals("1")){
+                                        txt_price.setText(getString(R.string.custom_rent));
+                                    }else {
+                                        txt_price.setText(getString(R.string.custom_hire));
+                                    }
                                 } else {
                                     txt_price.setVisibility(View.GONE);
                                 }
@@ -398,9 +473,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             } else if (editAdDetailsModel.getAdStatus().equals("2")) {
                                 txt_active_status.setText(getString(R.string.txt_in_active));
                                 btn_promote.setVisibility(View.GONE);
+                                layout_like.setEnabled(false);
                             } else {
                                 txt_active_status.setText(getString(R.string.txt_in_review));
                                 btn_promote.setVisibility(View.GONE);
+                                layout_like.setEnabled(false);
                             }
                             userId = editAdDetailsModel.getUserId();
                             if (!editAdDetailsModel.getUserId().equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
@@ -447,6 +524,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
+                Function.ShareLink(MyPostViewActivity.this, catId, adId, adTitle, catGroup);
                 break;
             case R.id.img_favorite:
                 if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
@@ -552,6 +630,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 p.putExtra("PageFrom", "2");
                 p.putExtra("CatId", catId);
                 p.putExtra("AdId", adId);
+                p.putExtra("AdTitle", adTitle);
                 startActivityForResult(p, EDIT_POST_CODE);
                 break;
             case R.id.img_ad_view:
@@ -623,6 +702,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             case R.id.btn_call_now:
                 if (_fun.checkPermission2(MyPostViewActivity.this))
                     Function.CallNow(MyPostViewActivity.this, userPhone);
+
                 break;
             case R.id.txt_prosperId:
                 if (isUnverified) {
@@ -762,12 +842,12 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 if (dr.isStatus()) {
                     if (isFavorite.equals("0")) {
                         isFavorite = "1";
-                        img_favorite.setImageResource(R.drawable.ic_fav_select);
+//                        img_favorite.setImageResource(R.drawable.ic_fav_select);
                         favCount++;
                         txt_fav_count.setText(String.valueOf(favCount));
                     } else {
                         isFavorite = "0";
-                        img_favorite.setImageResource(R.drawable.ic_favorite);
+//                        img_favorite.setImageResource(R.drawable.ic_favorite);
                         favCount--;
                         if (favCount == 0) {
                             txt_fav_count.setText("0");
@@ -939,6 +1019,53 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
                 }
             }
+        }
+    }
+
+    @Override
+    public void liked(LikeButton likeButton) {
+
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+                Function.CustomMessage(MyPostViewActivity.this, getString(R.string.my_ad_favorite));
+                img_favorite.setLiked(false);
+            } else {
+                callAddFavorite();
+            }
+        } else {
+            Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+        }
+    }
+
+    @Override
+    public void unLiked(LikeButton likeButton) {
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+                Function.CustomMessage(MyPostViewActivity.this, getString(R.string.my_ad_favorite));
+                img_favorite.setLiked(false);
+            } else {
+                callAddFavorite();
+            }
+        } else {
+            Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean result = false;
+        for (int i = 0; i < Constant.Permissions2.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(MyPostViewActivity.this, Constant.Permissions2[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if(result){
+            Function.CallNow(MyPostViewActivity.this, userPhone);
         }
     }
 }

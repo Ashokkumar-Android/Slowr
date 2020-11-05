@@ -1,6 +1,7 @@
 package com.slowr.app.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.slowr.app.R;
 import com.slowr.app.adapter.HomeAdListAdapter;
 import com.slowr.app.api.Api;
@@ -44,6 +47,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     TextView txt_prosperId_post;
     TextView txt_name;
     TextView txt_phone;
+    TextView txt_verified;
     ImageView img_unverified_user;
     ImageView img_user_profile;
 
@@ -58,6 +62,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     String prosperId = "";
     String userId = "";
     private PopupWindow spinnerPopup;
+
+    String shareMessage = "";
 
 
     @Override
@@ -77,12 +83,13 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         txt_name = findViewById(R.id.txt_name);
         txt_phone = findViewById(R.id.txt_phone);
         img_user_profile = findViewById(R.id.img_user_profile);
+        txt_verified = findViewById(R.id.txt_verified);
         txt_page_title.setText("Profile");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(linearLayoutManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList,UserProfileActivity.this);
+        homeAdListAdapter = new HomeAdListAdapter(adList, UserProfileActivity.this);
         rc_ad_list.setAdapter(homeAdListAdapter);
         if (_fun.isInternetAvailable(UserProfileActivity.this)) {
             getAdList();
@@ -103,7 +110,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
         callBackFunction();
         img_back.setOnClickListener(this);
-        img_unverified_user.setOnClickListener(this);
+        txt_verified.setOnClickListener(this);
         txt_prosperId_post.setOnClickListener(this);
 
     }
@@ -147,8 +154,19 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     Function.CustomMessage(UserProfileActivity.this, getString(R.string.txt_please_login));
                 }
             }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+                Function.ShareLink(UserProfileActivity.this, catId, adId, adTitle, catGroup);
+            }
         });
     }
+
+
 
     private void callAddFavorite() {
         String catId = adList.get(favPosition).getCatId();
@@ -195,7 +213,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.img_unverified_user:
+            case R.id.txt_verified:
                 ShowPopupProsper();
                 break;
             case R.id.txt_prosperId_post:
@@ -222,9 +240,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     txt_name.setText(dr.getUserDetailsModel().getUserName());
                     txt_phone.setText(dr.getUserDetailsModel().getUserPhone());
                     if (dr.getUserDetailsModel().getIsProfileVerified().equals("0")) {
-                        img_unverified_user.setVisibility(View.VISIBLE);
+                        txt_verified.setVisibility(View.VISIBLE);
                     } else {
-                        img_unverified_user.setVisibility(View.GONE);
+                        txt_verified.setVisibility(View.GONE);
                     }
                     Glide.with(UserProfileActivity.this)
                             .load(dr.getUserDetailsModel().getUserPhoto())
@@ -265,10 +283,10 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                 if (dr.isStatus()) {
                     if (adList.get(favPosition).getIsFavorite().equals("0")) {
                         adList.get(favPosition).setIsFavorite("1");
-                        homeAdListAdapter.notifyItemChanged(favPosition);
+//                        homeAdListAdapter.notifyItemChanged(favPosition);
                     } else {
                         adList.get(favPosition).setIsFavorite("0");
-                        homeAdListAdapter.notifyItemChanged(favPosition);
+//                        homeAdListAdapter.notifyItemChanged(favPosition);
                     }
                     Function.CustomMessage(UserProfileActivity.this, dr.getMessage());
                     Intent intent = new Intent();

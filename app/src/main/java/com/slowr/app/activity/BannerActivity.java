@@ -2,9 +2,13 @@ package com.slowr.app.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.slowr.app.R;
 import com.slowr.app.adapter.BannerListAdapter;
@@ -43,9 +48,22 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayoutManager listManager;
     ArrayList<BannerItemModel> bannerList = new ArrayList<BannerItemModel>();
     BannerListAdapter bannerListAdapter;
+
+    TextView txt_preview_title;
+    TextView txt_prosperId;
+    TextView txt_preview_description;
+    ImageView img_banner_preview;
+    Button btn_edit;
+    Button btn_delete;
+    LinearLayout layout_banner_bg;
+    LinearLayout layout_preview;
+    FrameLayout layout_list;
+
     private Function _fun = new Function();
 
     int EDIT_CODE = 1299;
+    String bannerId = "";
+    boolean isPreview = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +78,17 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         rc_banner = findViewById(R.id.rc_banner);
         fb_add_banner = findViewById(R.id.fb_add_banner);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
+        txt_preview_title = findViewById(R.id.txt_preview_title);
+        txt_prosperId = findViewById(R.id.txt_prosperId);
+        txt_preview_description = findViewById(R.id.txt_preview_description);
+        img_banner_preview = findViewById(R.id.img_banner_preview);
+        btn_edit = findViewById(R.id.btn_edit);
+        btn_delete = findViewById(R.id.btn_delete);
+        layout_preview = findViewById(R.id.layout_preview);
+        layout_list = findViewById(R.id.layout_list);
+        layout_banner_bg = findViewById(R.id.layout_banner_bg);
+
+
         listManager = new LinearLayoutManager(BannerActivity.this, RecyclerView.VERTICAL, false);
         rc_banner.setLayoutManager(listManager);
         rc_banner.setItemAnimator(new DefaultItemAnimator());
@@ -70,6 +99,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         txt_page_title.setText(getString(R.string.txt_banner));
         img_back.setOnClickListener(this);
         fb_add_banner.setOnClickListener(this);
+        btn_edit.setOnClickListener(this);
+        btn_delete.setOnClickListener(this);
         getBannerList(true);
         callBackFunction();
     }
@@ -78,11 +109,26 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         bannerListAdapter.setCallback(new BannerListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                String id = bannerList.get(pos).getBannerId();
-                Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
-                i.putExtra("BannerID", id);
-                i.putExtra("Type", "2");
-                startActivityForResult(i, EDIT_CODE);
+                bannerId = bannerList.get(pos).getBannerId();
+                layout_list.setVisibility(View.GONE);
+                layout_preview.setVisibility(View.VISIBLE);
+                isPreview = true;
+                txt_preview_title.setText(bannerList.get(pos).getBannerTitle());
+                txt_preview_description.setText(bannerList.get(pos).getDescription());
+                txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+                layout_banner_bg.setBackgroundColor(Color.parseColor(bannerList.get(pos).getColorCode()));
+                Glide.with(BannerActivity.this)
+                        .load(bannerList.get(pos).getBannerImage())
+                        .placeholder(R.drawable.ic_default_vertical)
+                        .error(R.drawable.ic_default_vertical)
+                        .into(img_banner_preview);
+                if (bannerList.get(pos).getBannerStatus().equals("1")) {
+                    btn_edit.setText(getString(R.string.txt_edit));
+                } else if (bannerList.get(pos).getBannerStatus().equals("3")) {
+                    btn_edit.setText(getString(R.string.txt_renew));
+                } else {
+                    btn_edit.setText(getString(R.string.txt_edit));
+                }
             }
 
             @Override
@@ -107,7 +153,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
 
                         if (_fun.isInternetAvailable(BannerActivity.this)) {
 
-                            RetrofitClient.getClient().create(Api.class).getBannerDelete( id, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            RetrofitClient.getClient().create(Api.class).getBannerDelete(id, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                                     .enqueue(new RetrofitCallBack(BannerActivity.this, deleteAd, true));
 
                         } else {
@@ -194,6 +240,9 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             try {
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
+                    isPreview = false;
+                    layout_list.setVisibility(View.VISIBLE);
+                    layout_preview.setVisibility(View.GONE);
                     getBannerList(true);
                 } else {
                     Function.CustomMessage(BannerActivity.this, dr.getMessage());
@@ -210,24 +259,51 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             call.cancel();
         }
     };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_back:
-                finish();
+                if (isPreview) {
+                    isPreview = false;
+                    layout_list.setVisibility(View.VISIBLE);
+                    layout_preview.setVisibility(View.GONE);
+                } else {
+                    finish();
+                }
+
                 break;
             case R.id.fb_add_banner:
                 Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
                 i.putExtra("Type", "1");
                 startActivityForResult(i, EDIT_CODE);
                 break;
+            case R.id.btn_edit:
+                Intent e = new Intent(BannerActivity.this, AddBannerActivity.class);
+                e.putExtra("BannerID", bannerId);
+                e.putExtra("Type", "2");
+                startActivityForResult(e, EDIT_CODE);
+//                isPreview = false;
+//                layout_list.setVisibility(View.VISIBLE);
+//                layout_preview.setVisibility(View.GONE);
+                break;
+            case R.id.btn_delete:
+                DeleteBanner(bannerId);
+                break;
         }
     }
 
     @Override
     public void onBackPressed() {
-        finish();
-        super.onBackPressed();
+        if (isPreview) {
+            isPreview = false;
+            layout_list.setVisibility(View.VISIBLE);
+            layout_preview.setVisibility(View.GONE);
+        } else {
+            finish();
+            super.onBackPressed();
+        }
+
     }
 
     @Override
@@ -238,7 +314,9 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 getBannerList(true);
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
-
+                isPreview = false;
+                layout_list.setVisibility(View.VISIBLE);
+                layout_preview.setVisibility(View.GONE);
             }
         }
     }

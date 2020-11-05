@@ -34,6 +34,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
         TextView txt_left_message;
         TextView txt_left_time;
         TextView date_time;
+        TextView txt_chat_warning;
         LinearLayout layout_txt_right;
         LinearLayout layout_txt_left;
         LinearLayout date_container;
@@ -52,6 +53,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
             img_right_chat = view.findViewById(R.id.img_right_chat);
             img_left_chat = view.findViewById(R.id.img_left_chat);
             date_time = view.findViewById(R.id.date_time);
+            txt_chat_warning = view.findViewById(R.id.txt_chat_warning);
             img_right_chat.setOnClickListener(this);
             img_left_chat.setOnClickListener(this);
         }
@@ -85,7 +87,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         ChatItemModel chatModel = chatList.get(position);
-
+        if (position == 0) {
+            holder.txt_chat_warning.setVisibility(View.VISIBLE);
+        } else {
+            holder.txt_chat_warning.setVisibility(View.GONE);
+        }
         String userId = Sessions.getSession(Constant.UserId, ctx);
         if (userId.equals(chatModel.getUserId())) {
             holder.layout_txt_right.setVisibility(View.VISIBLE);

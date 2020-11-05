@@ -156,7 +156,7 @@
                 style="@style/txt_create_post"
                 android:layout_marginTop="@dimen/size_fifteen"
                 android:fontFamily="@font/nunito_regular"
-                android:text="@string/txt_sample_guide"
+                android:text=""
                 android:textSize="@dimen/size_sixteen" />
 
             <LinearLayout
@@ -183,7 +183,16 @@
                         style="@style/attribute_content"
                         android:layout_weight="1"
                         android:hint="@string/txt_select_city"
+                        android:visibility="visible"
                         android:singleLine="true" />
+                    <com.slowr.chips.ChipsInputLayout
+                        android:id="@+id/chips_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/txt_select_city"
+                        android:textColorHint="#757575"
+                        android:visibility="gone"
+                        android:textColor="#212121"/>
 
                     <ImageView
                         android:layout_width="15dp"

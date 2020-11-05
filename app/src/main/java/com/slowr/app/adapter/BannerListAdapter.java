@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +29,7 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
         public TextView txt_active_status;
         public Button btn_edit;
         public Button btn_delete;
+        LinearLayout layout_root;
 
         public MyViewHolder(View view) {
             super(view);
@@ -37,14 +39,16 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
             btn_edit = view.findViewById(R.id.btn_edit);
             btn_delete = view.findViewById(R.id.btn_delete);
             txt_active_status = view.findViewById(R.id.txt_active_status);
+            layout_root = view.findViewById(R.id.layout_root);
             btn_edit.setOnClickListener(this);
             btn_delete.setOnClickListener(this);
+            layout_root.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.btn_edit:
+                case R.id.layout_root:
                     callback.itemClick(getAdapterPosition());
                     break;
 
@@ -103,8 +107,9 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
     }
 
     public interface Callback {
-        public void itemClick(int pos);
-        public void itemDelete(int pos);
+        void itemClick(int pos);
+
+        void itemDelete(int pos);
 
     }
 }

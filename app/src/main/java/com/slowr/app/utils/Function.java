@@ -37,6 +37,11 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.gson.Gson;
 import com.slowr.app.R;
 
@@ -59,7 +64,8 @@ public class Function {
     private Typeface normaltext = null, boldtext = null;
     NoInternetCallBack noInternetCallBack;
     private static final int ANIMATION_DURATION = 300;
-
+    boolean result = false;
+    public String shareMessage = "";
 
     public boolean isInternetAvailable(Context cont) {
         boolean isInt = false;
@@ -114,6 +120,7 @@ public class Function {
         }
         if (!result) {
             ActivityCompat.requestPermissions(activity, Constant.Permissions2, Constant.PERMISSION_REQUEST_CODE);
+
         }
         return result;
     }
@@ -230,7 +237,7 @@ public class Function {
         if (inflater != null) {
             view = inflater.inflate(R.layout.layout_no_internet, null);
             Button btn_retry;
-            btn_retry = (Button) view.findViewById(R.id.btn_try_again);
+            btn_retry = view.findViewById(R.id.btn_try_again);
             btn_retry.setTypeface(normaltext);
 
 
@@ -266,8 +273,8 @@ public class Function {
 
     public static void CustomMessage(Activity ctx, String message) {
         LayoutInflater inflater = ctx.getLayoutInflater();
-        View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) ctx.findViewById(R.id.custom_toast_layout));
-        TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+        View layout = inflater.inflate(R.layout.layout_custom_toast, ctx.findViewById(R.id.custom_toast_layout));
+        TextView tv = layout.findViewById(R.id.txt_toast_message);
         tv.setText(message);
         Toast toast = new Toast(ctx);
         toast.setGravity(Gravity.BOTTOM, 0, 100);
@@ -291,5 +298,50 @@ public class Function {
             return;
         }
         act.startActivity(intent);
+    }
+
+    public static void ShareLink(Activity ctx, String catId, String adId, String adTitle, String catGroup) {
+
+        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://www.slowr.in/" + catId + "/" + adId))
+                .setDomainUriPrefix("https://devlink.slowr.in")
+                // Open links with this app on Android
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                // Open links with com.example.ios on iOS
+                .setIosParameters(new DynamicLink.IosParameters.Builder("com.slowr.ios.beta").build())
+                .buildShortDynamicLink()
+                .addOnCompleteListener(ctx, new OnCompleteListener<ShortDynamicLink>() {
+
+
+                    @Override
+                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                        if (task.isSuccessful()) {
+                            // Short link created
+                            Uri shortLink = task.getResult().getShortLink();
+                            Uri flowchartLink = task.getResult().getPreviewLink();
+                            Log.i("Share Link", String.valueOf(shortLink));
+                            String shareMessage;
+                            try {
+                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                shareIntent.setType("text/plain");
+                                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Slowr");
+                                if (catGroup.equals("1")) {
+                                    shareMessage = "\n" + ctx.getString(R.string.txt_rent_temp) + "\n" + adTitle + "\n";
+                                } else {
+                                    shareMessage = "\n" + ctx.getString(R.string.txt_hire_temp) + "\n" + adTitle + "\n";
+                                }
+                                shareMessage = shareMessage + shortLink;
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                                ctx.startActivity(Intent.createChooser(shareIntent, "choose one"));
+                            } catch (Exception e) {
+                                //e.toString();
+                            }
+                        } else {
+                            CustomMessage(ctx, "Oops.Try again...");
+                        }
+                    }
+                });
+
+
     }
 }

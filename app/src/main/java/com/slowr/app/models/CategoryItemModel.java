@@ -18,6 +18,9 @@ public class CategoryItemModel {
     @SerializedName("slug")
     private String slug;
 
+    @SerializedName("ad_title_label")
+    String categoryTitle;
+
     @SerializedName("sub_categories")
     private ArrayList<SubCategoryItemModel> subCategoryList;
 
@@ -61,5 +64,11 @@ public class CategoryItemModel {
         this.subCategoryList = subCategoryList;
     }
 
+    public String getCategoryTitle() {
+        return categoryTitle;
+    }
 
+    public void setCategoryTitle(String categoryTitle) {
+        this.categoryTitle = categoryTitle;
+    }
 }

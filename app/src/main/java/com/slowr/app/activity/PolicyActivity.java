@@ -1,19 +1,26 @@
 package com.slowr.app.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public class PolicyActivity extends AppCompatActivity implements View.OnClickListener {
@@ -27,12 +34,17 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DeepLink();
         setContentView(R.layout.activity_policy);
         doDeclaration();
     }
 
     private void doDeclaration() {
-        pageFrom = getIntent().getStringExtra("PageFrom");
+        if (getIntent().hasExtra("PageFrom")) {
+            pageFrom = getIntent().getStringExtra("PageFrom");
+        } else {
+            pageFrom = "1";
+        }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
         txt_terms_conditions = findViewById(R.id.txt_terms_conditions);
@@ -52,6 +64,45 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
             txt_page_title.setText(getString(R.string.nav_terms_conditions));
             getTC();
         }
+
+
+    }
+
+    private void DeepLink() {
+        DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://www.slowr.in/"))
+                .setDomainUriPrefix("https://devlink.slowr.in")
+                // Open links with this app on Android
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                // Open links with com.example.ios on iOS
+                .setIosParameters(new DynamicLink.IosParameters.Builder("com.slowr.ios.beta").build())
+                .buildDynamicLink();
+
+        Uri dynamicLinkUri = dynamicLink.getUri();
+
+        Log.i("Share Link", String.valueOf(dynamicLinkUri));
+
+
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+                    @Override
+                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                        // Get deep link from result (may be null if no link is found)
+                        Uri deepLink = null;
+                        if (pendingDynamicLinkData != null) {
+                            deepLink = pendingDynamicLinkData.getLink();
+                            Toast.makeText(getApplicationContext(), String.valueOf(deepLink), Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAG", "getDynamicLink:onFailure", e);
+                    }
+                });
     }
 
     @Override

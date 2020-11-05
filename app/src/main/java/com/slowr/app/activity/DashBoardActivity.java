@@ -46,6 +46,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     NestedScrollView layout_root;
     LinearLayout layout_no_result;
     Button btn_add_post;
+    Button btn_add_post_header;
     EditText edt_search_ad;
     SwipeRefreshLayout layout_swipe_refresh;
     AdListAdapter adListAdapter;
@@ -54,6 +55,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     int MY_POST_VIEW_CODE = 1299;
     boolean isChanges = false;
     private Function _fun = new Function();
+    String shareMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         layout_root = findViewById(R.id.layout_root);
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_add_post = findViewById(R.id.btn_add_post);
+        btn_add_post_header = findViewById(R.id.btn_add_post_header);
         edt_search_ad = findViewById(R.id.edt_search_ad);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
 
@@ -83,6 +86,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         rc_adPost.setAdapter(adListAdapter);
         img_back.setOnClickListener(this);
         btn_add_post.setOnClickListener(this);
+        btn_add_post_header.setOnClickListener(this);
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         layout_swipe_refresh.setOnRefreshListener(this);
 //        getUserDetails();
@@ -129,52 +133,6 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void callBackFunction() {
-//        adListAdapter.setCallback(new AdListAdapter.Callback() {
-//            @Override
-//            public void itemClick(int pos) {
-//                String catId = adList.get(pos).getCatId();
-//                String adId = adList.get(pos).getAdId();
-//                Intent i = new Intent(DashBoardActivity.this, AddPostActivity.class);
-//                i.putExtra("CatId", catId);
-//                i.putExtra("AdId", adId);
-//                i.putExtra("AdType", 1);
-//                startActivity(i);
-//            }
-//
-//            @Override
-//            public void deleteClick(int pos) {
-//                deletePos = pos;
-//                final String catId = adList.get(pos).getCatId();
-//                final String adId = adList.get(pos).getAdId();
-//
-//                AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
-//                        DashBoardActivity.this);
-//
-//                alertDialog2.setTitle("Delete Ad");
-//
-//                alertDialog2.setMessage("Are you sure you want delete this Ad?");
-//
-//                alertDialog2.setPositiveButton("YES",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                RetrofitClient.getClient().create(Api.class).deletePost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                                        .enqueue(new RetrofitCallBack(DashBoardActivity.this, deleteAd, true));
-//                            }
-//                        });
-//
-//                alertDialog2.setNegativeButton("NO",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//
-//                                dialog.cancel();
-//                            }
-//                        });
-//
-//                alertDialog2.show();
-//
-//
-//            }
-//        });
         adListAdapter.setCallback(new AdListAdapter.Callback() {
             @Override
             public void itemClick(AdItemModel model) {
@@ -188,21 +146,28 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
             @Override
             public void onShareClick(AdItemModel model) {
-
+                String catId = model.getCatId();
+                String adId = model.getAdId();
+                String adTitle = model.getAdTitle();
+                String catGroup = model.getCatGroup();
+                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup);
             }
 
             @Override
             public void onPromoteClick(AdItemModel model) {
                 String catId = model.getCatId();
                 String adId = model.getAdId();
+                String adTitle = model.getAdTitle();
                 Intent p = new Intent(DashBoardActivity.this, UpgradeActivity.class);
                 p.putExtra("PageFrom", "2");
                 p.putExtra("CatId", catId);
                 p.putExtra("AdId", adId);
+                p.putExtra("AdTitle", adTitle);
                 startActivityForResult(p, MY_POST_VIEW_CODE);
             }
         });
     }
+
 
     private void getAdList(boolean isLoader) {
         Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
@@ -240,18 +205,22 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 }
                 if (adList.size() == 0) {
                     layout_root.setVisibility(View.GONE);
+                    btn_add_post_header.setVisibility(View.GONE);
                     layout_no_result.setVisibility(View.VISIBLE);
                 } else {
                     layout_root.setVisibility(View.VISIBLE);
+                    btn_add_post_header.setVisibility(View.VISIBLE);
                     layout_no_result.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
                 if (adList.size() == 0) {
                     layout_root.setVisibility(View.GONE);
+                    btn_add_post_header.setVisibility(View.GONE);
                     layout_no_result.setVisibility(View.VISIBLE);
                 } else {
                     layout_root.setVisibility(View.VISIBLE);
+                    btn_add_post_header.setVisibility(View.VISIBLE);
                     layout_no_result.setVisibility(View.GONE);
                 }
 
@@ -268,9 +237,11 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
             }
             if (adList.size() == 0) {
                 layout_root.setVisibility(View.GONE);
+                btn_add_post_header.setVisibility(View.GONE);
                 layout_no_result.setVisibility(View.VISIBLE);
             } else {
                 layout_root.setVisibility(View.VISIBLE);
+                btn_add_post_header.setVisibility(View.VISIBLE);
                 layout_no_result.setVisibility(View.GONE);
             }
         }
@@ -293,6 +264,12 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 Intent p = new Intent(DashBoardActivity.this, AddPostActivity.class);
                 p.putExtra("AdType", 0);
                 startActivityForResult(p, MY_POST_VIEW_CODE);
+                break;
+
+            case R.id.btn_add_post_header:
+                Intent a = new Intent(DashBoardActivity.this, AddPostActivity.class);
+                a.putExtra("AdType", 0);
+                startActivityForResult(a, MY_POST_VIEW_CODE);
                 break;
         }
     }

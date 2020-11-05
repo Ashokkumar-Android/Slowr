@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 
 import com.slowr.app.R;
 import com.slowr.app.models.AreaItemModel;
-import com.slowr.app.models.AreaItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +45,10 @@ public class AreaAutoCompleteAdapter extends ArrayAdapter<AreaItemModel> {
                 view = inflater.inflate(resourceId, parent, false);
             }
             AreaItemModel fruit = getItem(position);
-            TextView name = (TextView) view.findViewById(R.id.txt_category_name);
-            RadioButton rb_select = (RadioButton) view.findViewById(R.id.rb_select);
+            TextView name = view.findViewById(R.id.txt_category_name);
+            RadioButton rb_select = view.findViewById(R.id.rb_select);
             rb_select.setVisibility(View.GONE);
-            name.setText(fruit.getAreaName());
+            name.setText(fruit.getAreaName().trim());
             LinearLayout linearLayout = view.findViewById(R.id.layout_root);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,7 +83,7 @@ public class AreaAutoCompleteAdapter extends ArrayAdapter<AreaItemModel> {
     }
 
     public interface Callback {
-        public void itemClick(AreaItemModel model);
+        void itemClick(AreaItemModel model);
 
 
     }
@@ -107,7 +106,7 @@ public class AreaAutoCompleteAdapter extends ArrayAdapter<AreaItemModel> {
             if (charSequence != null) {
                 suggestions.clear();
                 for (AreaItemModel fruit : tempItems) {
-                    if (fruit.getAreaName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                    if (fruit.getAreaName().toLowerCase().trim().startsWith(charSequence.toString().toLowerCase().trim())) {
                         suggestions.add(fruit);
                     }
                 }

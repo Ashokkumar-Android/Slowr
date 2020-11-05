@@ -77,19 +77,32 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
             holder.txt_price.setVisibility(View.VISIBLE);
             String price = "";
             if (movie.getAdFee().contains(".")) {
-                String tempPrice[] = movie.getAdFee().split("\\.");
+                String[] tempPrice = movie.getAdFee().split("\\.");
                 price = tempPrice[0];
             } else {
                 price = movie.getAdFee();
             }
 
             if (price.equals("0") || movie.getAdDuration().equals("Custom")) {
-                holder.txt_price.setText(movie.getAdDuration());
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
+
             } else {
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
-        }else {
-            holder.txt_price.setVisibility(View.GONE);
+        } else {
+            if (movie.getAdDuration().equals("Custom")) {
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
+            } else {
+                holder.txt_price.setVisibility(View.GONE);
+            }
         }
         if (movie.getAdPromotion().equals("1")) {
             holder.layout_promoted.setVisibility(View.VISIBLE);
@@ -150,7 +163,7 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
     }
 
     public interface Callback {
-        public void itemClick(AdItemModel model);
+        void itemClick(AdItemModel model);
 
 
     }

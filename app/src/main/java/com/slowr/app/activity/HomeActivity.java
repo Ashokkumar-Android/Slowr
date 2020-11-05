@@ -25,7 +25,9 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -37,6 +39,7 @@ import com.slowr.app.adapter.FilterOptionAdapter;
 import com.slowr.app.adapter.FilterSelectAdapter;
 import com.slowr.app.adapter.HomeAdGridAdapter;
 import com.slowr.app.adapter.HomeAdListAdapter;
+import com.slowr.app.adapter.HomeBannerAdapter;
 import com.slowr.app.adapter.HomeCustomListAdapter;
 import com.slowr.app.adapter.ProductCategoryListAdapter;
 import com.slowr.app.adapter.SearchSuggistionAdapter;
@@ -85,6 +88,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     RecyclerView rc_service_list;
     RecyclerView rc_ad_list;
     RecyclerView rc_home_ad_list;
+    RecyclerView rc_banner;
 
     ProductCategoryListAdapter productCategoryListAdapter;
     ServiceCategoryListAdapter serviceCategoryListAdapter;
@@ -115,6 +119,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     String sortById = "";
     String catId = "";
     String productType = "";
+    String shareMessage = "";
 
     HashMap<String, Object> params = new HashMap<String, Object>();
 
@@ -130,6 +135,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     FilterOptionAdapter filterOptionAdapter;
     FilterSelectAdapter filterSelectAdapter;
     SearchSuggistionAdapter searchSuggistionAdapter;
+    HomeBannerAdapter homeBannerAdapter;
     boolean isFilterClear = false;
     int EDIT_AD_VIEW = 1266;
     boolean isRegister = false;
@@ -143,9 +149,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        FrameLayout contentFrameLayout = findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.content_home, contentFrameLayout);
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.getMenu().getItem(0).setChecked(true);
         doDeclaration();
     }
@@ -172,6 +178,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_requirement_ad = findViewById(R.id.layout_requirement_ad);
         layout_list_filter = findViewById(R.id.layout_list_filter);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
+        rc_banner = findViewById(R.id.rc_banner);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -198,11 +205,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         rc_home_ad_list.setLayoutManager(linearLayoutManager3);
         rc_home_ad_list.setItemAnimator(new DefaultItemAnimator());
         homeCustomListAdapter = new HomeCustomListAdapter(homeAdList, getApplicationContext());
+
         rc_home_ad_list.setAdapter(homeCustomListAdapter);
         sortByAdapter = new SortByAdapter(sortByList, getApplicationContext());
         filterOptionAdapter = new FilterOptionAdapter(filterList, getApplicationContext());
         filterSelectAdapter = new FilterSelectAdapter(filterSelectList, getApplicationContext());
         searchSuggistionAdapter = new SearchSuggistionAdapter(searchSuggestionList, getApplicationContext());
+
+//        LinearLayoutManager linearLayoutManager5 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
+//        rc_banner.setLayoutManager(linearLayoutManager5);
+//        rc_banner.setItemAnimator(new DefaultItemAnimator());
+//        homeBannerAdapter = new HomeBannerAdapter(bannerList, HomeActivity.this);
+//        rc_banner.setAdapter(homeBannerAdapter);
+//        SnapHelper snapHelper = new PagerSnapHelper();
+//        snapHelper.attachToRecyclerView(rc_banner);
+
+
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         img_back.setOnClickListener(this);
         img_list.setOnClickListener(this);
@@ -266,7 +284,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
 
     private void CallBackFunction() {
-
         homeAdGridAdapter.setCallback(new HomeAdGridAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
@@ -302,6 +319,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
 
                 }
+            }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup);
             }
         });
 
@@ -342,6 +368,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
                 }
 
+            }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup);
             }
         });
 
@@ -433,6 +468,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         });
     }
 
+
     private void callAddFavorite() {
         String catId = adList.get(favPosition).getCatId();
         String adId = adList.get(favPosition).getAdId();
@@ -445,10 +481,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false));
         } else {
             RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false));
         }
     }
 
@@ -467,6 +503,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void setBanner() {
+
         bannerAdapter = new BannerAdapter(HomeActivity.this, bannerList);
         vp_banner.setAdapter(bannerAdapter);
         // Auto start of viewpager
@@ -644,6 +681,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     serviceCategoryListAdapter.notifyDataSetChanged();
                     homeCustomListAdapter.notifyDataSetChanged();
                     bannerAdapter.notifyDataSetChanged();
+//                    homeBannerAdapter.notifyDataSetChanged();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -747,11 +785,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Function.CustomMessage(HomeActivity.this, dr.getMessage());
                 }
                 adList.get(favPosition).setProgress(false);
-                if (isGrid) {
-                    homeAdGridAdapter.notifyItemChanged(favPosition);
-                } else {
-                    homeAdListAdapter.notifyItemChanged(favPosition);
-                }
+//                if (isGrid) {
+//                    homeAdGridAdapter.notifyItemChanged(favPosition);
+//                } else {
+//                    homeAdListAdapter.notifyItemChanged(favPosition);
+//                }
                 Function.CustomMessage(HomeActivity.this, dr.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -782,8 +820,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 if (isGrid) {
                     rc_ad_list.setLayoutManager(listManager);
                     rc_ad_list.setAdapter(homeAdListAdapter);
-                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
-                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
+                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
+                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
                     isGrid = false;
                 }
                 break;
@@ -791,8 +829,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 if (!isGrid) {
                     rc_ad_list.setLayoutManager(gridManager);
                     rc_ad_list.setAdapter(homeAdGridAdapter);
-                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
-                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
                     isGrid = true;
                 }
                 break;
@@ -806,6 +844,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
                     Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 2);
+                    p.putExtra("ParId", catId);
                     startActivity(p);
                 } else {
                     Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
@@ -1111,8 +1150,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void onRestart() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(0).setChecked(true);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+//        navigationView.getMenu().getItem(0).setChecked(true);
         super.onRestart();
     }
 

@@ -27,7 +27,6 @@ import androidx.annotation.IntDef;
 import androidx.fragment.app.FragmentActivity;
 
 import com.slowr.matisse.R;
-import com.slowr.matisse.internal.ui.widget.IncapableDialog;
 
 import java.lang.annotation.Retention;
 
@@ -83,9 +82,9 @@ public class IncapableCause {
 
                 LayoutInflater inflater = ((FragmentActivity) context).getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) ((FragmentActivity) context).findViewById(R.id.custom_toast_layout));
-                TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
                 tv.setText(cause.mMessage);
-                Toast toast = new Toast(((FragmentActivity) context));
+                Toast toast = new Toast(context);
                 toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.setView(layout);
@@ -96,9 +95,9 @@ public class IncapableCause {
 //                Toast.makeText(context, cause.mMessage, Toast.LENGTH_SHORT).show();
                 LayoutInflater inflater1 = ((FragmentActivity) context).getLayoutInflater();
                 View layout1 = inflater1.inflate(R.layout.layout_custom_toast, (ViewGroup) ((FragmentActivity) context).findViewById(R.id.custom_toast_layout));
-                TextView tv1 = (TextView) layout1.findViewById(R.id.txt_toast_message);
+                TextView tv1 = layout1.findViewById(R.id.txt_toast_message);
                 tv1.setText(cause.mMessage);
-                Toast toast1 = new Toast(((FragmentActivity) context));
+                Toast toast1 = new Toast(context);
                 toast1.setGravity(Gravity.CENTER, 0, 100);
                 toast1.setDuration(Toast.LENGTH_SHORT);
                 toast1.setView(layout1);

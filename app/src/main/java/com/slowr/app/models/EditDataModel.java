@@ -7,7 +7,10 @@ import java.util.ArrayList;
 public class EditDataModel {
 
     @SerializedName("cat_group")
-    private int catGroup;
+    private String catGroup;
+
+    @SerializedName("ad_title_label")
+    String categoryTitle;
 
     @SerializedName("SuperParent")
     private String parentTitle;
@@ -45,11 +48,11 @@ public class EditDataModel {
     @SerializedName("path")
     public String urlPath;
 
-    public int getCatGroup() {
+    public String getCatGroup() {
         return catGroup;
     }
 
-    public void setCatGroup(int catGroup) {
+    public void setCatGroup(String catGroup) {
         this.catGroup = catGroup;
     }
 
@@ -147,5 +150,13 @@ public class EditDataModel {
 
     public void setChatId(String chatId) {
         this.chatId = chatId;
+    }
+
+    public String getCategoryTitle() {
+        return categoryTitle;
+    }
+
+    public void setCategoryTitle(String categoryTitle) {
+        this.categoryTitle = categoryTitle;
     }
 }

@@ -57,7 +57,6 @@ import com.slowr.matisse.internal.ui.adapter.AlbumMediaAdapter;
 import com.slowr.matisse.internal.ui.adapter.AlbumsAdapter;
 import com.slowr.matisse.internal.ui.widget.AlbumsSpinner;
 import com.slowr.matisse.internal.ui.widget.CheckRadioView;
-import com.slowr.matisse.internal.ui.widget.IncapableDialog;
 import com.slowr.matisse.internal.utils.MediaStoreCompat;
 import com.slowr.matisse.internal.utils.PathUtils;
 import com.slowr.matisse.internal.utils.PhotoMetadataUtils;
@@ -122,7 +121,7 @@ public class MatisseActivity extends AppCompatActivity implements
             mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
@@ -133,8 +132,8 @@ public class MatisseActivity extends AppCompatActivity implements
         ta.recycle();
         navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
-        mButtonPreview = (TextView) findViewById(R.id.button_preview);
-        mButtonApply = (TextView) findViewById(R.id.button_apply);
+        mButtonPreview = findViewById(R.id.button_preview);
+        mButtonApply = findViewById(R.id.button_apply);
         mButtonPreview.setOnClickListener(this);
         mButtonApply.setOnClickListener(this);
         mContainer = findViewById(R.id.container);
@@ -293,7 +292,7 @@ public class MatisseActivity extends AppCompatActivity implements
 //                        IncapableDialog.class.getName());
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
-                TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
                 tv.setText( getString(R.string.error_over_original_size, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
                 toast.setGravity(Gravity.CENTER, 0, 100);
@@ -350,7 +349,7 @@ public class MatisseActivity extends AppCompatActivity implements
 //                        IncapableDialog.class.getName());
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
-                TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
                 tv.setText( getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
                 toast.setGravity(Gravity.CENTER, 0, 100);

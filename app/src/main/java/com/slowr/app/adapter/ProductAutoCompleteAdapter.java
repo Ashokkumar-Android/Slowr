@@ -45,10 +45,10 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemMode
                 view = inflater.inflate(resourceId, parent, false);
             }
             SubCategoryItemModel fruit = getItem(position);
-            TextView name = (TextView) view.findViewById(R.id.txt_category_name);
-            RadioButton rb_select = (RadioButton) view.findViewById(R.id.rb_select);
+            TextView name = view.findViewById(R.id.txt_category_name);
+            RadioButton rb_select = view.findViewById(R.id.rb_select);
             rb_select.setVisibility(View.GONE);
-            name.setText(fruit.getSubcategoryName());
+            name.setText(fruit.getSubcategoryName().trim());
             LinearLayout linearLayout = view.findViewById(R.id.layout_root);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,7 +83,7 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemMode
     }
 
     public interface Callback {
-        public void itemClick(SubCategoryItemModel model);
+        void itemClick(SubCategoryItemModel model);
 
 
     }
@@ -106,7 +106,7 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemMode
             if (charSequence != null) {
                 suggestions.clear();
                 for (SubCategoryItemModel fruit : tempItems) {
-                    if (fruit.getSubcategoryName().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                    if (fruit.getSubcategoryName().toLowerCase().trim().startsWith(charSequence.toString().toLowerCase().trim())) {
                         suggestions.add(fruit);
                     }
                 }

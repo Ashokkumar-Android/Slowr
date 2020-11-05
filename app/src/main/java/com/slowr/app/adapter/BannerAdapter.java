@@ -20,8 +20,6 @@ import java.util.ArrayList;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
-
 
 public class BannerAdapter extends PagerAdapter {
 
@@ -63,7 +61,7 @@ public class BannerAdapter extends PagerAdapter {
         txt_prosperId.setText(bannerItemModel.getProsperId());
         txt_banner_content.setText(bannerItemModel.getBannerTitle());
         txt_banner_price.setText(bannerItemModel.getDescription());
-        layout_root.setBackgroundColor(Color.parseColor(bannerItemModel.getColorCode()));
+//        layout_root.setBackgroundColor(Color.parseColor(bannerItemModel.getColorCode()));
         Glide.with(context)
                 .load(bannerItemModel.getBannerImage())
                 .error(R.drawable.ic_default_horizontal)
@@ -77,12 +75,12 @@ public class BannerAdapter extends PagerAdapter {
                     callBack.onItemClick(position);
             }
         });
-//        Glide.with(context)
-//                .load(bannerItemModel.getBannerImage())
-//                .transform(new BlurTransformation())
-//                .error(R.drawable.ic_default_horizontal)
-//                .placeholder(R.drawable.ic_default_horizontal)
-//                .into(defult_one);
+        Glide.with(context)
+                .load(bannerItemModel.getBannerImage())
+                .transform(new BlurTransformation())
+                .error(R.drawable.ic_default_horizontal)
+                .placeholder(R.drawable.ic_default_horizontal)
+                .into(defult_one);
 
         return imageLayout;
     }
@@ -106,7 +104,7 @@ public class BannerAdapter extends PagerAdapter {
     }
 
     public interface CallBack {
-        public void onItemClick(int pos);
+        void onItemClick(int pos);
     }
 
 }

@@ -77,6 +77,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     Button btn_profile;
     Button btn_go_back;
     TextView txt_prosper_id;
+    TextView txt_ad_title;
     ImageView img_fancy_content;
 
     LinearLayoutManager listManager;
@@ -93,6 +94,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     String paymentId = "";
     String selectedId = "";
     String pageFrom = "";
+    String adTitle = "";
     private Function _fun = new Function();
     HashMap<String, String> params = new HashMap<String, String>();
     ArrayList<ProsperIdItemModel> prosperIdList = new ArrayList<>();
@@ -112,6 +114,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         if (pageFrom.equals("2")) {
             catId = getIntent().getStringExtra("CatId");
             adId = getIntent().getStringExtra("AdId");
+            adTitle = getIntent().getStringExtra("AdTitle");
         }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
@@ -135,6 +138,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         img_fancy_content = findViewById(R.id.img_fancy_content);
         btn_go_back = findViewById(R.id.btn_go_back);
         layout_error = findViewById(R.id.layout_error);
+        txt_ad_title = findViewById(R.id.txt_ad_title);
 
 
         listManager = new LinearLayoutManager(UpgradeActivity.this, RecyclerView.VERTICAL, false);
@@ -455,12 +459,15 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             options.put("amount", "100");
 
             JSONObject preFill = new JSONObject();
+            preFill.put("email", "contact@slowr.in");
+            preFill.put("contact", "9876543210");
+            JSONObject ReadOnly = new JSONObject();
             JSONObject themeStyle = new JSONObject();
-            preFill.put("email", Sessions.getSession(Constant.UserEmail, getApplicationContext()));
-            preFill.put("contact", Sessions.getSession(Constant.UserPhone, getApplicationContext()));
+            ReadOnly.put("email", "true");
+            ReadOnly.put("contact", "true");
             themeStyle.put("color", "#0F4C81");
-
             options.put("prefill", preFill);
+            options.put("readonly", ReadOnly);
             options.put("theme", themeStyle);
 
             co.open(activity, options);
@@ -578,9 +585,11 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     if (promotionType.equals("2")) {
+                        txt_ad_title.setText(adTitle + "-" + getString(R.string.promote_content_one));
                         layout_upgrade.setVisibility(View.GONE);
                         layout_success.setVisibility(View.VISIBLE);
                     } else if (promotionType.equals("3")) {
+                        txt_ad_title.setText(adTitle + "-" + getString(R.string.promote_content_one));
                         layout_upgrade.setVisibility(View.GONE);
                         layout_success.setVisibility(View.VISIBLE);
                     } else {
@@ -775,6 +784,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
+
     public void ShowPopupSuccess(String mesg) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_post_success, null);

@@ -4,6 +4,19 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:orientation="vertical">
+    <TextView
+        android:id="@+id/txt_chat_warning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_ten"
+        android:padding="@dimen/size_fifteen"
+        android:background="@drawable/bg_chat_top"
+        android:fontFamily="@font/nunito_regular"
+        android:textColor="@color/color_black"
+        android:textSize="@dimen/size_fifteen"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/chat_top_message"/>
 
     <LinearLayout
         android:id="@+id/date_container"

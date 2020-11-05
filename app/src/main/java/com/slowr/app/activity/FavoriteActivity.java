@@ -1,6 +1,7 @@
 package com.slowr.app.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.slowr.app.R;
 import com.slowr.app.adapter.HomeAdListAdapter;
 import com.slowr.app.api.Api;
@@ -33,7 +36,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class FavoriteActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
+public class FavoriteActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView rc_favorite;
     TextView txt_page_title;
@@ -46,11 +49,12 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
     ArrayList<AdItemModel> adList = new ArrayList<>();
     LinearLayoutManager listManager;
     HashMap<String, Object> params = new HashMap<String, Object>();
-///dgdfg
+    ///dgdfg
     int favPosition = 0;
     int VIEW_POST_CODE = 1299;
     boolean isChange = false;
     private Function _fun = new Function();
+    String shareMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,8 +131,19 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
                 }
             }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup);
+            }
         });
     }
+
+
 
     private void callAddFavorite() {
         String catId = adList.get(favPosition).getCatId();

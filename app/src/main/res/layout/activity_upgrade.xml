@@ -402,9 +402,11 @@
                     android:src="@drawable/ic_success" />
 
                 <TextView
+                    android:id="@+id/txt_ad_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"
+                    android:gravity="center"
                     android:fontFamily="@font/nunito_regular"
                     android:text="@string/promote_content_one"
                     android:textColor="@color/color_black"

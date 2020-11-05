@@ -32,7 +32,14 @@
                     <androidx.viewpager.widget.ViewPager
                         android:id="@+id/vp_banner"
                         android:layout_width="match_parent"
-                        android:layout_height="130dp"/>
+                        android:layout_height="140dp"
+                        android:visibility="visible"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rc_banner"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="140dp" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -156,7 +163,7 @@
                                 android:background="@drawable/circle_ripple_effect"
                                 android:padding="8dp"
                                 android:src="@drawable/ic_list_blue"
-                                android:tint="@color/colorPrimary" />
+                                android:tint="@color/txt_orange" />
 
                             <ImageView
                                 android:id="@+id/img_grid"
@@ -167,7 +174,7 @@
                                 android:background="@drawable/circle_ripple_effect"
                                 android:padding="8dp"
                                 android:src="@drawable/ic_square_blue"
-                                android:tint="@color/txt_orange" />
+                                android:tint="@color/colorPrimary" />
 
                             <LinearLayout
                                 android:id="@+id/layout_filter"

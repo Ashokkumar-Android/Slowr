@@ -2,8 +2,10 @@ package com.slowr.app.activity;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,8 +25,11 @@ import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +45,7 @@ import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.BannerDetailsModel;
+import com.slowr.app.models.CityChipModel;
 import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.ColorModel;
 import com.slowr.app.models.DefaultResponse;
@@ -48,6 +54,7 @@ import com.slowr.app.models.UploadImageModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
+import com.slowr.chips.ChipsInputLayout;
 import com.slowr.matisse.Matisse;
 import com.slowr.matisse.MimeType;
 import com.slowr.matisse.engine.impl.GlideEngine;
@@ -142,6 +149,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     String paymentId = "";
     boolean changeDeductedAmount = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -200,6 +208,9 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         rc_list.setItemAnimator(new DefaultItemAnimator());
         cityListAdapter = new CityMultiSelectAdapter(cityList, getApplicationContext());
         rc_list.setAdapter(cityListAdapter);
+
+
+
         txt_page_title.setText(getString(R.string.txt_banner));
         txt_page_action.setText(getString(R.string.txt_ok));
         txt_page_action.setVisibility(View.GONE);
@@ -374,7 +385,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        String contentTwo = "<font color=#000000>Banner Ad posted\nLocation\n</font> <font color=#F2672E>" + cityName + "</font> <font color=#000000>\nduration\n</font><font color=#F2672E>" + totalDays + " days</font>";
+        String contentTwo = "<font color=#000000>Banner Ad posted\nCity\n</font> <font color=#F2672E>" + cityName + "</font> <font color=#000000>\nduration\n</font><font color=#F2672E>" + totalDays + " days</font>";
         contentTwo = contentTwo.replace("\n", "<br>");
         txt_summary_content.setText(Html.fromHtml(contentTwo));
 
@@ -521,7 +532,6 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             return;
         }
         if (!Type.equals("2") && !isRenew) {
-
             if (imgPath.equals("")) {
                 Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_upload_banner_image));
                 return;
@@ -667,12 +677,12 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         try {
             final Calendar c = Calendar.getInstance();
             if (type.equals("1") && !adStartDate.equals("")) {
-                String sDate[] = adStartDate.split("-");
+                String[] sDate = adStartDate.split("-");
                 c.set(Calendar.YEAR, Integer.valueOf(sDate[0]));
                 c.set(Calendar.MONTH, Integer.valueOf(sDate[1]) - 1);
                 c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(sDate[2]));
             } else if (type.equals("2") && !adEndDate.equals("")) {
-                String sDate[] = adEndDate.split("-");
+                String[] sDate = adEndDate.split("-");
                 c.set(Calendar.YEAR, Integer.valueOf(sDate[0]));
                 c.set(Calendar.MONTH, Integer.valueOf(sDate[1]) - 1);
                 c.set(Calendar.DAY_OF_MONTH, Integer.valueOf(sDate[2]));
@@ -840,7 +850,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                                 cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), false));
                             }
                         } else {
-                            String cIds[] = cityId.split(",");
+                            String[] cIds = cityId.split(",");
                             for (int s = 0; s < cIds.length; s++) {
                                 if (dr.getEditBannerDataModel().getCityList().get(i).getCityId().equals(cIds[s])) {
                                     cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), true));
@@ -913,7 +923,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                     colorCode = colorList.get(0).getImgURL();
                     layout_banner_bg.setBackgroundColor(Color.parseColor(colorCode));
                     view_color.setBackgroundColor(Color.parseColor(colorCode));
-
+                    txt_guid_line.setText(dr.getColorItemModel().getGuideLines());
                     cityList.clear();
                     cityList.addAll(dr.getColorItemModel().getCityList());
                     cityListAdapter.notifyDataSetChanged();
@@ -975,10 +985,37 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             layout_preview.setVisibility(View.GONE);
             isPreview = false;
         } else {
-            finish();
-            super.onBackPressed();
+            if (checkData() && !Type.equals("2") && !isRenew) {
+                WarningPopup();
+            } else {
+                finish();
+                super.onBackPressed();
+            }
         }
 
+    }
+
+    public boolean checkData() {
+        return !edt_banner_title.getText().toString().equals("") || !edt_description.getText().toString().equals("") || !adStartDate.equals("") || !adEndDate.equals("") || !cityId.equals("") || !(imgPath.equals(""));
+    }
+
+    private void WarningPopup() {
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
+                AddBannerActivity.this);
+        alertDialog2.setMessage(getString(R.string.ad_discard));
+        alertDialog2.setPositiveButton("DISCARD",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+        alertDialog2.setNegativeButton("CANCEL",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        alertDialog2.show();
     }
 
     @Override
@@ -1051,4 +1088,41 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             Log.e("TAG", "Exception in onPaymentError", e);
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean result = false;
+        for (int i = 0; i < Constant.Permissions.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(AddBannerActivity.this, Constant.Permissions[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if (result) {
+            MatisseActivity.PAGE_FROM = 2;
+            Matisse.from(AddBannerActivity.this)
+                    .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
+//                            .choose(MimeType.of(MimeType.GIF), false)
+//                            .choose(MimeType.ofAll())
+
+                    .countable(true)
+                    .capture(true)
+                    .theme(R.style.Matisse_Dracula)
+                    .captureStrategy(
+                            new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
+                    .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
+                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                    .thumbnailScale(0.85f)
+                    .imageEngine(new GlideEngine())
+                    .maxSelectable(1)
+                    .showSingleMediaType(true)
+                    .forResult(50);
+        }
+    }
+
+
 }

@@ -2,8 +2,8 @@ package com.slowr.app.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,7 +27,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.gson.JsonArray;
+import com.slowr.app.BuildConfig;
 import com.slowr.app.R;
 import com.slowr.app.adapter.FilterOptionAdapter;
 import com.slowr.app.adapter.FilterSelectAdapter;
@@ -112,6 +115,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     boolean isLoading = false;
+    String shareMessage ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -387,6 +391,16 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
                 }
             }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+//                ShareLink(catId, adId, adTitle,catGroup);
+                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup);
+            }
         });
 
         homeAdListAdapter.setCallback(new HomeAdListAdapter.Callback() {
@@ -413,9 +427,20 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
                 }
             }
+
+            @Override
+            public void onShareClick(int pos) {
+                String catId = adList.get(pos).getCatId();
+                String adId = adList.get(pos).getAdId();
+                String adTitle = adList.get(pos).getAdTitle();
+                String catGroup = adList.get(pos).getCatGroup();
+                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup);
+            }
         });
 
     }
+
+
 
     private void callAddFavorite() {
         final String catId = adList.get(favPosition).getCatId();
@@ -610,11 +635,11 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
                 }
                 adList.get(favPosition).setProgress(false);
-                if (isGrid) {
-                    homeAdGridAdapter.notifyItemChanged(favPosition);
-                } else {
-                    homeAdListAdapter.notifyItemChanged(favPosition);
-                }
+//                if (isGrid) {
+//                    homeAdGridAdapter.notifyItemChanged(favPosition);
+//                } else {
+//                    homeAdListAdapter.notifyItemChanged(favPosition);
+//                }
                 isChanges = true;
 
             } catch (Exception e) {
@@ -658,8 +683,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 if (isGrid) {
                     rc_ad_list.setLayoutManager(listManager);
                     rc_ad_list.setAdapter(homeAdListAdapter);
-                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
-                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
+                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
+                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
                     isGrid = false;
                 }
                 break;
@@ -667,8 +692,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 if (!isGrid) {
                     rc_ad_list.setLayoutManager(gridManager);
                     rc_ad_list.setAdapter(homeAdGridAdapter);
-                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
-                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+                    img_list.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary));
+                    img_grid.setColorFilter(ContextCompat.getColor(this, R.color.txt_orange));
                     isGrid = true;
                 }
                 break;
@@ -681,6 +706,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             case R.id.btn_requirement_ad:
                 Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
                 p.putExtra("AdType", 2);
+                p.putExtra("ParId", "");
                 startActivity(p);
                 break;
         }

@@ -42,7 +42,6 @@ import com.slowr.matisse.internal.model.SelectedItemCollection;
 import com.slowr.matisse.internal.ui.adapter.PreviewPagerAdapter;
 import com.slowr.matisse.internal.ui.widget.CheckRadioView;
 import com.slowr.matisse.internal.ui.widget.CheckView;
-import com.slowr.matisse.internal.ui.widget.IncapableDialog;
 import com.slowr.matisse.internal.utils.PhotoMetadataUtils;
 import com.slowr.matisse.internal.utils.Platform;
 import com.slowr.matisse.listener.OnFragmentInteractionListener;
@@ -103,17 +102,17 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             mSelectedCollection.onCreate(savedInstanceState);
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
-        mButtonBack = (TextView) findViewById(R.id.button_back);
-        mButtonApply = (TextView) findViewById(R.id.button_apply);
-        mSize = (TextView) findViewById(R.id.size);
+        mButtonBack = findViewById(R.id.button_back);
+        mButtonApply = findViewById(R.id.button_apply);
+        mSize = findViewById(R.id.size);
         mButtonBack.setOnClickListener(this);
         mButtonApply.setOnClickListener(this);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPager.addOnPageChangeListener(this);
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), null);
         mPager.setAdapter(mAdapter);
-        mCheckView = (CheckView) findViewById(R.id.check_view);
+        mCheckView = findViewById(R.id.check_view);
         mCheckView.setCountable(mSpec.countable);
         mBottomToolbar = findViewById(R.id.bottom_toolbar);
         mTopToolbar = findViewById(R.id.top_toolbar);
@@ -165,7 +164,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
                     LayoutInflater inflater = getLayoutInflater();
                     View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
-                    TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+                    TextView tv = layout.findViewById(R.id.txt_toast_message);
                     tv.setText( getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
                     Toast toast = new Toast(getApplicationContext());
                     toast.setGravity(Gravity.CENTER, 0, 100);
@@ -321,7 +320,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 //                        IncapableDialog.class.getName());
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
-                TextView tv = (TextView) layout.findViewById(R.id.txt_toast_message);
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
                 tv.setText( getString(R.string.error_over_original_size, mSpec.originalMaxSize));
                 Toast toast = new Toast(getApplicationContext());
                 toast.setGravity(Gravity.CENTER, 0, 100);

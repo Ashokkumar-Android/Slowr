@@ -1,8 +1,11 @@
 package com.slowr.app.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -58,6 +62,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     TextInputLayout til_email;
     TextInputLayout til_edt_type;
     TextView txt_ticket_id;
+    TextView txt_description_count;
     ArrayAdapter<String> spinnerAdapter;
     private PopupWindow spinnerPopup;
     private Function _fun = new Function();
@@ -93,6 +98,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
         txt_ticket_id = findViewById(R.id.txt_ticket_id);
         edt_report_typ = findViewById(R.id.edt_report_typ);
         til_edt_type = findViewById(R.id.til_edt_type);
+        txt_description_count = findViewById(R.id.txt_description_count);
 
         rentalDurationAdapter = new RentalDurationAdapter(reportTypeStringList, getApplicationContext());
 
@@ -131,6 +137,27 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void CallBackFunction() {
+        txt_description_count.setText(getString(R.string.txt_des_count, "0"));
+        edt_description.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int desValue = edt_description.getText().toString().length();
+                txt_description_count.setText(getString(R.string.txt_des_count, String.valueOf(desValue)));
+                if (desValue == 200) {
+                    Function.CustomMessage(ReportUsActivity.this, getString(R.string.txt_limit_reached));
+                }
+            }
+        });
         rentalDurationAdapter.setCallback(new RentalDurationAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
@@ -243,19 +270,41 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
             Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_comments));
             return;
         }
+        AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
+                ReportUsActivity.this);
+
+        alertDialog2.setTitle("Report");
+
+        alertDialog2.setMessage(getString(R.string.report_message));
+
+        alertDialog2.setPositiveButton("YES",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (_fun.isInternetAvailable(ReportUsActivity.this)) {
+                            SubmitReport();
+                        } else {
+                            _fun.ShowNoInternetPopup(ReportUsActivity.this, new Function.NoInternetCallBack() {
+                                @Override
+                                public void isInternet() {
+                                    SubmitReport();
+                                }
+                            });
+
+                        }
+                    }
+                });
+
+        alertDialog2.setNegativeButton("NO",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.cancel();
+                    }
+                });
+
+        alertDialog2.show();
 
 
-        if (_fun.isInternetAvailable(ReportUsActivity.this)) {
-            SubmitReport();
-        } else {
-            _fun.ShowNoInternetPopup(ReportUsActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    SubmitReport();
-                }
-            });
-
-        }
     }
 
     private void SubmitReport() {

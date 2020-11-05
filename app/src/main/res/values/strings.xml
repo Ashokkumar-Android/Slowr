@@ -259,7 +259,9 @@
 
     <string name="ad_delete_message">Are you sure you want to delete this Ad?</string>
     <string name="banner_delete_message">Are you sure you want to delete this Banner?</string>
+    <string name="ad_discard">Are you sure do you want to discard changes?</string>
     <string name="logout_message">Are you sure you want to Logout?</string>
+    <string name="report_message">Are you sure you want to submit this report?</string>
 
     <string name="txt_please_login">Please Login.</string>
 
@@ -357,5 +359,12 @@
     <string name="txt_customise">Customise</string>
     <string name="banner_ad_preview">Banner Ad Preview</string>
     <string name="txt_delete">Delete</string>
+    <string name="txt_rent_temp">*Rent Temporarily*</string>
+    <string name="txt_hire_temp">*Hire Temporarily*</string>
+
+    <string name="custom_rent">Custom Rent</string>
+    <string name="custom_hire">Custom Hire</string>
+
+    <string name="chat_top_message">This is official Chat for Business purpose only. We record and maintain the Chat history</string>
 
 </resources>

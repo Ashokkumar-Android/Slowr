@@ -63,6 +63,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
     ImageView img_profile;
     TextView txt_prosperId;
+    TextView txt_chat_warning;
     RecyclerView rc_chat;
     EditText edt_message;
     ImageView img_send;
@@ -126,6 +127,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         img_menu = findViewById(R.id.img_menu);
         img_unverified_user = findViewById(R.id.img_unverified_user);
         layout_prosper_id = findViewById(R.id.layout_prosper_id);
+        txt_chat_warning = findViewById(R.id.txt_chat_warning);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_chat.setLayoutManager(linearLayoutManager);
@@ -377,9 +379,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             } catch (Exception e) {
                 img_send.setEnabled(true);
                 e.printStackTrace();
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             }
         }
 //        }
@@ -389,6 +401,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if(chatList.size()!=0){
+                txt_chat_warning.setVisibility(View.GONE);
+            }else {
+                txt_chat_warning.setVisibility(View.VISIBLE);
+            }
         }
     };
 
@@ -451,9 +468,19 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             } catch (Exception e) {
                 img_send.setEnabled(true);
                 e.printStackTrace();
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             }
         }
 //        }
@@ -464,6 +491,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("TAG", t.getMessage());
             call.cancel();
             img_send.setEnabled(true);
+            if(chatList.size()!=0){
+                txt_chat_warning.setVisibility(View.GONE);
+            }else {
+                txt_chat_warning.setVisibility(View.VISIBLE);
+            }
         }
     };
 
@@ -488,8 +520,18 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                if(chatList.size()!=0){
+                    txt_chat_warning.setVisibility(View.GONE);
+                }else {
+                    txt_chat_warning.setVisibility(View.VISIBLE);
+                }
             }
         }
 //        }
@@ -499,6 +541,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if(chatList.size()!=0){
+                txt_chat_warning.setVisibility(View.GONE);
+            }else {
+                txt_chat_warning.setVisibility(View.VISIBLE);
+            }
         }
     };
 

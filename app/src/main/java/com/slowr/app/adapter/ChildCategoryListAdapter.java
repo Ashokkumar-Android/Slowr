@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
@@ -104,7 +103,7 @@ public class ChildCategoryListAdapter extends RecyclerView.Adapter<ChildCategory
     }
 
     public interface Callback {
-        public void itemClick(SubCategoryChildModel model);
+        void itemClick(SubCategoryChildModel model);
     }
 
     @Override

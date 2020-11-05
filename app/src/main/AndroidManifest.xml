@@ -25,10 +25,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
-        <activity android:name=".activity.BannerActivity"></activity>
-        <activity android:name=".activity.AddBannerActivity" />
         <activity
-            android:name=".activity.WelcomeActivity"
+            android:name="com.slowr.app.activity.BannerActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.slowr.app.activity.AddBannerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.slowr.app.activity.WelcomeActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,67 +41,83 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chat.ChatListActivity"
+            android:name="com.slowr.app.chat.ChatListActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".chat.ProductChatActivity"
+            android:name="com.slowr.app.chat.ProductChatActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".chat.ChatActivity"
+            android:name="com.slowr.app.chat.ChatActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
-            android:name=".activity.UserProfileActivity"
+            android:name="com.slowr.app.activity.UserProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.SplashActivity"
+            android:name="com.slowr.app.activity.SplashActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PolicyActivity"
+            android:name="com.slowr.app.activity.PolicyActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.slowr.app.activity.TransactionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.TransactionActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.UpgradeActivity"
+            android:name="com.slowr.app.activity.UpgradeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustNothing" />
         <activity
-            android:name=".activity.ReportUsActivity"
+            android:name="com.slowr.app.activity.ReportUsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity
+            android:name="com.slowr.app.activity.ImageViewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ImageViewActivity"
+            android:name="com.slowr.app.activity.AboutUsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.AboutUsActivity"
+            android:name="com.slowr.app.activity.FavoriteActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.FavoriteActivity"
+            android:name="com.slowr.app.activity.ProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ProfileActivity"
+            android:name="com.slowr.app.activity.ChangPasswordActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ChangPasswordActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.SearchActivity"
+            android:name="com.slowr.app.activity.SearchActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible" />
         <activity
-            android:name=".activity.PostViewActivity"
+            android:name="com.slowr.app.activity.PostViewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.MyPostViewActivity"
+            android:name="com.slowr.app.activity.MyPostViewActivity"
+            android:screenOrientation="portrait">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="devlink.slowr.in"
+                    android:scheme="http" />
+                <data
+                    android:host="devlink.slowr.in"
+                    android:scheme="https" />
+            </intent-filter>
+
+        </activity>
+        <activity
+            android:name="com.slowr.app.activity.HomeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.HomeActivity"
+            android:name="com.slowr.app.activity.NotificationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NotificationActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.DashBoardActivity"
+            android:name="com.slowr.app.activity.DashBoardActivity"
             android:screenOrientation="portrait" />
 
         <provider
@@ -112,23 +132,21 @@
         </provider>
 
         <activity
-            android:name=".activity.AddPostActivity"
+            android:name="com.slowr.app.activity.AddPostActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
-            android:name=".activity.VerificationActivity"
+            android:name="com.slowr.app.activity.VerificationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.SignupActivity"
+            android:name="com.slowr.app.activity.SignupActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name="com.slowr.app.activity.LoginActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.PaymentActivity"
-            android:screenOrientation="portrait" /> <!-- For Google Plus Sign in -->
+        <!-- For Google Plus Sign in -->
         <service
-            android:name=".firebase.MyFirebaseMessagingService"
+            android:name="com.slowr.app.firebase.MyFirebaseMessagingService"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

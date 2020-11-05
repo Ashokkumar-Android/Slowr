@@ -58,6 +58,9 @@ public class AdItemModel {
     @SerializedName("promotion")
     private String adPromotion;
 
+    @SerializedName("cat_group")
+    private String catGroup;
+
     boolean isProgress = false;
 
     public String getAdId() {
@@ -210,5 +213,13 @@ public class AdItemModel {
 
     public void setAdPromotion(String adPromotion) {
         this.adPromotion = adPromotion;
+    }
+
+    public String getCatGroup() {
+        return catGroup;
+    }
+
+    public void setCatGroup(String catGroup) {
+        this.catGroup = catGroup;
     }
 }

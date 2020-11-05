@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 
 import com.slowr.app.R;
 import com.slowr.app.models.AttributeSelectModel;
-import com.slowr.app.models.SubCategoryItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +45,10 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
                 view = inflater.inflate(resourceId, parent, false);
             }
             AttributeSelectModel fruit = getItem(position);
-            TextView name = (TextView) view.findViewById(R.id.txt_category_name);
-            RadioButton rb_select = (RadioButton) view.findViewById(R.id.rb_select);
+            TextView name = view.findViewById(R.id.txt_category_name);
+            RadioButton rb_select = view.findViewById(R.id.rb_select);
             rb_select.setVisibility(View.GONE);
-            name.setText(fruit.getAttributeValue());
+            name.setText(fruit.getAttributeValue().trim());
             LinearLayout linearLayout = view.findViewById(R.id.layout_root);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,7 +83,7 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
     }
 
     public interface Callback {
-        public void itemClick(AttributeSelectModel model);
+        void itemClick(AttributeSelectModel model);
 
 
     }
@@ -107,7 +106,7 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
             if (charSequence != null) {
                 suggestions.clear();
                 for (AttributeSelectModel fruit : tempItems) {
-                    if (fruit.getAttributeValue().toLowerCase().contains(charSequence.toString().toLowerCase())) {
+                    if (fruit.getAttributeValue().toLowerCase().trim().startsWith(charSequence.toString().toLowerCase().trim())) {
                         suggestions.add(fruit);
                     }
                 }

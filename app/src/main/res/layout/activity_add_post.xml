@@ -130,100 +130,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="@dimen/size_ten">
+            android:paddingRight="@dimen/size_ten"
+            android:paddingLeft="@dimen/size_five"
+            android:paddingTop="@dimen/size_ten"
+            android:paddingBottom="@dimen/size_ten">
 
             <TextView
                 android:id="@+id/txt_parent_title"
                 style="@style/txt_title"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
+                android:layout_marginLeft="@dimen/size_five"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_twenty" />
 
 
-            <LinearLayout
-                android:id="@+id/layout_sub_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    style="@style/attribute_title"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="@string/txt_category" />
-
-                <LinearLayout
-                    android:id="@+id/layout_drop_down"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txt_category_content"
-                        style="@style/attribute_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/nunito_regular"
-                        android:text="" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center|right"
-                        android:rotation="180"
-                        android:src="@drawable/ic_forward"
-                        android:tint="@color/colorPrimary" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/color_black" />
-            </LinearLayout>
 
 
-            <LinearLayout
-                android:id="@+id/layout_child_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_fifteen"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    style="@style/attribute_title"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="@string/txt_sub_category" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txt_sub_category_content"
-                        style="@style/attribute_content"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/nunito_regular"
-                        android:text="" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_gravity="center|right"
-                        android:rotation="180"
-                        android:src="@drawable/ic_forward"
-                        android:tint="@color/colorPrimary" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/color_black" />
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_product_container"
@@ -237,6 +160,7 @@
                     android:id="@+id/txt_product_type_title"
                     style="@style/attribute_title"
                     android:fontFamily="@font/nunito_regular"
+                    android:layout_marginLeft="@dimen/size_five"
                     android:text="@string/txt_product_type" />
 
                 <FrameLayout
@@ -250,10 +174,10 @@
                         style="@style/attribute_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:dropDownAnchor="@id/dropdownDivider"
+                        android:dropDownAnchor="@id/productDivider"
                         android:dropDownVerticalOffset="5dp"
                         android:maxLength="50"
+                        android:inputType="textCapSentences"
                         android:hint="@string/txt_select_product"
                         android:imeOptions="actionNext"
                         android:paddingRight="@dimen/button_box_height"
@@ -271,22 +195,23 @@
                 </FrameLayout>
 
                 <View
-                    android:id="@+id/dropdownDivider"
-                    style="@style/attribute_line" />
+                    android:id="@+id/productDivider"
+                    style="@style/attribute_line"
+                    android:visibility="invisible"/>
             </LinearLayout>
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_attributes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_five" />
+                android:layout_height="wrap_content"/>
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
+                android:layout_marginTop="@dimen/size_five"
+                android:layout_marginLeft="@dimen/size_five"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -312,6 +237,8 @@
                             android:id="@+id/layout_rental_duration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_five"
+
                             android:orientation="horizontal">
 
                             <Spinner
@@ -325,21 +252,22 @@
                             <TextView
                                 android:id="@+id/txt_rental_duration_content"
                                 style="@style/attribute_content"
-                                android:layout_weight="1"
                                 android:hint="@string/txt_rental_duration_select"
                                 android:singleLine="true" />
 
                             <ImageView
                                 android:id="@+id/img_drop_down"
                                 android:layout_width="15dp"
-                                android:layout_height="15dp"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center|right"
+
                                 android:rotation="270"
                                 android:src="@drawable/ic_forward"
                                 android:tint="@color/colorPrimary" />
                         </LinearLayout>
 
-                        <View style="@style/attribute_line" />
+                        <View style="@style/attribute_line"
+                            />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -367,15 +295,14 @@
                         android:id="@+id/edt_price"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
                         android:hint="@string/txt_input_price_product"
                         android:inputType="number"
                         android:maxLength="6"
                         android:textSize="@dimen/size_fifteen" />
 
 
-                    <View style="@style/attribute_line" />
+                    <View style="@style/attribute_line"
+                        android:visibility="gone"/>
 
                     <CheckBox
                         android:id="@+id/cb_price"
@@ -396,13 +323,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_fifteen"
+                android:layout_marginTop="@dimen/size_ten"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginLeft="@dimen/size_five"
                     android:orientation="vertical">
 
                     <TextView
@@ -414,6 +342,8 @@
                         android:id="@+id/layout_city"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_five"
+
                         android:orientation="horizontal">
 
                         <TextView
@@ -437,7 +367,7 @@
 
                 <View
                     android:layout_width="@dimen/size_twenty"
-                    android:layout_height="@dimen/size_fifteen" />
+                    android:layout_height="@dimen/size_ten" />
 
                 <LinearLayout
 
@@ -449,6 +379,7 @@
                     <TextView
                         style="@style/attribute_title"
                         android:fontFamily="@font/nunito_regular"
+                        android:layout_marginLeft="@dimen/size_five"
                         android:text="@string/txt_locality" />
 
                     <FrameLayout
@@ -462,7 +393,6 @@
                             style="@style/attribute_content"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@android:color/transparent"
                             android:dropDownVerticalOffset="5dp"
                             android:focusableInTouchMode="false"
                             android:hint="@string/txt_select_locality"
@@ -483,14 +413,15 @@
 
                     <View
                         android:id="@+id/viewArea"
-                        style="@style/attribute_line" />
+                        style="@style/attribute_line"
+                        android:visibility="invisible"/>
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
+                android:layout_marginTop="@dimen/size_five"
                 android:gravity="bottom"
                 android:orientation="horizontal">
 
@@ -503,6 +434,7 @@
                     <TextView
                         style="@style/attribute_title"
                         android:fontFamily="@font/nunito_regular"
+                        android:layout_marginLeft="@dimen/size_five"
                         android:text="@string/enter_your_phone_no" />
 
 
@@ -511,13 +443,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@android:color/transparent"
                         android:inputType="number"
                         android:maxLength="10"
                         android:textSize="@dimen/size_fifteen" />
 
 
-                    <View style="@style/attribute_line" />
+                    <View style="@style/attribute_line"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <View
@@ -543,17 +475,19 @@
 
             <TextView
                 style="@style/txt_create_post"
-                android:layout_marginTop="@dimen/size_fifteen"
+                android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
+                android:layout_marginLeft="@dimen/size_five"
                 android:text="@string/txt_description" />
 
             <EditText
                 android:id="@+id/edt_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_five"
+                android:layout_marginTop="@dimen/size_ten"
                 android:background="@drawable/bg_description"
                 android:gravity="top"
+                android:layout_marginLeft="@dimen/size_five"
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxLength="200"
                 android:minHeight="80dp"
@@ -573,12 +507,13 @@
                 android:id="@+id/layout_image_upload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/size_five"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txt_image_content"
                     style="@style/txt_create_post"
-                    android:layout_marginTop="@dimen/size_fifteen"
+                    android:layout_marginTop="@dimen/size_ten"
                     android:fontFamily="@font/nunito_regular"
                     android:text="@string/txt_upload_image_product" />
 
@@ -613,6 +548,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
                 android:layout_weight="1"
+                android:layout_marginLeft="@dimen/size_five"
                 android:orientation="vertical">
 
                 <TextView
@@ -635,6 +571,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
+                android:layout_marginLeft="@dimen/size_five"
                 android:gravity="center|left"
                 android:orientation="horizontal">
 

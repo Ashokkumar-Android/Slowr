@@ -1,7 +1,6 @@
 package com.slowr.app.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +8,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Constant;
@@ -28,17 +28,18 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
     Callback callback;
     Activity ctx;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, OnLikeListener {
         public TextView txt_ad_title;
         public TextView txt_price;
         public TextView txt_location;
         public TextView txt_like_count;
         public LinearLayout layout_root;
         public ImageView img_ad;
-        public ImageView img_favorite;
+        public LikeButton img_favorite;
         LinearLayout layout_promoted;
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
+        ImageView img_share;
 
         public MyViewHolder(View view) {
             super(view);
@@ -52,9 +53,12 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
             layout_promoted = view.findViewById(R.id.layout_promoted);
             img_top_page_mark = view.findViewById(R.id.img_top_page_mark);
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
+            img_share = view.findViewById(R.id.img_share);
 
             layout_root.setOnClickListener(this);
-            img_favorite.setOnClickListener(this);
+//            img_favorite.setOnClickListener(this);
+            img_share.setOnClickListener(this);
+            img_favorite.setOnLikeListener(this);
         }
 
         @Override
@@ -73,9 +77,44 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                         Function.CustomMessage(ctx, ctx.getString(R.string.my_ad_favorite));
                     }
                     break;
+                case R.id.img_share:
+                    callback.onShareClick(getAdapterPosition());
+                    break;
 
             }
 
+        }
+
+        @Override
+        public void liked(LikeButton likeButton) {
+            if (Sessions.getSessionBool(Constant.LoginFlag, ctx)) {
+                if (!categoryList.get(getAdapterPosition()).getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
+                    callback.onFavoriteClick(getAdapterPosition());
+//                        Function.bounceAnimateImageView(true, img_favorite);
+                } else {
+                    Function.CustomMessage(ctx, ctx.getString(R.string.my_ad_favorite));
+                    likeButton.setLiked(false);
+                }
+            } else {
+                Function.CustomMessage(ctx, ctx.getString(R.string.txt_please_login));
+                likeButton.setLiked(false);
+            }
+        }
+
+        @Override
+        public void unLiked(LikeButton likeButton) {
+            if (Sessions.getSessionBool(Constant.LoginFlag, ctx)) {
+                if (!categoryList.get(getAdapterPosition()).getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
+                    callback.onFavoriteClick(getAdapterPosition());
+//                        Function.bounceAnimateImageView(true, img_favorite);
+                } else {
+                    Function.CustomMessage(ctx, ctx.getString(R.string.my_ad_favorite));
+                    likeButton.setLiked(false);
+                }
+            } else {
+                Function.CustomMessage(ctx, ctx.getString(R.string.txt_please_login));
+                likeButton.setLiked(false);
+            }
         }
     }
 
@@ -117,32 +156,51 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
             holder.txt_price.setVisibility(View.VISIBLE);
             String price = "";
             if (movie.getAdFee().contains(".")) {
-                String tempPrice[] = movie.getAdFee().split("\\.");
+                String[] tempPrice = movie.getAdFee().split("\\.");
                 price = tempPrice[0];
             } else {
                 price = movie.getAdFee();
             }
 
             Log.i("Fave", movie.getIsFavorite());
-            if (price.equals("0") || movie.getAdDuration().equals("Custom")) {
-                holder.txt_price.setText(movie.getAdDuration());
+            if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
             } else {
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
-        }else {
-            holder.txt_price.setVisibility(View.GONE);
+        } else {
+            if ( movie.getAdDuration().equals("Custom")) {
+                if(movie.getCatGroup().equals("1")){
+                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                }else {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                }
+            } else {
+                holder.txt_price.setVisibility(View.GONE);
+            }
+
         }
         if (movie.getIsFavorite().equals("0")) {
-            holder.img_favorite.setImageResource(R.drawable.ic_favorite);
+            holder.img_favorite.setLiked(false);
 
         } else {
-            holder.img_favorite.setImageResource(R.drawable.ic_fav_select);
+            holder.img_favorite.setLiked(true);
         }
         Glide.with(ctx)
                 .load(movie.getPhotoType())
                 .error(R.drawable.ic_default_horizontal)
                 .placeholder(R.drawable.ic_default_horizontal)
                 .into(holder.img_ad);
+
+//        if (!movie.getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
+//            holder.img_favorite.setEnabled(true);
+//        }else {
+//            holder.img_favorite.setEnabled(false);
+//        }
 
 
     }
@@ -162,8 +220,10 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
-        public void onFavoriteClick(int pos);
+        void onFavoriteClick(int pos);
+
+        void onShareClick(int pos);
     }
 }

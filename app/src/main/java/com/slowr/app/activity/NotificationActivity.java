@@ -91,6 +91,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         btn_my_ads.setOnClickListener(this);
         img_back.setOnClickListener(this);
         CallBackFunction();
+        ReadNotification("");
     }
 
     private void CallBackFunction() {
@@ -121,9 +122,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                     Intent not = new Intent(NotificationActivity.this, TransactionActivity.class);
                     startActivity(not);
                 }
-                if (isRead.equals("0")) {
-                    ReadNotification(noteId);
-                }
+//                if (isRead.equals("0")) {
+//                    ReadNotification(noteId);
+//                }
             }
         });
     }
@@ -218,8 +219,8 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
             DefaultResponse dr = response.body();
             try {
                 if (dr.isStatus()) {
-                    notificationList.get(readPos).setIsRead("1");
-                    notificationAdapter.notifyItemChanged(readPos);
+//                    notificationList.get(readPos).setIsRead("1");
+//                    notificationAdapter.notifyItemChanged(readPos);
                 } else {
 
                 }
@@ -269,5 +270,11 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
             }, 200);
 
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        getNotificationList(true);
+        super.onRestart();
     }
 }

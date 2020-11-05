@@ -22,30 +22,43 @@
 
             <ImageView
                 android:id="@+id/img_ad"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
                 android:layout_gravity="center"
-                android:layout_margin="@dimen/size_ten"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_default_vertical" />
 
-            <ImageView
+<!--            <ImageView-->
+<!--                android:id="@+id/img_favorite"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="@dimen/size_ten"-->
+<!--                android:background="@drawable/circle_ripple_effect"-->
+<!--                android:padding="2dp"-->
+<!--                android:src="@drawable/ic_favorite" />-->
+            <com.like.LikeButton
                 android:id="@+id/img_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/size_ten"
-                android:background="@drawable/circle_ripple_effect"
-                android:padding="2dp"
-                android:src="@drawable/ic_favorite" />
+                app:like_drawable="@drawable/ic_fav_select"
+                app:unlike_drawable="@drawable/ic_fav_blue"
+                app:anim_scale_factor="2.5"
+                app:circle_end_color="@color/txt_orange"
+                app:circle_start_color="@color/txt_orange"
+                app:dots_primary_color="@color/txt_orange"
+                app:dots_secondary_color="@color/txt_orange"
+                app:icon_size="20dp"
+                app:icon_type="heart" />
+
 
             <ImageView
                 android:id="@+id/img_bg_gradient"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:visibility="gone"
                 android:layout_marginRight="@dimen/size_ten"
-                android:src="@drawable/bg_post_img_gradient" />
+                android:scaleType="fitXY"
+                android:src="@drawable/bg_post_img_gradient"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/txt_active_status"
@@ -75,9 +88,9 @@
                 android:id="@+id/layout_promoted"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_five"
                 android:gravity="right"
                 android:orientation="horizontal"
-                android:layout_marginTop="@dimen/size_five"
                 android:visibility="gone">
 
                 <ImageView
@@ -104,8 +117,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center|left"
+                android:orientation="vertical"
                 android:paddingRight="@dimen/size_ten"
                 android:paddingBottom="@dimen/size_ten">
 
@@ -114,8 +127,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_regular"
-                    android:maxLines="3"
+                    android:maxLines="2"
                     android:text=""
+                    android:ellipsize="end"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_sixteen" />
 
@@ -165,6 +179,7 @@
                         android:gravity="center|left"
                         android:orientation="horizontal">
 
+
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
@@ -185,7 +200,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="horizontal"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/img_share"

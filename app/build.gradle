@@ -45,6 +45,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':matisse')
     implementation project(':photoview')
+    implementation project(':likebutton')
+    implementation project(path: ':ChipView')
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -81,6 +83,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-dynamic-links'
     implementation 'com.google.firebase:firebase-analytics'
+
+
 }
 apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 

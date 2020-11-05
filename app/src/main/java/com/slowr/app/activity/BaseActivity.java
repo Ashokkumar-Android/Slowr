@@ -89,7 +89,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;
 
     MenuItem menuLogout;
-    MenuItem menuProfile;
+//    MenuItem menuProfile;
     MenuItem menuFavorites;
     MenuItem menuMyAds;
     MenuItem menuInvoice;
@@ -154,7 +154,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         Menu menu = navigationView.getMenu();
 
         menuLogout = menu.findItem(R.id.nav_logout);
-        menuProfile = menu.findItem(R.id.nav_profile);
+//        menuProfile = menu.findItem(R.id.nav_profile);
         menuFavorites = menu.findItem(R.id.nav_favorites);
         menuMyAds = menu.findItem(R.id.nav_dash_board);
         menuInvoice = menu.findItem(R.id.nav_invoice);
@@ -164,15 +164,15 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout viewChat = (LinearLayout) menuChat.getActionView();
         LinearLayout viewNotification = (LinearLayout) menuNotification.getActionView();
 
-        txtChatUnread = (TextView) viewChat.findViewById(R.id.txt_unread_count);
-        txtNotificationUnread = (TextView) viewNotification.findViewById(R.id.txt_unread_count);
+        txtChatUnread = viewChat.findViewById(R.id.txt_unread_count);
+        txtNotificationUnread = viewNotification.findViewById(R.id.txt_unread_count);
 
 
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             layout_login.setVisibility(View.GONE);
             layout_prosper.setVisibility(View.VISIBLE);
             menuLogout.setVisible(true);
-            menuProfile.setVisible(true);
+//            menuProfile.setVisible(true);
             menuFavorites.setVisible(true);
             menuMyAds.setVisible(true);
             menuInvoice.setVisible(true);
@@ -199,7 +199,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             layout_prosper.setVisibility(View.GONE);
             layout_menu_header.setVisibility(View.GONE);
             menuLogout.setVisible(false);
-            menuProfile.setVisible(false);
+//            menuProfile.setVisible(false);
             menuFavorites.setVisible(false);
             menuMyAds.setVisible(false);
             menuInvoice.setVisible(false);
@@ -381,11 +381,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.nav_home:
-                Intent h = new Intent(BaseActivity.this, HomeActivity.class);
-                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(h);
-                break;
+//            case R.id.nav_home:
+//                Intent h = new Intent(BaseActivity.this, HomeActivity.class);
+//                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(h);
+//                break;
             case R.id.nav_dash_board:
                 Intent d = new Intent(BaseActivity.this, DashBoardActivity.class);
                 startActivityForResult(d, MY_POST_CODE);
@@ -449,10 +449,10 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
 
                 break;
-            case R.id.nav_profile:
-                Intent profile = new Intent(BaseActivity.this, ProfileActivity.class);
-                startActivityForResult(profile, MY_PROFILE_CODE);
-                break;
+//            case R.id.nav_profile:
+//                Intent profile = new Intent(BaseActivity.this, ProfileActivity.class);
+//                startActivityForResult(profile, MY_PROFILE_CODE);
+//                break;
             case R.id.nav_favorites:
                 Intent fav = new Intent(BaseActivity.this, FavoriteActivity.class);
                 startActivityForResult(fav, MY_POST_CODE);

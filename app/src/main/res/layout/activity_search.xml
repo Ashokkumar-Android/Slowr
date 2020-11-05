@@ -149,7 +149,7 @@
                                 android:background="@drawable/circle_ripple_effect"
                                 android:padding="8dp"
                                 android:src="@drawable/ic_list_blue"
-                                android:tint="@color/colorPrimary" />
+                                android:tint="@color/txt_orange" />
 
                             <ImageView
                                 android:id="@+id/img_grid"
@@ -160,7 +160,7 @@
                                 android:background="@drawable/circle_ripple_effect"
                                 android:padding="8dp"
                                 android:src="@drawable/ic_square_blue"
-                                android:tint="@color/txt_orange" />
+                                android:tint="@color/colorPrimary" />
 
                             <LinearLayout
                                 android:id="@+id/layout_filter"

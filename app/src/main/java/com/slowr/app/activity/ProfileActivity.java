@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,8 +19,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputLayout;
@@ -1013,6 +1016,41 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             finish();
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean result = false;
+        for (int i = 0; i < Constant.Permissions.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(ProfileActivity.this, Constant.Permissions[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if(result){
+            MatisseActivity.PAGE_FROM = 2;
+            Matisse.from(ProfileActivity.this)
+                    .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
+//                            .choose(MimeType.of(MimeType.GIF), false)
+//                            .choose(MimeType.ofAll())
+
+                    .countable(true)
+                    .capture(true)
+                    .theme(R.style.Matisse_Dracula)
+                    .captureStrategy(
+                            new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
+                    .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
+                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                    .thumbnailScale(0.85f)
+                    .imageEngine(new GlideEngine())
+                    .maxSelectable(1)
+                    .showSingleMediaType(true)
+                    .forResult(50);
         }
     }
 }
