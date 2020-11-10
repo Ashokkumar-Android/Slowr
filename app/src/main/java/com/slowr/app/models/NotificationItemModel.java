@@ -33,6 +33,8 @@ public class NotificationItemModel {
     @SerializedName("is_read")
     String isRead;
 
+    boolean isCheck = false;
+
     public String getNotificationId() {
         return notificationId;
     }
@@ -103,5 +105,13 @@ public class NotificationItemModel {
 
     public void setIsRead(String isRead) {
         this.isRead = isRead;
+    }
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public void setCheck(boolean check) {
+        isCheck = check;
     }
 }

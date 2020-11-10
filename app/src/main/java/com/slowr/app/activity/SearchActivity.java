@@ -2,7 +2,6 @@ package com.slowr.app.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,10 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.gson.JsonArray;
-import com.slowr.app.BuildConfig;
 import com.slowr.app.R;
 import com.slowr.app.adapter.FilterOptionAdapter;
 import com.slowr.app.adapter.FilterSelectAdapter;
@@ -115,7 +111,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     boolean isLoading = false;
-    String shareMessage ="";
+    String shareMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,12 +296,16 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
                     searchSugeistionValue = edt_search_suggestion.getText().toString();
-//                    txt_page_title.setText(searchSugeistionValue);
-                    currentPageNo = 1;
-                    getAdList(true);
+                    if (searchSugeistionValue.isEmpty()) {
+                        Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
+                    } else {
+                        Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
 
+//                    txt_page_title.setText(searchSugeistionValue);
+                        currentPageNo = 1;
+                        getAdList(true);
+                    }
                     return true;
                 }
                 return false;
@@ -319,11 +319,16 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        Function.hideSoftKeyboard(SearchActivity.this, edt_search);
                         searchSugeistionValue = edt_search_suggestion.getText().toString();
+                        if (searchSugeistionValue.isEmpty()) {
+                            Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
+                        } else {
+                            Function.hideSoftKeyboard(SearchActivity.this, edt_search);
+
 //                        txt_page_title.setText(searchSugeistionValue);
-                        currentPageNo = 1;
-                        getAdList(true);
+                            currentPageNo = 1;
+                            getAdList(true);
+                        }
                         return true;
                     }
                 }
@@ -439,7 +444,6 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         });
 
     }
-
 
 
     private void callAddFavorite() {

@@ -2,6 +2,7 @@ package com.slowr.app.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,12 +76,40 @@ public class BannerAdapter extends PagerAdapter {
                     callBack.onItemClick(position);
             }
         });
-        Glide.with(context)
-                .load(bannerItemModel.getBannerImage())
-                .transform(new BlurTransformation())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(defult_one);
+
+        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT,new int[]{
+                Color.parseColor("#8A2387"),
+                Color.parseColor("#E94057"),
+                Color.parseColor("#F27121")
+        });
+
+        // Set the color array to draw gradient
+//        gd.setColors(new int[]{
+//                Color.RED,
+//                Color.GREEN,
+//                Color.YELLOW
+//        });
+
+        // Set the GradientDrawable gradient type linear gradient
+        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+
+        // Set GradientDrawable shape is a rectangle
+        gd.setShape(GradientDrawable.RECTANGLE);
+
+        // Set 3 pixels width solid blue color border
+        gd.setStroke(0, Color.BLUE);
+
+        // Set GradientDrawable width and in pixels
+//        gd.setSize(450, 150); // Width 450 pixels and height 150 pixels
+
+        // Set GradientDrawable as ImageView source image
+        defult_one.setImageDrawable(gd);
+//        Glide.with(context)
+//                .load(bannerItemModel.getBannerImage())
+//                .transform(new BlurTransformation())
+//                .error(R.drawable.ic_default_horizontal)
+//                .placeholder(R.drawable.ic_default_horizontal)
+//                .into(defult_one);
 
         return imageLayout;
     }

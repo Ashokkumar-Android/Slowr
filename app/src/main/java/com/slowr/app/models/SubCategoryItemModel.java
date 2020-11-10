@@ -26,7 +26,7 @@ public class SubCategoryItemModel {
     }
 
     public String getSubcategoryName() {
-        return subcategoryName;
+        return subcategoryName.trim();
     }
 
     public void setSubcategoryName(String subcategoryName) {

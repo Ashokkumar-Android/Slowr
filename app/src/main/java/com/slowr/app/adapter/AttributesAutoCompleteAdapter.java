@@ -98,7 +98,7 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
         @Override
         public CharSequence convertResultToString(Object resultValue) {
             AttributeSelectModel fruit = (AttributeSelectModel) resultValue;
-            return fruit.getAttributeValue();
+            return fruit.getAttributeValue().trim();
         }
 
         @Override

@@ -98,7 +98,7 @@ public class AreaAutoCompleteAdapter extends ArrayAdapter<AreaItemModel> {
         @Override
         public CharSequence convertResultToString(Object resultValue) {
             AreaItemModel fruit = (AreaItemModel) resultValue;
-            return fruit.getAreaName();
+            return fruit.getAreaName().trim();
         }
 
         @Override

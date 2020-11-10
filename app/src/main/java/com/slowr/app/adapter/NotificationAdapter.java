@@ -1,6 +1,7 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
 import com.slowr.app.models.NotificationItemModel;
-import com.slowr.app.utils.FormatterUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
@@ -22,12 +23,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     Callback callback;
     Context ctx;
     String checkedPos = "";
+    boolean icSelect = false;
+    int i = 0;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_notification_title;
         public TextView txt_date;
         public View view_line;
         public LinearLayout layout_root;
+        public View layout_bg;
 
         public MyViewHolder(View view) {
             super(view);
@@ -35,15 +39,40 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             txt_date = view.findViewById(R.id.txt_date);
             layout_root = view.findViewById(R.id.layout_root);
             view_line = view.findViewById(R.id.view_line);
+            layout_bg = view.findViewById(R.id.layout_bg);
             layout_root.setOnClickListener(this);
-
+            layout_root.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    icSelect = true;
+                    categoryListFilter.get(getAdapterPosition()).setCheck(true);
+                    notifyItemChanged(getAdapterPosition());
+                    i++;
+                    return true;
+                }
+            });
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.layout_root:
-                    callback.itemClick(getAdapterPosition());
+                    if (icSelect) {
+                        if (categoryListFilter.get(getAdapterPosition()).isCheck()) {
+                            categoryListFilter.get(getAdapterPosition()).setCheck(false);
+                            notifyItemChanged(getAdapterPosition());
+                            i--;
+                            if (i == 0) {
+                                icSelect = false;
+                            }
+                        } else {
+                            categoryListFilter.get(getAdapterPosition()).setCheck(true);
+                            notifyItemChanged(getAdapterPosition());
+                            i++;
+                        }
+                    } else {
+                        callback.itemClick(getAdapterPosition());
+                    }
                     break;
 
             }
@@ -68,8 +97,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         NotificationItemModel movie = categoryListFilter.get(position);
         holder.txt_notification_title.setText(movie.getNotificationContent().trim());
-        CharSequence date = FormatterUtil.getRelativeTimeSpanStringShort(ctx, movie.getNotificationDate().getTime());
-        holder.txt_date.setText(date);
+        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy");
+        holder.txt_date.setText(spf.format(movie.getNotificationDate()));
+        if (movie.isCheck()) {
+            holder.layout_bg.setBackgroundColor(ctx.getResources().getColor(R.color.txt_gray_trans));
+        } else {
+            holder.layout_bg.setBackgroundColor(Color.TRANSPARENT);
+        }
         switch (Integer.valueOf(movie.getNotificationColor())) {
             case 1:
                 holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.bg_green));
@@ -85,7 +119,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         if (movie.getIsRead().equals("1")) {
             holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
             holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-        }else {
+        } else {
             holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.color_black));
             holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.color_black));
         }
@@ -107,7 +141,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

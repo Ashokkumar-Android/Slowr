@@ -94,6 +94,7 @@
     <string name="txt_locality">Locality *</string>
     <string name="txt_locality_select">Locality</string>
     <string name="txt_select_city">Select City</string>
+    <string name="txt_type_city">Type City</string>
     <string name="txt_rental_duration_select">Select Rental Duration</string>
     <string name="txt_hiring_duration_select">Select Hiring Pattern</string>
     <string name="txt_select_locality">Type Locality</string>
@@ -365,6 +366,8 @@
     <string name="custom_rent">Custom Rent</string>
     <string name="custom_hire">Custom Hire</string>
 
-    <string name="chat_top_message">This is official Chat for Business purpose only. We record and maintain the Chat history</string>
+    <string name="chat_top_message">This is official Chat for Business purpose only. We record and maintain the Chat history.</string>
+
+    <string name="enter_something_search">Enter Something To Search</string>
 
 </resources>

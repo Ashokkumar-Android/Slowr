@@ -28,6 +28,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
     Callback callback;
     Activity ctx;
     boolean isEditable = false;
+    boolean isChange = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_select_title;
@@ -98,11 +99,13 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             holder.edt_attributeValue.setText("");
             holder.txt_select_content.setText("");
         } else {
+            isChange = true;
             if (movie.getType().equals("select")) {
                 holder.txt_select_content.setText(movie.getInputValue().trim());
             } else {
                 holder.edt_attributeValue.setText(movie.getInputValue().trim());
             }
+            isChange = false;
         }
 
 
@@ -165,7 +168,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                     callback.attributeEnterValue(val, position);
                 }
                 holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                if (desValue == 50) {
+                if (desValue == 50 && !isChange) {
                     Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
                 }
             }
@@ -191,7 +194,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                     callback.attributeEnterValue(val, position);
                 }
                 holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                if (desValue == 50) {
+                if (desValue == 50 && !isChange) {
                     Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
                 }
             }

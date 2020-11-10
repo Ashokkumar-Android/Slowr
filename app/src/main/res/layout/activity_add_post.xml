@@ -130,22 +130,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingRight="@dimen/size_ten"
             android:paddingLeft="@dimen/size_five"
             android:paddingTop="@dimen/size_ten"
+            android:paddingRight="@dimen/size_ten"
             android:paddingBottom="@dimen/size_ten">
 
             <TextView
                 android:id="@+id/txt_parent_title"
                 style="@style/txt_title"
+                android:layout_marginLeft="@dimen/size_five"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
-                android:layout_marginLeft="@dimen/size_five"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_twenty" />
-
-
-
 
 
             <LinearLayout
@@ -159,8 +156,8 @@
                 <TextView
                     android:id="@+id/txt_product_type_title"
                     style="@style/attribute_title"
-                    android:fontFamily="@font/nunito_regular"
                     android:layout_marginLeft="@dimen/size_five"
+                    android:fontFamily="@font/nunito_regular"
                     android:text="@string/txt_product_type" />
 
                 <FrameLayout
@@ -176,10 +173,10 @@
                         android:layout_height="wrap_content"
                         android:dropDownAnchor="@id/productDivider"
                         android:dropDownVerticalOffset="5dp"
-                        android:maxLength="50"
-                        android:inputType="textCapSentences"
                         android:hint="@string/txt_select_product"
                         android:imeOptions="actionNext"
+                        android:inputType="textCapSentences"
+                        android:maxLength="50"
                         android:paddingRight="@dimen/button_box_height"
                         android:singleLine="true" />
 
@@ -197,21 +194,21 @@
                 <View
                     android:id="@+id/productDivider"
                     style="@style/attribute_line"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
             </LinearLayout>
 
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_attributes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_five"
                 android:layout_marginLeft="@dimen/size_five"
+                android:layout_marginTop="@dimen/size_five"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -238,7 +235,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_five"
-
+                            android:layout_weight="1"
                             android:orientation="horizontal">
 
                             <Spinner
@@ -252,6 +249,7 @@
                             <TextView
                                 android:id="@+id/txt_rental_duration_content"
                                 style="@style/attribute_content"
+                                android:layout_weight="1"
                                 android:hint="@string/txt_rental_duration_select"
                                 android:singleLine="true" />
 
@@ -266,8 +264,7 @@
                                 android:tint="@color/colorPrimary" />
                         </LinearLayout>
 
-                        <View style="@style/attribute_line"
-                            />
+                        <View style="@style/attribute_line" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -301,8 +298,9 @@
                         android:textSize="@dimen/size_fifteen" />
 
 
-                    <View style="@style/attribute_line"
-                        android:visibility="gone"/>
+                    <View
+                        style="@style/attribute_line"
+                        android:visibility="gone" />
 
                     <CheckBox
                         android:id="@+id/cb_price"
@@ -329,8 +327,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginLeft="@dimen/size_five"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -378,8 +376,8 @@
 
                     <TextView
                         style="@style/attribute_title"
-                        android:fontFamily="@font/nunito_regular"
                         android:layout_marginLeft="@dimen/size_five"
+                        android:fontFamily="@font/nunito_regular"
                         android:text="@string/txt_locality" />
 
                     <FrameLayout
@@ -414,7 +412,7 @@
                     <View
                         android:id="@+id/viewArea"
                         style="@style/attribute_line"
-                        android:visibility="invisible"/>
+                        android:visibility="invisible" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -433,8 +431,8 @@
 
                     <TextView
                         style="@style/attribute_title"
-                        android:fontFamily="@font/nunito_regular"
                         android:layout_marginLeft="@dimen/size_five"
+                        android:fontFamily="@font/nunito_regular"
                         android:text="@string/enter_your_phone_no" />
 
 
@@ -448,8 +446,9 @@
                         android:textSize="@dimen/size_fifteen" />
 
 
-                    <View style="@style/attribute_line"
-                        android:visibility="gone"/>
+                    <View
+                        style="@style/attribute_line"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <View
@@ -475,19 +474,19 @@
 
             <TextView
                 style="@style/txt_create_post"
+                android:layout_marginLeft="@dimen/size_five"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
-                android:layout_marginLeft="@dimen/size_five"
                 android:text="@string/txt_description" />
 
             <EditText
                 android:id="@+id/edt_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/size_five"
                 android:layout_marginTop="@dimen/size_ten"
                 android:background="@drawable/bg_description"
                 android:gravity="top"
-                android:layout_marginLeft="@dimen/size_five"
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxLength="200"
                 android:minHeight="80dp"
@@ -546,9 +545,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/size_five"
                 android:layout_marginTop="@dimen/size_ten"
                 android:layout_weight="1"
-                android:layout_marginLeft="@dimen/size_five"
                 android:orientation="vertical">
 
                 <TextView
@@ -570,8 +569,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_ten"
                 android:layout_marginLeft="@dimen/size_five"
+                android:layout_marginTop="@dimen/size_ten"
                 android:gravity="center|left"
                 android:orientation="horizontal">
 

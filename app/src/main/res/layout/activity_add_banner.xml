@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".activity.AddBannerActivity">
 
@@ -12,7 +13,7 @@
         android:id="@+id/layout_banner_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -185,14 +186,6 @@
                         android:hint="@string/txt_select_city"
                         android:visibility="visible"
                         android:singleLine="true" />
-                    <com.slowr.chips.ChipsInputLayout
-                        android:id="@+id/chips_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/txt_select_city"
-                        android:textColorHint="#757575"
-                        android:visibility="gone"
-                        android:textColor="#212121"/>
 
                     <ImageView
                         android:layout_width="15dp"
@@ -500,6 +493,17 @@
         android:orientation="vertical"
         android:visibility="gone">
 
+        <com.slowr.materialchips.ChipsInput
+            android:id="@+id/chips_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint="@string/txt_type_city"
+            android:background="@drawable/bg_edt_login"
+            android:visibility="visible"
+            android:paddingLeft="@dimen/size_ten"
+            android:paddingRight="@dimen/size_ten"
+            android:layout_margin="@dimen/size_ten"
+            app:chip_deletable="true"/>
 
         <EditText
             android:id="@+id/edt_list_search"
@@ -511,12 +515,14 @@
             android:inputType="text"
             android:paddingLeft="@dimen/size_ten"
             android:paddingRight="@dimen/size_ten"
+            android:visibility="gone"
             android:textSize="@dimen/size_fifteen" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rc_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
 
     </LinearLayout>

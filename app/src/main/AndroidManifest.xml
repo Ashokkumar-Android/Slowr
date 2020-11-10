@@ -30,7 +30,8 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name="com.slowr.app.activity.AddBannerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateVisible"/>
         <activity
             android:name="com.slowr.app.activity.WelcomeActivity"
             android:screenOrientation="portrait">

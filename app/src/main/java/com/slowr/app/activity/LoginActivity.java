@@ -641,6 +641,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         params.put("mobile_email", email);
         params.put("password", password);
         params.put("fcm_token", fbToken);
+        params.put("device_platform", "1");
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).toLogin(params)
                     .enqueue(new RetrofitCallBack(LoginActivity.this, login, true));
@@ -875,6 +876,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         params.put("providerId", providerId);
         params.put("fcm_token", fbToken);
         params.put("platform", "2");
+        params.put("device_platform", "1");
 
         Log.i("Param", params.toString());
         if (loginWith.equals("1")) {

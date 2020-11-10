@@ -54,7 +54,8 @@ import com.slowr.app.models.UploadImageModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
-import com.slowr.chips.ChipsInputLayout;
+import com.slowr.materialchips.ChipsInput;
+import com.slowr.materialchips.model.ChipInterface;
 import com.slowr.matisse.Matisse;
 import com.slowr.matisse.MimeType;
 import com.slowr.matisse.engine.impl.GlideEngine;
@@ -114,10 +115,13 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     ImageView img_banner_preview;
     TextView txt_banner_duration;
     TextView txt_city;
+    ChipsInput chips_input;
 
     ViewColorAdapter viewColorAdapter;
     ArrayList<UploadImageModel> colorList = new ArrayList<>();
     ArrayList<CityItemModel> cityList = new ArrayList<>();
+    ArrayList<CityChipModel> cityChipList = new ArrayList<>();
+    ArrayList<CityChipModel> selectChipList = new ArrayList<>();
 
     private int mYear, mMonth, mDay;
     String adStartDate = "";
@@ -148,6 +152,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
     String paymentId = "";
     boolean changeDeductedAmount = false;
+    boolean changeChip = false;
 
 
     @Override
@@ -196,6 +201,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         img_banner_preview = findViewById(R.id.img_banner_preview);
         txt_banner_duration = findViewById(R.id.txt_banner_duration);
         txt_city = findViewById(R.id.txt_city);
+        chips_input = findViewById(R.id.chips_input);
 
         listManager = new LinearLayoutManager(AddBannerActivity.this, RecyclerView.HORIZONTAL, false);
         rc_color_list.setLayoutManager(listManager);
@@ -208,7 +214,6 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         rc_list.setItemAnimator(new DefaultItemAnimator());
         cityListAdapter = new CityMultiSelectAdapter(cityList, getApplicationContext());
         rc_list.setAdapter(cityListAdapter);
-
 
 
         txt_page_title.setText(getString(R.string.txt_banner));
@@ -234,6 +239,42 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         } else {
             getColor();
         }
+        chips_input.addChipsListener(new ChipsInput.ChipsListener() {
+            @Override
+            public void onChipAdded(ChipInterface chip, int newSize) {
+                if (!changeChip) {
+                    selectChipList.add(new CityChipModel(chip.getId(), chip.getCityName(), chip.getPrice()));
+                    SummaryContent();
+                }
+            }
+
+            @Override
+            public void onChipRemoved(ChipInterface chip, int newSize) {
+                for (int i = 0; i < selectChipList.size(); i++) {
+                    if (selectChipList.get(i).getId().equals(chip.getId())) {
+                        selectChipList.remove(i);
+                        break;
+                    }
+                }
+                SummaryContent();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text) {
+
+            }
+
+            @Override
+            public void onKeyboardDone() {
+                Function.hideSoftKeyboard(AddBannerActivity.this, img_back);
+                layout_list.setVisibility(View.GONE);
+                layout_banner_form.setVisibility(View.VISIBLE);
+                txt_page_title.setText(getString(R.string.txt_banner));
+                txt_page_action.setVisibility(View.GONE);
+                isList = false;
+                SummaryContent();
+            }
+        });
     }
 
     private void getBannerDetails() {
@@ -273,13 +314,13 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     private void getColor() {
         if (_fun.isInternetAvailable(AddBannerActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, false));
+                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
         } else {
             _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, false));
+                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
                 }
             });
         }
@@ -355,28 +396,28 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 //            jsonArray = new JsonArray();
             cityIdArray = new HashMap<String, String>();
             int price = 0;
-            for (int i = 0; i < cityList.size(); i++) {
-                if (cityList.get(i).isSelect()) {
-                    if (cityName.equals("")) {
-                        cityName = cityList.get(i).getCityName();
-                        price = Integer.valueOf(cityList.get(i).getCityPrice());
-                        if (!adStartDate.equals("") && !adEndDate.equals("")) {
-                            price = (price * Integer.valueOf(totalDays));
-                        }
-                        cityId = cityList.get(i).getCityId();
-                    } else {
-                        cityName = cityName + "," + cityList.get(i).getCityName();
-                        if (!adStartDate.equals("") && !adEndDate.equals("")) {
-                            price = price + (Integer.valueOf(cityList.get(i).getCityPrice()) * Integer.valueOf(totalDays));
-                        } else {
-                            price = price + Integer.valueOf(cityList.get(i).getCityPrice());
-                        }
+            for (int i = 0; i < selectChipList.size(); i++) {
 
-                        cityId = cityId + "," + cityList.get(i).getCityId();
+                if (cityName.equals("")) {
+                    cityName = selectChipList.get(i).getCityName();
+                    price = Integer.valueOf(selectChipList.get(i).getPrice());
+                    if (!adStartDate.equals("") && !adEndDate.equals("")) {
+                        price = (price * Integer.valueOf(totalDays));
                     }
-//                    jsonArray.add(cityList.get(i).getCityId());
-                    cityIdArray.put(String.valueOf(cityIdArray.size()), cityList.get(i).getCityId());
+                    cityId = selectChipList.get(i).getId();
+                } else {
+                    cityName = cityName + "," + selectChipList.get(i).getCityName();
+                    if (!adStartDate.equals("") && !adEndDate.equals("")) {
+                        price = price + (Integer.valueOf(selectChipList.get(i).getPrice()) * Integer.valueOf(totalDays));
+                    } else {
+                        price = price + Integer.valueOf(selectChipList.get(i).getPrice());
+                    }
+
+                    cityId = cityId + "," + selectChipList.get(i).getId();
                 }
+//                    jsonArray.add(cityList.get(i).getCityId());
+                cityIdArray.put(String.valueOf(cityIdArray.size()), selectChipList.get(i).getId());
+
             }
             txt_city_content.setText(cityName);
             totalAmount = String.valueOf(price);
@@ -423,6 +464,8 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                 layout_banner_form.setVisibility(View.GONE);
                 txt_page_title.setText(getString(R.string.txt_select) + " " + getString(R.string.txt_city_select));
                 txt_page_action.setVisibility(View.VISIBLE);
+
+                Function.openSoftKeyboard(AddBannerActivity.this, v);
                 isList = true;
                 break;
             case R.id.txt_page_action:
@@ -802,6 +845,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             EditBannerModel dr = response.body();
             try {
                 if (dr.isStatus()) {
+                    layout_banner_form.setVisibility(View.VISIBLE);
                     changeDeductedAmount = true;
                     BannerDetailsModel detailsModel = dr.getEditBannerDataModel().getBannerDetailsModel();
                     edt_banner_title.setText(detailsModel.getBannerTitle());
@@ -846,6 +890,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                         if (!cityId.contains(",")) {
                             if (dr.getEditBannerDataModel().getCityList().get(i).getCityId().equals(cityId)) {
                                 cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), true));
+                                selectChipList.add(new CityChipModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice()));
                             } else {
                                 cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), false));
                             }
@@ -854,6 +899,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                             for (int s = 0; s < cIds.length; s++) {
                                 if (dr.getEditBannerDataModel().getCityList().get(i).getCityId().equals(cIds[s])) {
                                     cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), true));
+                                    selectChipList.add(new CityChipModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice()));
                                     isAdd = true;
                                     break;
                                 }
@@ -861,7 +907,15 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                             if (!isAdd)
                                 cityList.add(new CityItemModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice(), false));
                         }
+                        cityChipList.add(new CityChipModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice()));
                     }
+                    changeChip = true;
+                    for (int z = 0;z<selectChipList.size();z++){
+//                        chips_input.addChip(selectChipList.get(z).getId(),selectChipList.get(z).getCityName(),selectChipList.get(z).getPrice());
+                        chips_input.addChip(selectChipList.get(z));
+                    }
+                    changeChip = false;
+                    chips_input.setFilterableList(cityChipList);
 //                    cityList.addAll(dr.getEditBannerDataModel().getCityList());
                     cityListAdapter.notifyDataSetChanged();
                     btn_confirm.setText(getString(R.string.txt_update_banner));
@@ -911,6 +965,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             ColorModel dr = response.body();
             try {
                 if (dr.isStatus()) {
+                    layout_banner_form.setVisibility(View.VISIBLE);
                     colorList.clear();
                     for (int i = 0; i < dr.getColorItemModel().getColorCode().size(); i++) {
                         if (i == 0) {
@@ -926,6 +981,11 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                     txt_guid_line.setText(dr.getColorItemModel().getGuideLines());
                     cityList.clear();
                     cityList.addAll(dr.getColorItemModel().getCityList());
+                    for (int i = 0; i < cityList.size(); i++) {
+                        cityChipList.add(new CityChipModel(cityList.get(i).getCityId(), cityList.get(i).getCityName(), cityList.get(i).getCityPrice()));
+
+                    }
+                    chips_input.setFilterableList(cityChipList);
                     cityListAdapter.notifyDataSetChanged();
                 } else {
 

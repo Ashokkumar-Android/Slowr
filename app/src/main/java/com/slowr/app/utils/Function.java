@@ -163,7 +163,13 @@ public class Function {
         inputMethodManager.hideSoftInputFromWindow(
                 v.getWindowToken(), 0);
     }
-
+    public static void openSoftKeyboard(Activity activity, View v) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInputFromWindow(
+                v.getApplicationWindowToken(),
+                InputMethodManager.SHOW_FORCED, 0);
+    }
 
 //    public static void applyFontToMenuItem(MenuItem mi, Typeface ty) {
 //        SpannableString mNewTitle = new SpannableString(mi.getTitle());

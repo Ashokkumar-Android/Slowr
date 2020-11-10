@@ -98,7 +98,7 @@ public class ProductAutoCompleteAdapter extends ArrayAdapter<SubCategoryItemMode
         @Override
         public CharSequence convertResultToString(Object resultValue) {
             SubCategoryItemModel fruit = (SubCategoryItemModel) resultValue;
-            return fruit.getSubcategoryName();
+            return fruit.getSubcategoryName().trim();
         }
 
         @Override

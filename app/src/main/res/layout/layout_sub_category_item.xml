@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:button="@drawable/radio_button_selector"
-            android:visibility="visible"
+            android:visibility="gone"
             android:checked="false" />
 
     </LinearLayout>

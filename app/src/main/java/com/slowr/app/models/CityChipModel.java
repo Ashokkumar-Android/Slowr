@@ -1,30 +1,33 @@
 package com.slowr.app.models;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.slowr.chips.Chip;
+import com.slowr.materialchips.model.ChipInterface;
 
-public class CityChipModel extends Chip {
-    String id;
-    String cityName;
-    String cityPrice;
+public class CityChipModel implements ChipInterface {
 
-    @Nullable
+    private String id;
+    private String cityName;
+    private String cityPrice;
+
+    public CityChipModel(String id, String name, String phoneNumber) {
+        this.id = id;
+        this.cityName = name;
+        this.cityPrice = phoneNumber;
+    }
+
     @Override
     public String getId() {
         return id;
     }
 
-    @NonNull
+
     @Override
     public String getCityName() {
         return cityName;
     }
 
-    @Nullable
     @Override
-    public String getCityPrice() {
+    public String getPrice() {
         return cityPrice;
     }
 }

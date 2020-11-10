@@ -64,7 +64,7 @@
         <LinearLayout
             android:id="@+id/layout_banner_bg"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/size_ten"
             android:orientation="horizontal">
 
@@ -73,14 +73,14 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/size_twenty"
-                android:paddingTop="@dimen/size_fifteen"
-                android:paddingBottom="@dimen/size_fifteen">
+                android:paddingLeft="@dimen/size_ten"
+                android:paddingTop="@dimen/size_ten"
+                android:paddingBottom="@dimen/size_ten">
 
                 <TextView
                     android:id="@+id/txt_preview_title"
                     style="@style/attribute_title"
-                    android:text="Renting @ ₹1800/day"
+                    android:text=""
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_fourteen" />
 
@@ -95,7 +95,7 @@
                     android:id="@+id/txt_prosperId"
                     style="@style/attribute_content"
                     android:fontFamily="@font/nunito_regular"
-                    android:text="AB1234"
+                    android:text=""
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/size_eighteen" />
 
@@ -103,7 +103,7 @@
                     android:id="@+id/txt_preview_description"
                     style="@style/attribute_title"
                     android:layout_marginTop="@dimen/size_five"
-                    android:text="EPSON projector for office use."
+                    android:text=""
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_fourteen" />
 
