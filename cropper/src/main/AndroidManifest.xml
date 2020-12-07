@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gioco.image.cropper">
+
+    <application>
+        <activity
+            android:name="com.gioco.image.cropper.CropImageActivity"
+            android:theme="@style/Theme.AppCompat">
+
+        </activity>
+    </application>
+</manifest>

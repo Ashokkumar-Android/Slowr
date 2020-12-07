@@ -1,0 +1,45 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+	package
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:2:5-38
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:1-11:12
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:1:11-69
+application
+ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:4:5-10:19
+activity#com.gioco.image.cropper.CropImageActivity
+ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:5:9-9:20
+	android:theme
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:7:13-51
+	android:name
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml:6:13-69
+uses-sdk
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		ADDED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
+		INJECTED from D:\Android Project\Slowr\cropper\src\main\AndroidManifest.xml
