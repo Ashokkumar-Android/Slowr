@@ -96,14 +96,19 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
 
         if (movie.getInputValue() != null && movie.getInputValue().equals("")) {
             holder.txt_select_content.setHint("Type" + " " + movie.getName());
-            holder.edt_attributeValue.setText("");
-            holder.txt_select_content.setText("");
+            if (movie.getType().equals("select")) {
+                holder.txt_select_content.setText("");
+            } else {
+                holder.edt_attributeValue.setText("");
+            }
         } else {
             isChange = true;
             if (movie.getType().equals("select")) {
                 holder.txt_select_content.setText(movie.getInputValue().trim());
+                holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
             } else {
                 holder.edt_attributeValue.setText(movie.getInputValue().trim());
+                holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
             }
             isChange = false;
         }
@@ -164,6 +169,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                 String val = holder.edt_attributeValue.getText().toString().trim();
                 int desValue = holder.edt_attributeValue.getText().toString().length();
                 movie.setInputValue(val);
+                movie.setTextLength(String.valueOf(desValue));
                 if (movie.getIsTitle().equals("1")) {
                     callback.attributeEnterValue(val, position);
                 }
@@ -190,6 +196,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                 String val = holder.txt_select_content.getText().toString().trim();
                 int desValue = holder.txt_select_content.getText().toString().length();
                 movie.setInputValue(val);
+                movie.setTextLength(String.valueOf(desValue));
                 if (movie.getIsTitle().equals("1")) {
                     callback.attributeEnterValue(val, position);
                 }

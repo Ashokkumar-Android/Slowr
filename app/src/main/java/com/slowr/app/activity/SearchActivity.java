@@ -3,6 +3,9 @@ package com.slowr.app.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -162,22 +165,22 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
         btn_requirement_ad.setOnClickListener(this);
-//        if (_fun.isInternetAvailable(SearchActivity.this)) {
-//            getRecentSearch();
-//        } else {
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-//                        @Override
-//                        public void isInternet() {
-//                            getRecentSearch();
-//                        }
-//                    });
-//                }
-//            }, 200);
-//
-//        }
+        if (_fun.isInternetAvailable(SearchActivity.this)) {
+            getRecentSearch();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getRecentSearch();
+                        }
+                    });
+                }
+            }, 200);
+
+        }
 
         CallBackFunction();
         SearchFunction();
@@ -247,51 +250,51 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
     private void SearchFunction() {
 
-//        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                final String val = edt_search_suggestion.getText().toString();
-//                if (val.length() > 1) {
-//
-//                    if (_fun.isInternetAvailable(SearchActivity.this)) {
-//                        getSearchSuggestion(val);
-//                    } else {
-//                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-//                            @Override
-//                            public void isInternet() {
-//                                getSearchSuggestion(val);
-//                            }
-//                        });
-//                    }
-//                } else {
-//                    if (_fun.isInternetAvailable(SearchActivity.this)) {
-//                        getRecentSearch();
-//                    } else {
-//                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-//                            @Override
-//                            public void isInternet() {
-//                                getRecentSearch();
-//                            }
-//                        });
-//                    }
-//                }
-////                if (val.length() != 0) {
-//////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete_image, 0);
-//////                } else {
-//////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0);
-//////                }
-//            }
-//        });
+        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                final String val = edt_search_suggestion.getText().toString();
+                if (val.length() != 0) {
+
+                    if (_fun.isInternetAvailable(SearchActivity.this)) {
+                        getSearchSuggestion(val);
+                    } else {
+                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                getSearchSuggestion(val);
+                            }
+                        });
+                    }
+                } else {
+                    if (_fun.isInternetAvailable(SearchActivity.this)) {
+                        getRecentSearch();
+                    } else {
+                        _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                getRecentSearch();
+                            }
+                        });
+                    }
+                }
+//                if (val.length() != 0) {
+////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_delete_image, 0);
+////                } else {
+////                    edt_search_suggestion.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_search, 0);
+////                }
+            }
+        });
         edt_search_suggestion.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -301,8 +304,19 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                         Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
                     } else {
                         Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
+                        layout_ad_list.setVisibility(View.VISIBLE);
+                        layout_search_list.setVisibility(View.GONE);
 
-//                    txt_page_title.setText(searchSugeistionValue);
+                        isCategory = true;
+
+                        searchCatId = "";
+
+                        searchSubCatId = "";
+
+
+                        searchChildCatId = "";
+
+                        txt_page_title.setText(searchSugeistionValue);
                         currentPageNo = 1;
                         getAdList(true);
                     }
@@ -324,8 +338,19 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                             Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
                         } else {
                             Function.hideSoftKeyboard(SearchActivity.this, edt_search);
+                            layout_ad_list.setVisibility(View.VISIBLE);
+                            layout_search_list.setVisibility(View.GONE);
 
-//                        txt_page_title.setText(searchSugeistionValue);
+                            isCategory = true;
+
+                            searchCatId = "";
+
+                            searchSubCatId = "";
+
+
+                            searchChildCatId = "";
+
+                            txt_page_title.setText(searchSugeistionValue);
                             currentPageNo = 1;
                             getAdList(true);
                         }
@@ -403,8 +428,9 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 String adId = adList.get(pos).getAdId();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
+                String url = adList.get(pos).getPhotoType();
 //                ShareLink(catId, adId, adTitle,catGroup);
-                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup);
+                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup, url);
             }
         });
 
@@ -439,7 +465,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 String adId = adList.get(pos).getAdId();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
-                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup);
+                String url = adList.get(pos).getPhotoType();
+                Function.ShareLink(SearchActivity.this, catId, adId, adTitle, catGroup, url);
             }
         });
 
@@ -593,7 +620,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 //                    isSearch = true;
                     serachView = 1;
                     if (adList.size() == 0) {
-                        layout_list_filter.setVisibility(View.GONE);
+                        layout_list_filter.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.VISIBLE);
                     } else {
                         layout_list_filter.setVisibility(View.VISIBLE);
@@ -708,10 +735,14 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 ShowPopupSortBy(2);
                 break;
             case R.id.btn_requirement_ad:
-                Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
-                p.putExtra("AdType", 2);
-                p.putExtra("ParId", "");
-                startActivity(p);
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 2);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                }else {
+                    Function.CustomMessage(SearchActivity.this, getString(R.string.txt_please_login));
+                }
                 break;
         }
     }
@@ -963,31 +994,31 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             getAdList(false);
         } else {
 
-//            final String val = edt_search_suggestion.getText().toString();
-//            if (val.length() > 1) {
-//
-//                if (_fun.isInternetAvailable(SearchActivity.this)) {
-//                    getSearchSuggestion(val);
-//                } else {
-//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-//                        @Override
-//                        public void isInternet() {
-//                            getSearchSuggestion(val);
-//                        }
-//                    });
-//                }
-//            } else {
-//                if (_fun.isInternetAvailable(SearchActivity.this)) {
-//                    getRecentSearch();
-//                } else {
-//                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
-//                        @Override
-//                        public void isInternet() {
-//                            getRecentSearch();
-//                        }
-//                    });
-//                }
-//            }
+            final String val = edt_search_suggestion.getText().toString();
+            if (val.length() > 1) {
+
+                if (_fun.isInternetAvailable(SearchActivity.this)) {
+                    getSearchSuggestion(val);
+                } else {
+                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getSearchSuggestion(val);
+                        }
+                    });
+                }
+            } else {
+                if (_fun.isInternetAvailable(SearchActivity.this)) {
+                    getRecentSearch();
+                } else {
+                    _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            getRecentSearch();
+                        }
+                    });
+                }
+            }
 
         }
     }

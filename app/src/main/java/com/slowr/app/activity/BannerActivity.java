@@ -2,7 +2,6 @@ package com.slowr.app.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -55,9 +54,11 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     ImageView img_banner_preview;
     Button btn_edit;
     Button btn_delete;
+    Button btn_add_banner;
     LinearLayout layout_banner_bg;
     LinearLayout layout_preview;
     FrameLayout layout_list;
+    LinearLayout layout_no_result;
 
     private Function _fun = new Function();
 
@@ -87,6 +88,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         layout_preview = findViewById(R.id.layout_preview);
         layout_list = findViewById(R.id.layout_list);
         layout_banner_bg = findViewById(R.id.layout_banner_bg);
+        layout_no_result = findViewById(R.id.layout_no_result);
+        btn_add_banner = findViewById(R.id.btn_add_banner);
 
 
         listManager = new LinearLayoutManager(BannerActivity.this, RecyclerView.VERTICAL, false);
@@ -101,6 +104,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         fb_add_banner.setOnClickListener(this);
         btn_edit.setOnClickListener(this);
         btn_delete.setOnClickListener(this);
+        btn_add_banner.setOnClickListener(this);
         getBannerList(true);
         callBackFunction();
     }
@@ -116,7 +120,9 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 txt_preview_title.setText(bannerList.get(pos).getBannerTitle());
                 txt_preview_description.setText(bannerList.get(pos).getDescription());
                 txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
-                layout_banner_bg.setBackgroundColor(Color.parseColor(bannerList.get(pos).getColorCode()));
+//                layout_banner_bg.setBackgroundColor(Color.parseColor(bannerList.get(pos).getColorCode()));
+                String[] col = bannerList.get(pos).getColorCode().split(",");
+                Function.GradientBgSet(layout_banner_bg, col[0], col[1]);
                 Glide.with(BannerActivity.this)
                         .load(bannerList.get(pos).getBannerImage())
                         .placeholder(R.drawable.ic_default_vertical)
@@ -215,8 +221,22 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
 
                 }
+                if (bannerList.size() == 0) {
+                    layout_list.setVisibility(View.GONE);
+                    layout_no_result.setVisibility(View.VISIBLE);
+                } else {
+                    layout_list.setVisibility(View.VISIBLE);
+                    layout_no_result.setVisibility(View.GONE);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+                if (bannerList.size() == 0) {
+                    layout_list.setVisibility(View.GONE);
+                    layout_no_result.setVisibility(View.VISIBLE);
+                } else {
+                    layout_list.setVisibility(View.VISIBLE);
+                    layout_no_result.setVisibility(View.GONE);
+                }
             }
         }
 //        }
@@ -227,6 +247,13 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             call.cancel();
             if (layout_swipe_refresh.isRefreshing()) {
                 layout_swipe_refresh.setRefreshing(false);
+            }
+            if (bannerList.size() == 0) {
+                layout_list.setVisibility(View.GONE);
+                layout_no_result.setVisibility(View.VISIBLE);
+            } else {
+                layout_list.setVisibility(View.VISIBLE);
+                layout_no_result.setVisibility(View.GONE);
             }
         }
     };
@@ -277,6 +304,9 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
                 i.putExtra("Type", "1");
                 startActivityForResult(i, EDIT_CODE);
+                break;
+            case R.id.btn_add_banner:
+                fb_add_banner.performClick();
                 break;
             case R.id.btn_edit:
                 Intent e = new Intent(BannerActivity.this, AddBannerActivity.class);

@@ -48,6 +48,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                     categoryListFilter.get(getAdapterPosition()).setCheck(true);
                     notifyItemChanged(getAdapterPosition());
                     i++;
+                    if (i != 0) {
+                        callback.deleteVisible(true);
+                    } else {
+                        callback.deleteVisible(false);
+                    }
                     return true;
                 }
             });
@@ -65,10 +70,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                             if (i == 0) {
                                 icSelect = false;
                             }
+                            if (i != 0) {
+                                callback.deleteVisible(true);
+                            } else {
+                                callback.deleteVisible(false);
+                            }
                         } else {
                             categoryListFilter.get(getAdapterPosition()).setCheck(true);
                             notifyItemChanged(getAdapterPosition());
                             i++;
+                            if (i != 0) {
+                                callback.deleteVisible(true);
+                            } else {
+                                callback.deleteVisible(false);
+                            }
                         }
                     } else {
                         callback.itemClick(getAdapterPosition());
@@ -143,8 +158,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public interface Callback {
         void itemClick(int pos);
 
+        void deleteVisible(boolean isDelete);
 
     }
 
-
+    public void RemoveSelection(boolean _icSelect) {
+        this.icSelect = _icSelect;
+        notifyDataSetChanged();
+    }
 }

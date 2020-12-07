@@ -10,7 +10,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -113,6 +115,21 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onOtpCompleted(String _otp) {
                 otp = _otp;
+            }
+        });
+        edt_otp.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (otp.length() == 0) {
+                        Function.CustomMessage(SignupActivity.this, "Enter OTP");
+                        return false;
+                    } else {
+                        verifyOTP(otp);
+                    }
+                    return true;
+                }
+                return false;
             }
         });
         TCPPTextView(txt_privacy_policy);
@@ -226,7 +243,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.txt_resend_otp:
                 if (resentCount != 2) {
                     resentCount++;
-                    reSendOTP();
+//                    reSendOTP();
+                    sendOTP();
                     edt_otp.setText("");
                 } else {
                     Intent i = new Intent(SignupActivity.this, ReportUsActivity.class);
@@ -362,6 +380,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }
         params.put("mobile", phone);
         params.put("status", "2");
+        params.put("message_type", "1");
         Log.i("params", params.toString());
 
 

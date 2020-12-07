@@ -37,7 +37,7 @@ public class KeyHashGenerator {
                 MessageDigest md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
                 key = new String(Base64.encode(md.digest(), 0));
-                Log.i("Key Hash= ", key);
+                Log.e("Key Hash= ", key);
             }
         } catch (PackageManager.NameNotFoundException e1) {
             Log.e("Name not found", e1.toString());

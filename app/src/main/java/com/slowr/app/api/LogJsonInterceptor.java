@@ -22,7 +22,6 @@ public class LogJsonInterceptor implements Interceptor {
             e.printStackTrace();
         }
 
-
         // Re-create the response before returning it because body can be read only once
         return response.newBuilder()
                 .body(ResponseBody.create(response.body().contentType(), rawJson)).build();

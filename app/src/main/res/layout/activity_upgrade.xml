@@ -14,7 +14,7 @@
         android:id="@+id/layout_upgrade"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -186,8 +186,8 @@
                         android:background="@drawable/bg_blue_top_page"
                         android:gravity="center"
                         android:text="@string/txt_top_of_page"
-                        android:textSize="@dimen/size_fourteen"
-                        android:textColor="@color/color_white" />
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_fourteen" />
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
 
@@ -303,8 +303,8 @@
                         android:background="@drawable/bg_green_top_page"
                         android:gravity="center"
                         android:text="@string/txt_premium_caps"
-                        android:textSize="@dimen/size_fourteen"
-                        android:textColor="@color/color_white" />
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_fourteen" />
                 </androidx.cardview.widget.CardView>
             </FrameLayout>
 
@@ -316,22 +316,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
-
-        <EditText
-            android:id="@+id/edt_search_suggestion"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_margin="@dimen/size_fifteen"
-            android:background="@drawable/bg_edt_login"
-            android:drawableRight="@drawable/ic_search"
-            android:hint="@string/search_prosper_id"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:paddingLeft="@dimen/size_ten"
-            android:paddingRight="@dimen/size_ten"
-            android:textSize="@dimen/size_fifteen" />
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edt_search_prosper"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="@dimen/size_fifteen"
+                android:background="@drawable/bg_edt_login"
+                android:digits="@string/search_digits"
+                android:hint="@string/search_prosper_id"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLength="6"
+                android:paddingLeft="@dimen/size_ten"
+                android:paddingRight="@dimen/size_ten"
+                android:singleLine="true"
+                android:textSize="@dimen/size_fifteen" />
+
+            <ImageView
+                android:id="@+id/img_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search"
+                android:layout_marginRight="@dimen/size_twenty"
+                android:padding="@dimen/size_five"
+                android:layout_gravity="center|right"/>
+        </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -341,13 +356,14 @@
             android:text="@string/txt_prosper_suggestion"
             android:textColor="@color/color_black"
             android:textSize="@dimen/size_eighteen" />
+
         <ImageView
             android:id="@+id/img_fancy_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="@dimen/size_ten"
-            android:src="@drawable/ic_fancy_page"/>
+            android:src="@drawable/ic_fancy_page" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -406,8 +422,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"
-                    android:gravity="center"
                     android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
                     android:text="@string/promote_content_one"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_eighteen" />
@@ -559,11 +575,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"
                     android:fontFamily="@font/nunito_regular"
-                    android:text="@string/promote_content_error"
                     android:gravity="center"
+                    android:text="@string/promote_content_error"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_eighteen" />
-
 
 
                 <Button

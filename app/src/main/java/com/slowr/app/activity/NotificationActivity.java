@@ -37,6 +37,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
     LinearLayout img_back;
     RecyclerView rc_notification;
     LinearLayout layout_no_result;
+    LinearLayout layout_delete;
     Button btn_my_ads;
     SwipeRefreshLayout layout_swipe_refresh;
     NotificationAdapter notificationAdapter;
@@ -46,6 +47,8 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
     HashMap<String, Object> params = new HashMap<String, Object>();
 
     int readPos = 0;
+    boolean isDeleteRefresh = false;
+    boolean isDeleteVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_my_ads = findViewById(R.id.btn_my_ads);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
+        layout_delete = findViewById(R.id.layout_delete);
 
         listManager = new LinearLayoutManager(NotificationActivity.this, RecyclerView.VERTICAL, false);
         rc_notification.setLayoutManager(listManager);
@@ -90,6 +94,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         }
         btn_my_ads.setOnClickListener(this);
         img_back.setOnClickListener(this);
+        layout_delete.setOnClickListener(this);
         CallBackFunction();
         ReadNotification("");
     }
@@ -126,6 +131,17 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 //                    ReadNotification(noteId);
 //                }
             }
+
+            @Override
+            public void deleteVisible(boolean isDelete) {
+                if (isDelete) {
+                    layout_delete.setVisibility(View.VISIBLE);
+                    isDeleteVisible = true;
+                } else {
+                    layout_delete.setVisibility(View.GONE);
+                    isDeleteVisible = false;
+                }
+            }
         });
     }
 
@@ -134,6 +150,42 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         RetrofitClient.getClient().create(Api.class).getNotificationList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(NotificationActivity.this, adListResponse, isLoad));
 
+    }
+
+    private void DeleteNotification() {
+
+        String noteId = "";
+        for (int i = 0; i < notificationList.size(); i++) {
+            if (notificationList.get(i).isCheck()) {
+                if (noteId.equals("")) {
+                    noteId = notificationList.get(i).getNotificationId();
+                } else {
+                    noteId = noteId + "," + notificationList.get(i).getNotificationId();
+                }
+            }
+        }
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_ids", noteId);
+        Log.i("Params", params.toString());
+
+
+        if (_fun.isInternetAvailable(NotificationActivity.this)) {
+            isDeleteRefresh = true;
+            RetrofitClient.getClient().create(Api.class).deleteNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true));
+
+        } else {
+            isDeleteRefresh = true;
+            _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).deleteNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true));
+                }
+            });
+        }
     }
 
     private void ReadNotification(String noteId) {
@@ -221,11 +273,25 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 if (dr.isStatus()) {
 //                    notificationList.get(readPos).setIsRead("1");
 //                    notificationAdapter.notifyItemChanged(readPos);
+                    if (isDeleteRefresh) {
+                        isDeleteRefresh = false;
+                        isDeleteVisible = false;
+                        layout_delete.setVisibility(View.GONE);
+                        notificationAdapter.RemoveSelection(false);
+                        getNotificationList(true);
+                    }
                 } else {
-
+                    if (isDeleteRefresh) {
+                        isDeleteRefresh = false;
+                        isDeleteVisible = false;
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                if (isDeleteRefresh) {
+                    isDeleteRefresh = false;
+                    isDeleteVisible = false;
+                }
             }
         }
 //        }
@@ -234,6 +300,10 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            if (isDeleteRefresh) {
+                isDeleteRefresh = false;
+                isDeleteVisible = false;
+            }
         }
     };
 
@@ -246,7 +316,21 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 finish();
                 break;
             case R.id.img_back:
-                finish();
+                if (isDeleteVisible) {
+                    notificationAdapter.RemoveSelection(false);
+                    for (int i = 0; i < notificationList.size(); i++) {
+                        if (notificationList.get(i).isCheck()) {
+                            notificationList.get(i).setCheck(false);
+                        }
+                    }
+                    notificationAdapter.notifyDataSetChanged();
+                    layout_delete.setVisibility(View.GONE);
+                } else {
+                    finish();
+                }
+                break;
+            case R.id.layout_delete:
+                DeleteNotification();
                 break;
         }
     }
@@ -276,5 +360,23 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
     protected void onRestart() {
         getNotificationList(true);
         super.onRestart();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isDeleteVisible) {
+            notificationAdapter.RemoveSelection(false);
+            for (int i = 0; i < notificationList.size(); i++) {
+                if (notificationList.get(i).isCheck()) {
+                    notificationList.get(i).setCheck(false);
+                }
+            }
+            notificationAdapter.notifyDataSetChanged();
+            layout_delete.setVisibility(View.GONE);
+        } else {
+            finish();
+            super.onBackPressed();
+        }
+
     }
 }

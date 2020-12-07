@@ -150,7 +150,8 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 String adId = model.getAdId();
                 String adTitle = model.getAdTitle();
                 String catGroup = model.getCatGroup();
-                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup);
+                String url = model.getPhotoType();
+                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup,url);
             }
 
             @Override

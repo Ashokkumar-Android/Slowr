@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".activity.AddBannerActivity">
 
@@ -50,7 +50,7 @@
                         android:hint="@string/txt_enter_banner_title"
                         android:imeOptions="actionNext"
                         android:inputType="textCapSentences|textImeMultiLine"
-                        android:maxLength="60"
+                        android:maxLength="55"
                         android:maxLines="2"
                         android:paddingRight="@dimen/button_box_height" />
 
@@ -184,8 +184,8 @@
                         style="@style/attribute_content"
                         android:layout_weight="1"
                         android:hint="@string/txt_select_city"
-                        android:visibility="visible"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:visibility="visible" />
 
                     <ImageView
                         android:layout_width="15dp"
@@ -361,7 +361,7 @@
                     <Button
                         android:id="@+id/btn_confirm"
                         style="@style/LoginButtonStyle"
-                        android:layout_gravity="center"
+                        android:layout_gravity="right"
                         android:layout_marginTop="@dimen/size_fifteen"
                         android:layout_marginBottom="@dimen/size_twenty"
                         android:background="@drawable/bg_orenge"
@@ -395,68 +395,76 @@
         <LinearLayout
             android:id="@+id/layout_banner_bg"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/size_ten"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.4"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/size_twenty"
-                android:paddingTop="@dimen/size_fifteen"
-                android:paddingBottom="@dimen/size_fifteen">
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/size_ten"
+                android:background="@color/color_white_trans"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txt_preview_title"
-                    style="@style/attribute_title"
-                    android:text="Renting @ ₹1800/day"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_fourteen" />
-
-
-                <TextView
-                    style="@style/attribute_title"
-                    android:text="Prosper ID"
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_ten" />
-
-                <TextView
-                    android:id="@+id/txt_prosperId"
-                    style="@style/attribute_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="AB1234"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/size_eighteen" />
-
-                <TextView
-                    android:id="@+id/txt_preview_description"
-                    style="@style/attribute_title"
-                    android:layout_marginTop="@dimen/size_five"
-                    android:text="EPSON projector for office use."
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_fourteen" />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.6"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/img_banner_preview"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:layout_marginLeft="@dimen/size_ten"
-                    android:layout_marginRight="@dimen/size_ten"
-                    android:src="@drawable/ic_default_vertical" />
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4"
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/size_ten"
+                    android:paddingTop="@dimen/size_five"
+                    android:paddingBottom="@dimen/size_five">
 
+                    <TextView
+                        android:id="@+id/txt_preview_title"
+                        style="@style/attribute_title"
+                        android:text="Renting @ ₹1800/day"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_fourteen" />
+
+
+                    <TextView
+                        style="@style/attribute_title"
+                        android:text="Prosper ID"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_ten" />
+
+                    <TextView
+                        android:id="@+id/txt_prosperId"
+                        style="@style/attribute_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="AB1234"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/size_eighteen" />
+
+                    <TextView
+                        android:id="@+id/txt_preview_description"
+                        style="@style/attribute_title"
+                        android:layout_marginTop="@dimen/size_five"
+                        android:text=""
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_fourteen" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.6"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/img_banner_preview"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_marginLeft="@dimen/size_ten"
+                        android:layout_marginRight="@dimen/size_ten"
+                        android:src="@drawable/ic_default_vertical" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -497,13 +505,13 @@
             android:id="@+id/chips_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hint="@string/txt_type_city"
+            android:layout_margin="@dimen/size_ten"
             android:background="@drawable/bg_edt_login"
-            android:visibility="visible"
             android:paddingLeft="@dimen/size_ten"
             android:paddingRight="@dimen/size_ten"
-            android:layout_margin="@dimen/size_ten"
-            app:chip_deletable="true"/>
+            android:visibility="visible"
+            app:chip_deletable="true"
+            app:hint="@string/txt_type_city" />
 
         <EditText
             android:id="@+id/edt_list_search"
@@ -515,14 +523,14 @@
             android:inputType="text"
             android:paddingLeft="@dimen/size_ten"
             android:paddingRight="@dimen/size_ten"
-            android:visibility="gone"
-            android:textSize="@dimen/size_fifteen" />
+            android:textSize="@dimen/size_fifteen"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rc_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
 
     </LinearLayout>

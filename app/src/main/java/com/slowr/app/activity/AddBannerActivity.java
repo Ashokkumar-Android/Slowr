@@ -47,10 +47,10 @@ import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.BannerDetailsModel;
 import com.slowr.app.models.CityChipModel;
 import com.slowr.app.models.CityItemModel;
+import com.slowr.app.models.ColorCodeItemModel;
 import com.slowr.app.models.ColorModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditBannerModel;
-import com.slowr.app.models.UploadImageModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
@@ -118,7 +118,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     ChipsInput chips_input;
 
     ViewColorAdapter viewColorAdapter;
-    ArrayList<UploadImageModel> colorList = new ArrayList<>();
+    ArrayList<ColorCodeItemModel> colorList = new ArrayList<>();
     ArrayList<CityItemModel> cityList = new ArrayList<>();
     ArrayList<CityChipModel> cityChipList = new ArrayList<>();
     ArrayList<CityChipModel> selectChipList = new ArrayList<>();
@@ -131,7 +131,8 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     String imgPath = "";
     Uri selectedImage;
     MultipartBody.Part bannerImage = null;
-    String colorCode = "";
+    String colorCodeOne = "";
+    String colorCodeTwo = "";
     private PopupWindow spinnerPopup;
 
     boolean isList = false;
@@ -298,15 +299,17 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             public void itemClick(int pos) {
                 for (int i = 0; i < colorList.size(); i++) {
                     if (i == pos) {
-                        colorList.get(i).setChanged(true);
+                        colorList.get(i).setChange(true);
                     } else {
-                        colorList.get(i).setChanged(false);
+                        colorList.get(i).setChange(false);
                     }
                 }
                 viewColorAdapter.notifyDataSetChanged();
-                colorCode = colorList.get(pos).getImgURL();
-                layout_banner_bg.setBackgroundColor(Color.parseColor(colorCode));
-                view_color.setBackgroundColor(Color.parseColor(colorCode));
+                colorCodeOne = colorList.get(pos).getColorOne();
+                colorCodeTwo = colorList.get(pos).getColorTwo();
+
+                Function.GradientBgSet(layout_banner_bg, colorCodeOne, colorCodeTwo);
+                Function.GradientBgSet(view_color, colorCodeOne, colorCodeTwo);
             }
         });
     }
@@ -364,7 +367,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             public void afterTextChanged(Editable s) {
                 int desValue = edt_banner_title.getText().toString().length();
                 txt_title_count.setText(getString(R.string.txt_title_count, String.valueOf(desValue)));
-                if (desValue == 60 && !changeDeductedAmount) {
+                if (desValue == 55 && !changeDeductedAmount) {
                     Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_limit_reached));
                 }
             }
@@ -447,7 +450,11 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                     layout_preview.setVisibility(View.GONE);
                     isPreview = false;
                 } else {
-                    finish();
+                    if (checkData() && !Type.equals("2") && !isRenew) {
+                        WarningPopup();
+                    } else {
+                        finish();
+                    }
                 }
                 break;
             case R.id.txt_from_date:
@@ -593,7 +600,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         String bannerTitle = edt_banner_title.getText().toString().trim();
         String description = edt_description.getText().toString().trim();
         if (!imgPath.equals("")) {
-            File file = new File(imgPath);
+            File file = new File(Function.compressImage(imgPath));
             final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
             bannerImage = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
         }
@@ -604,7 +611,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         final RequestBody _cityId = RequestBody.create(okhttp3.MultipartBody.FORM, cityId);
         final RequestBody bAmount = RequestBody.create(okhttp3.MultipartBody.FORM, totalAmount);
         final RequestBody bDays = RequestBody.create(okhttp3.MultipartBody.FORM, totalDays);
-        final RequestBody bColors = RequestBody.create(okhttp3.MultipartBody.FORM, colorCode);
+        final RequestBody bColors = RequestBody.create(okhttp3.MultipartBody.FORM, colorCodeOne + "," + colorCodeTwo);
         final RequestBody _bannerId = RequestBody.create(okhttp3.MultipartBody.FORM, bannerId);
         final RequestBody transactionId = RequestBody.create(okhttp3.MultipartBody.FORM, paymentId);
         final RequestBody promotionType = RequestBody.create(okhttp3.MultipartBody.FORM, "4");
@@ -643,7 +650,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
         final Checkout co = new Checkout();
 //        co.setKeyID("rzp_test_A2vBDkxnd63ve4");
-
+        int tAmount = Integer.valueOf(totalAmount) * 100;
         try {
             JSONObject options = new JSONObject();
             options.put("name", getString(R.string.app_name));
@@ -651,7 +658,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             //You can omit the image option to fetch the image from dashboard
             options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             options.put("currency", "INR");
-            options.put("amount", "100");
+            options.put("amount",  String.valueOf(tAmount));
 
             JSONObject preFill = new JSONObject();
             JSONObject themeStyle = new JSONObject();
@@ -664,7 +671,6 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
             co.open(activity, options);
         } catch (Exception e) {
-
             Function.CustomMessage(AddBannerActivity.this, "Try Again.");
             e.printStackTrace();
         }
@@ -873,17 +879,20 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                             .error(R.drawable.ic_default_vertical)
                             .into(img_banner_preview);
                     colorList.clear();
+                    String[] col = dr.getEditBannerDataModel().getBannerDetailsModel().getColorCode().split(",");
                     for (int i = 0; i < dr.getEditBannerDataModel().getColorCode().size(); i++) {
-                        if (dr.getEditBannerDataModel().getColorCode().get(i).equals(dr.getEditBannerDataModel().getBannerDetailsModel().getColorCode())) {
-                            colorList.add(new UploadImageModel(dr.getEditBannerDataModel().getColorCode().get(i), true, "", ""));
-                            colorCode = dr.getEditBannerDataModel().getColorCode().get(i);
+                        if (dr.getEditBannerDataModel().getColorCode().get(i).getColorOne().equals(col[0]) && dr.getEditBannerDataModel().getColorCode().get(i).getColorTwo().equals(col[1])) {
+                            colorList.add(new ColorCodeItemModel(dr.getEditBannerDataModel().getColorCode().get(i).getColorOne(), dr.getEditBannerDataModel().getColorCode().get(i).getColorTwo(), true));
+                            colorCodeOne = dr.getEditBannerDataModel().getColorCode().get(i).getColorOne();
+                            colorCodeTwo = dr.getEditBannerDataModel().getColorCode().get(i).getColorTwo();
+
                         } else {
-                            colorList.add(new UploadImageModel(dr.getEditBannerDataModel().getColorCode().get(i), false, "", ""));
+                            colorList.add(new ColorCodeItemModel(dr.getEditBannerDataModel().getColorCode().get(i).getColorOne(), dr.getEditBannerDataModel().getColorCode().get(i).getColorTwo(), true));
                         }
                     }
                     viewColorAdapter.notifyDataSetChanged();
-                    layout_banner_bg.setBackgroundColor(Color.parseColor(colorCode));
-                    view_color.setBackgroundColor(Color.parseColor(colorCode));
+                    Function.GradientBgSet(layout_banner_bg, colorCodeOne, colorCodeTwo);
+                    Function.GradientBgSet(view_color, colorCodeOne, colorCodeTwo);
                     cityList.clear();
                     for (int i = 0; i < dr.getEditBannerDataModel().getCityList().size(); i++) {
                         boolean isAdd = false;
@@ -910,7 +919,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                         cityChipList.add(new CityChipModel(dr.getEditBannerDataModel().getCityList().get(i).getCityId(), dr.getEditBannerDataModel().getCityList().get(i).getCityName(), dr.getEditBannerDataModel().getCityList().get(i).getCityPrice()));
                     }
                     changeChip = true;
-                    for (int z = 0;z<selectChipList.size();z++){
+                    for (int z = 0; z < selectChipList.size(); z++) {
 //                        chips_input.addChip(selectChipList.get(z).getId(),selectChipList.get(z).getCityName(),selectChipList.get(z).getPrice());
                         chips_input.addChip(selectChipList.get(z));
                     }
@@ -969,21 +978,21 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                     colorList.clear();
                     for (int i = 0; i < dr.getColorItemModel().getColorCode().size(); i++) {
                         if (i == 0) {
-                            colorList.add(new UploadImageModel(dr.getColorItemModel().getColorCode().get(i), true, "", ""));
+                            colorList.add(new ColorCodeItemModel(dr.getColorItemModel().getColorCode().get(i).getColorOne(), dr.getColorItemModel().getColorCode().get(i).getColorTwo(), true));
                         } else {
-                            colorList.add(new UploadImageModel(dr.getColorItemModel().getColorCode().get(i), false, "", ""));
+                            colorList.add(new ColorCodeItemModel(dr.getColorItemModel().getColorCode().get(i).getColorOne(), dr.getColorItemModel().getColorCode().get(i).getColorTwo(), false));
                         }
                     }
                     viewColorAdapter.notifyDataSetChanged();
-                    colorCode = colorList.get(0).getImgURL();
-                    layout_banner_bg.setBackgroundColor(Color.parseColor(colorCode));
-                    view_color.setBackgroundColor(Color.parseColor(colorCode));
+                    colorCodeOne = colorList.get(0).getColorOne();
+                    colorCodeTwo = colorList.get(0).getColorTwo();
+                    Function.GradientBgSet(layout_banner_bg, colorCodeOne, colorCodeTwo);
+                    Function.GradientBgSet(view_color, colorCodeOne, colorCodeTwo);
                     txt_guid_line.setText(dr.getColorItemModel().getGuideLines());
                     cityList.clear();
                     cityList.addAll(dr.getColorItemModel().getCityList());
                     for (int i = 0; i < cityList.size(); i++) {
                         cityChipList.add(new CityChipModel(cityList.get(i).getCityId(), cityList.get(i).getCityName(), cityList.get(i).getCityPrice()));
-
                     }
                     chips_input.setFilterableList(cityChipList);
                     cityListAdapter.notifyDataSetChanged();

@@ -34,7 +34,7 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
             rb_select = view.findViewById(R.id.rb_select);
             layout_root.setOnClickListener(this);
             rb_select.setOnClickListener(this);
-
+            rb_select.setVisibility(View.VISIBLE);
         }
 
         @Override

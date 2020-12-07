@@ -171,7 +171,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 .into(img_profile);
 
         if (isUnVerified) {
-            img_unverified_user.setVisibility(View.VISIBLE);
+            img_unverified_user.setVisibility(View.GONE);
         } else {
             img_unverified_user.setVisibility(View.GONE);
         }
@@ -272,7 +272,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.layout_prosper_id:
                 if (isUnVerified) {
-                    ShowPopupProsper();
+//                    ShowPopupProsper();
                 }
                 break;
         }

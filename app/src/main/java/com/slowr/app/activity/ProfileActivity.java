@@ -185,6 +185,38 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 otp = _otp;
             }
         });
+        otp_view.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (otp.length() == 0) {
+                        Function.CustomMessage(ProfileActivity.this, "Enter OTP");
+                        return false;
+                    } else {
+                        if (_fun.isInternetAvailable(ProfileActivity.this)) {
+                            if (isEmail) {
+                                verifyEmailOTP(otp);
+                            } else {
+                                verifyOTP(otp);
+                            }
+                        } else {
+                            _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
+                                @Override
+                                public void isInternet() {
+                                    if (isEmail) {
+                                        verifyEmailOTP(otp);
+                                    } else {
+                                        verifyOTP(otp);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            }
+        });
         edt_email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -321,12 +353,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     resentCount++;
 
                     if (_fun.isInternetAvailable(ProfileActivity.this)) {
-                        reSendOTP();
+//                        reSendOTP();
+                        sendOTP();
                     } else {
                         _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                reSendOTP();
+                                sendOTP();
+//                                reSendOTP();
                             }
                         });
                     }
@@ -457,7 +491,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 //                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
 
         //creating a file
-        File file = new File(imgPath);
+        File file = new File(Function.compressImage(imgPath));
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         chatImage = MultipartBody.Part.createFormData("avator", file.getName(), requestFile);
 
@@ -590,9 +624,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     if (dr.getUserDetailsModel().getUserMobile() != null && !dr.getUserDetailsModel().getUserMobile().equals(""))
                         if (dr.getUserDetailsModel().getIsMobileVerified().equals("1")) {
                             txt_user_mobile_verify.setText("Verified");
+                            txt_user_mobile_verify.setVisibility(View.GONE);
                             txt_user_mobile_verify.setTextColor(getResources().getColor(R.color.bg_green));
                         } else {
                             txt_user_mobile_verify.setText("Not Verified");
+                            txt_user_mobile_verify.setVisibility(View.GONE);
                             txt_user_mobile_verify.setTextColor(getResources().getColor(R.color.chat_sticker_circle_bg));
                         }
 
@@ -622,11 +658,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         btn_profile_verification.setTextColor(getResources().getColor(R.color.bg_green));
                         btn_profile_verification.setBackgroundResource(R.drawable.bg_green_border_profile);
                         btn_profile_verification.setText(getString(R.string.txt_verified_profile));
-//                        txt_verified.setVisibility(View.VISIBLE);
+                        txt_verified.setVisibility(View.GONE);
                         txt_verified.setText(getString(R.string.txt_verified));
                         txt_verified.setTextColor(getResources().getColor(R.color.bg_green));
                         txt_verified.setEnabled(false);
                     } else {
+                        txt_verified.setVisibility(View.GONE);
                         txt_verified.setText(getString(R.string.txt_unverified));
                         txt_verified.setTextColor(getResources().getColor(R.color.txt_orange));
                         txt_verified.setEnabled(true);
@@ -991,6 +1028,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
         params.put("mobile", phone);
         params.put("status", "2");
+        params.put("message_type", "4");
         Log.i("params", params.toString());
         RetrofitClient.getClient().create(Api.class).sendOTP(params)
                 .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTP, true));

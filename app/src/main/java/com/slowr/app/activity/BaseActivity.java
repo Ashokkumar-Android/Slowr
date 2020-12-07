@@ -89,7 +89,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;
 
     MenuItem menuLogout;
-//    MenuItem menuProfile;
+    //    MenuItem menuProfile;
     MenuItem menuFavorites;
     MenuItem menuMyAds;
     MenuItem menuInvoice;
@@ -177,13 +177,13 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuMyAds.setVisible(true);
             menuInvoice.setVisible(true);
             menuNotification.setVisible(true);
-            menuChat.setVisible(true);
+            menuChat.setVisible(false);
             menuBanner.setVisible(true);
             layout_menu_header.setVisibility(View.VISIBLE);
             txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
             txt_prosperId_menu.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
             if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                img_unverified_user_home.setVisibility(View.VISIBLE);
+                img_unverified_user_home.setVisibility(View.GONE);
             } else {
                 img_unverified_user_home.setVisibility(View.GONE);
             }
@@ -239,6 +239,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
                     Intent p = new Intent(BaseActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 0);
+                    p.putExtra("ParId", Constant.ParentId);
                     startActivity(p);
                 } else {
                     Function.CustomMessage(BaseActivity.this, getString(R.string.txt_please_login));
@@ -266,29 +267,31 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-//        layout_prosper.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        layout_prosper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                Sessions.clearSession(getApplicationContext());
 //                layout_prosper.setVisibility(View.GONE);
 //                layout_login.setVisibility(View.VISIBLE);
-//            }
-//        });
+                Intent profile = new Intent(BaseActivity.this, ProfileActivity.class);
+                startActivityForResult(profile, MY_PROFILE_CODE);
+            }
+        });
         img_unverified_user_home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopupProsperBase();
+//                ShowPopupProsperBase();
             }
         });
 
-        txt_prosperId.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                    ShowPopupProsperBase();
-                }
-            }
-        });
+//        txt_prosperId.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
+////                    ShowPopupProsperBase();
+//                }
+//            }
+//        });
 
         layout_menu_header.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -365,6 +368,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 Intent h = new Intent(BaseActivity.this, HomeActivity.class);
                 h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(h);
+                Constant.ParentId = "";
             }
         });
 
@@ -521,6 +525,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     Intent h = new Intent(BaseActivity.this, HomeActivity.class);
                     h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(h);
+                    Constant.ParentId = "";
 //                    layout_login.setVisibility(View.VISIBLE);
 //                    layout_prosper.setVisibility(View.GONE);
 //                    menuLogout.setVisible(false);
@@ -557,7 +562,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     if (cityList.size() != 0) {
                         cityList.clear();
                     }
-                    CityItemModel cityItemModel = new CityItemModel("","All India","",false);
+                    CityItemModel cityItemModel = new CityItemModel("", "All India", "", false);
 
                     cityList.add(cityItemModel);
                     cityList.addAll(dr.getCityList());
@@ -664,7 +669,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                         .placeholder(R.drawable.ic_default_profile)
                         .into(img_profile_pic);
                 if (Sessions.getSession(Constant.UserVerified, getApplicationContext()).equals("0")) {
-                    img_unverified_user_home.setVisibility(View.VISIBLE);
+                    img_unverified_user_home.setVisibility(View.GONE);
                 } else {
                     img_unverified_user_home.setVisibility(View.GONE);
                 }

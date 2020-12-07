@@ -392,9 +392,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:dropDownVerticalOffset="5dp"
-                            android:focusableInTouchMode="false"
                             android:hint="@string/txt_select_locality"
                             android:imeOptions="actionNext"
+                            android:inputType="textCapSentences"
+                            android:focusableInTouchMode="false"
                             android:maxLength="50"
                             android:paddingRight="@dimen/button_box_height"
                             android:singleLine="true" />
@@ -560,6 +561,7 @@
                     android:id="@+id/txt_post_title_content"
                     style="@style/attribute_content"
                     android:layout_weight="1"
+                    android:textColor="@color/txt_orange"
                     android:fontFamily="@font/nunito_regular" />
 
 

@@ -104,7 +104,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.MyView
     }
 
     public interface Callback {
-        public void itemClick(CityItemModel model);
+        void itemClick(CityItemModel model);
 
 
     }
@@ -123,7 +123,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.MyView
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (row.getCityName().toLowerCase().contains(charString.toLowerCase())) {
+                        if (row.getCityName().toLowerCase().startsWith(charString.toLowerCase())) {
                             filteredList.add(row);
                         }
                     }

@@ -243,15 +243,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:background="@drawable/bg_green_border_view"
+                            android:background="@drawable/bg_orenge_border_color"
                             android:paddingLeft="@dimen/size_fifteen"
                             android:paddingTop="@dimen/size_five"
                             android:paddingRight="@dimen/size_fifteen"
                             android:paddingBottom="@dimen/size_five"
                             android:text="@string/txt_active"
-                            android:textColor="@color/bg_green"
+                            android:textColor="@color/txt_orange"
                             android:textSize="@dimen/size_sixteen"
                             android:visibility="visible" />
+
 
                     </LinearLayout>
 
@@ -373,10 +374,11 @@
 
                         <LinearLayout
                             android:id="@+id/layout_chat_call"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_five"
                             android:orientation="horizontal"
+                            android:gravity="center"
                             android:visibility="gone">
 
                             <Button
@@ -393,11 +395,12 @@
                                 android:textAllCaps="false"
                                 android:textColor="@color/color_white"
                                 android:textSize="@dimen/size_fourteen"
-                                android:visibility="visible" />
+                                android:visibility="gone" />
 
                             <View
                                 android:layout_width="10dp"
-                                android:layout_height="1dp" />
+                                android:layout_height="1dp"
+                                android:visibility="gone"/>
 
                             <Button
                                 android:id="@+id/btn_call_now"

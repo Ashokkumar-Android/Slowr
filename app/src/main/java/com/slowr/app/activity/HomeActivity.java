@@ -2,6 +2,7 @@ package com.slowr.app.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -19,17 +20,17 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonArray;
@@ -48,7 +49,9 @@ import com.slowr.app.adapter.SortByAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.components.carouselview.CarouselView;
 import com.slowr.app.models.AdItemModel;
+import com.slowr.app.models.AppVersionModel;
 import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.CategoryItemModel;
 import com.slowr.app.models.CityItemModel;
@@ -67,6 +70,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 
@@ -83,12 +87,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     LinearLayout layout_list_filter;
     Button btn_requirement_ad;
     SwipeRefreshLayout layout_swipe_refresh;
+    CardView layout_filter_root;
 
     RecyclerView rc_product_list;
     RecyclerView rc_service_list;
     RecyclerView rc_ad_list;
     RecyclerView rc_home_ad_list;
-    RecyclerView rc_banner;
+    CarouselView rc_banner;
 
     ProductCategoryListAdapter productCategoryListAdapter;
     ServiceCategoryListAdapter serviceCategoryListAdapter;
@@ -153,6 +158,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         getLayoutInflater().inflate(R.layout.content_home, contentFrameLayout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.getMenu().getItem(0).setChecked(true);
+        Constant.ParentId = "";
         doDeclaration();
     }
 
@@ -179,6 +185,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_list_filter = findViewById(R.id.layout_list_filter);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         rc_banner = findViewById(R.id.rc_banner);
+        layout_filter_root = findViewById(R.id.layout_filter_root);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -215,8 +222,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 //        LinearLayoutManager linearLayoutManager5 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
 //        rc_banner.setLayoutManager(linearLayoutManager5);
 //        rc_banner.setItemAnimator(new DefaultItemAnimator());
-//        homeBannerAdapter = new HomeBannerAdapter(bannerList, HomeActivity.this);
-//        rc_banner.setAdapter(homeBannerAdapter);
+        homeBannerAdapter = new HomeBannerAdapter(bannerList, HomeActivity.this);
+        rc_banner.setAdapter(homeBannerAdapter);
 //        SnapHelper snapHelper = new PagerSnapHelper();
 //        snapHelper.attachToRecyclerView(rc_banner);
 
@@ -231,7 +238,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_swipe_refresh.setOnRefreshListener(this);
         CallBackFunction();
 //        getCategory();
-        setBanner();
+//        setBanner();
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             getHomeDetails(true);
         } else {
@@ -269,6 +276,33 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
         Pageination();
+        CheckAppUpdate();
+    }
+
+    private void CheckAppUpdate() {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("platform", "1");
+        params.put("version", String.valueOf(Function.getAppVersionCode(HomeActivity.this)));
+        if (_fun.isInternetAvailable(HomeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).appVersionCheck(params)
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false));
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                        @Override
+                        public void isInternet() {
+                            RetrofitClient.getClient().create(Api.class).appVersionCheck(params)
+                                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false));
+                        }
+                    });
+                }
+            }, 200);
+
+        }
     }
 
 
@@ -284,6 +318,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
 
     private void CallBackFunction() {
+        homeBannerAdapter.setCallback(new HomeBannerAdapter.Callback() {
+            @Override
+            public void itemClick(BannerItemModel model) {
+                String userProsperId = model.getProsperId();
+                if (userProsperId != null) {
+                    Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
+                    i.putExtra("prosperId", userProsperId);
+                    startActivity(i);
+                }
+            }
+        });
         homeAdGridAdapter.setCallback(new HomeAdGridAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
@@ -327,7 +372,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String adId = adList.get(pos).getAdId();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup);
+                String url = adList.get(pos).getPhotoType();
+
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup,url);
             }
         });
 
@@ -376,7 +423,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String adId = adList.get(pos).getAdId();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup);
+                String url = adList.get(pos).getPhotoType();
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup,url);
             }
         });
 
@@ -425,6 +473,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     sortByAdapter.clearValues();
                 }
                 catId = categoryList.get(pos).getId();
+                Constant.ParentId = catId;
                 currentPageNo = 1;
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
 
@@ -448,6 +497,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 sortByList.clear();
                 filterList.clear();
                 catId = serviceList.get(pos).getId();
+                Constant.ParentId = catId;
                 currentPageNo = 1;
                 productType = "";
                 sortById = "";
@@ -680,8 +730,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     productCategoryListAdapter.notifyDataSetChanged();
                     serviceCategoryListAdapter.notifyDataSetChanged();
                     homeCustomListAdapter.notifyDataSetChanged();
-                    bannerAdapter.notifyDataSetChanged();
-//                    homeBannerAdapter.notifyDataSetChanged();
+//                    bannerAdapter.notifyDataSetChanged();
+                    homeBannerAdapter.notifyDataSetChanged();
+                    rc_banner.start(2, TimeUnit.SECONDS);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -742,9 +793,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     if (adList.size() == 0) {
                         rc_ad_list.setVisibility(View.GONE);
                         layout_requirement_ad.setVisibility(View.VISIBLE);
+                        layout_filter_root.setVisibility(View.VISIBLE);
                     } else {
                         rc_ad_list.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.GONE);
+                        layout_filter_root.setVisibility(View.VISIBLE);
                     }
 
                 } else {
@@ -807,6 +860,40 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
     };
 
+    retrofit2.Callback<AppVersionModel> checkApp = new retrofit2.Callback<AppVersionModel>() {
+        @Override
+        public void onResponse(Call<AppVersionModel> call, retrofit2.Response<AppVersionModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                AppVersionModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (dr.getAppVersionDataModel().isForced()) {
+                        ShowPopupAppVersion(dr.getAppVersionDataModel().getUpdateMessage(), 1);
+                    } else if (dr.getAppVersionDataModel().isUpdate()) {
+                        ShowPopupAppVersion(dr.getAppVersionDataModel().getUpdateMessage(), 2);
+                    }
+
+                } else {
+//                    Function.CustomMessage(HomeActivity.this, dr.getMessage());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -815,6 +902,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 layout_home.setVisibility(View.VISIBLE);
                 isCategory = false;
                 edt_search.setText("");
+                Constant.ParentId = "";
                 break;
             case R.id.img_list:
                 if (isGrid) {
@@ -869,6 +957,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 layout_home.setVisibility(View.VISIBLE);
                 isCategory = false;
                 edt_search.setText("");
+                Constant.ParentId = "";
             } else {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
@@ -1208,5 +1297,50 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         }
+    }
+
+    public void ShowPopupAppVersion(String titleContent, int i) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_post_success, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+
+        TextView popup_content = view.findViewById(R.id.txt_content_one);
+        TextView txt_skip = view.findViewById(R.id.txt_skip);
+        Button txt_done = view.findViewById(R.id.btn_ok);
+        popup_content.setText(titleContent);
+
+        txt_done.setText(getString(R.string.yes_take_me));
+        if (i == 1) {
+            txt_skip.setVisibility(View.GONE);
+        } else {
+            txt_skip.setVisibility(View.VISIBLE);
+        }
+        txt_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+
+        txt_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                /*try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                }*/
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

@@ -9,12 +9,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
+
+
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -24,14 +24,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="LockedOrientationActivity">
+        tools:ignore="LockedOrientationActivity"
+        tools:replace="android:allowBackup">
         <activity
             android:name="com.slowr.app.activity.BannerActivity"
             android:screenOrientation="portrait"></activity>
         <activity
             android:name="com.slowr.app.activity.AddBannerActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateVisible"/>
+            android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
             android:name="com.slowr.app.activity.WelcomeActivity"
             android:screenOrientation="portrait">
@@ -53,7 +54,9 @@
             android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
             android:name="com.slowr.app.activity.UserProfileActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name="com.slowr.app.activity.SplashActivity"
             android:screenOrientation="portrait" />
@@ -103,11 +106,18 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="devlink.slowr.in"
+                    android:host="dl.slowr.com"
                     android:scheme="http" />
                 <data
-                    android:host="devlink.slowr.in"
+                    android:host="dl.slowr.com"
                     android:scheme="https" />
+
+                <data
+                    android:host="slowrapp.page.link"
+                    android:scheme="https" />
+                <data
+                    android:host="slowrapp.page.link"
+                    android:scheme="http" />
             </intent-filter>
 
         </activity>
@@ -170,7 +180,9 @@
             android:value="@string/default_notification_channel_id" />
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" /> <!-- For Facebook Login -->
+            android:value="@integer/google_play_services_version" />
+
+        <!-- For Facebook Login -->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -185,7 +197,7 @@
             android:value="9952b4224ffea1b363591a8a4e77b91fdeb18259" /> <!-- Add your Payment API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_test_hh28PqAbniWxep" />
+            android:value="rzp_live_xhQLKhh7mxkA2D" />
     </application>
 
 </manifest>

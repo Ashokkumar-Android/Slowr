@@ -5,11 +5,14 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -79,6 +82,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     TextView txt_prosper_id;
     TextView txt_ad_title;
     ImageView img_fancy_content;
+    ImageView img_search;
 
     LinearLayoutManager listManager;
 
@@ -129,7 +133,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         layout_success = findViewById(R.id.layout_success);
         layout_upgrade = findViewById(R.id.layout_upgrade);
         layout_search_list = findViewById(R.id.layout_search_list);
-        edt_search_suggestion = findViewById(R.id.edt_search_suggestion);
+        edt_search_suggestion = findViewById(R.id.edt_search_prosper);
         rc_prosperList = findViewById(R.id.rc_prosperList);
         btn_home_page = findViewById(R.id.btn_home_page);
         layout_success_prosper = findViewById(R.id.layout_success_prosper);
@@ -139,6 +143,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         btn_go_back = findViewById(R.id.btn_go_back);
         layout_error = findViewById(R.id.layout_error);
         txt_ad_title = findViewById(R.id.txt_ad_title);
+        img_search = findViewById(R.id.img_search);
 
 
         listManager = new LinearLayoutManager(UpgradeActivity.this, RecyclerView.VERTICAL, false);
@@ -155,6 +160,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         btn_home_page.setOnClickListener(this);
         btn_profile.setOnClickListener(this);
         btn_go_back.setOnClickListener(this);
+        img_search.setOnClickListener(this);
         if (pageFrom.equals("2")) {
             layout_upgrade.setVisibility(View.VISIBLE);
             layout_search_list.setVisibility(View.GONE);
@@ -184,6 +190,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         SearchFunction();
         CallBackFunction();
+//        setFillter();
     }
 
     private void CallBackFunction() {
@@ -195,35 +202,36 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 promotionType = "1";
                 ShowPopupProsper(selectedId, amount);
 
-
             }
         });
 
     }
 
     private void SearchFunction() {
-        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_RIGHT = 2;
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        if (edt_search_suggestion.getText().length() == 0) {
-                            Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
-                        } else if (edt_search_suggestion.getText().length() < 4) {
-                            Function.CustomMessage(UpgradeActivity.this, "Enter 4 digits");
-                        } else {
-                            getProsperIdList();
-                        }
-
-
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+//        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                final int DRAWABLE_RIGHT = 2;
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+//                        if (edt_search_suggestion.getText().length() == 0) {
+//                            Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
+//                        } else if (edt_search_suggestion.getText().length() < 4) {
+//                            Function.CustomMessage(UpgradeActivity.this, "Enter 4 digits");
+//                        } else if (!CheckValitation()) {
+//                            Function.CustomMessage(UpgradeActivity.this, "Enter valid inputs");
+//                        } else {
+//                            getProsperIdList();
+//                        }
+//
+//
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
         edt_search_suggestion.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -231,7 +239,9 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                     if (edt_search_suggestion.getText().length() == 0) {
                         Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
                     } else if (edt_search_suggestion.getText().length() < 4) {
-                        Function.CustomMessage(UpgradeActivity.this, "Enter 4 digits");
+                        Function.CustomMessage(UpgradeActivity.this, "Enter minimum 4 digits");
+                    } else if (!CheckValitation()) {
+                        Function.CustomMessage(UpgradeActivity.this, "Enter valid inputs");
                     } else {
                         getProsperIdList();
                     }
@@ -239,6 +249,172 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 return false;
             }
+        });
+//        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                Log.i("Count", s + "," + String.valueOf(start) + "," + String.valueOf(before) + "," + String.valueOf(count));
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                try {
+//                    int length = edt_search_suggestion.getText().toString().length();
+//                    int numlength = 0;
+//                    int txtlength = 0;
+//                    String inTxt = edt_search_suggestion.getText().toString().trim();
+////                if (length != 0) {
+////                    for (int i = 0; i < length; i++) {
+////                        boolean digitsOnly = TextUtils.isDigitsOnly(edt_search_suggestion.getText().toString().substring(i));
+////                        if (digitsOnly) {
+////                            numlength++;
+////                        } else {
+////                            txtlength++;
+////                        }
+////                    }
+////                    if (numlength < 4 && txtlength < 2) {
+////                        setFillter("[a-zA-Z0-9]+");
+////                        edt_search_suggestion.setKeyListener(DigitsKeyListener.getInstance("0123456789."));
+////                    } else if (numlength == 4 && txtlength < 2) {
+////                        setFillter("[a-zA-Z]+");
+////                    } else if (numlength < 4 && txtlength == 2) {
+////                        setFillter("[0-9]+");
+////                    } else {
+////                        setFillter("[a-zA-Z0-9]+");
+////                    }
+////                } else {
+////                    setFillter("[a-zA-Z0-9]+");
+////                }
+//
+//
+//                    if (length != 0) {
+//                        for (int i = 0; i < length; i++) {
+//
+//                            String v = edt_search_suggestion.getText().toString().substring(i);
+//                            Log.i("LastText", v);
+//                            boolean digitsOnly = TextUtils.isDigitsOnly(v);
+//                            if (digitsOnly) {
+//                                numlength++;
+//                                if (numlength > 4) {
+//                                    inTxt = inTxt.replace(inTxt.substring(i), "");
+//
+//                                    edt_search_suggestion.setText(inTxt);
+//                                    edt_search_suggestion.setSelection(inTxt.length());
+//                                }
+//                            } else {
+//                                txtlength++;
+//                                if (txtlength > 2) {
+//                                    inTxt = inTxt.replace(inTxt.substring(i), "");
+//                                    edt_search_suggestion.setText(inTxt);
+//                                    edt_search_suggestion.setSelection(inTxt.length());
+//                                }
+//                            }
+//                        }
+//
+//
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+    }
+
+    private boolean CheckValitation() {
+        int length = edt_search_suggestion.getText().toString().length();
+        int numlength = 0;
+        int txtlength = 0;
+        for (int i = 0; i < length; i++) {
+
+            String v = edt_search_suggestion.getText().toString().substring(i);
+            Log.i("LastText", v);
+            boolean digitsOnly = TextUtils.isDigitsOnly(v);
+            if (digitsOnly) {
+                numlength++;
+                if (numlength > 4) {
+                    return false;
+                }
+            } else {
+                txtlength++;
+                if (txtlength > 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void setFillter() {
+        edt_search_suggestion.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_search_suggestion.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    public CharSequence filter(CharSequence src, int start,
+                                               int end, Spanned dst, int dstart, int dend) {
+                        if (src.equals("")) {
+                            return src;
+                        }
+                        Log.i("Entert Text", String.valueOf(src));
+//                        if (src.toString().matches(fillterMatch)) {
+//                            return src;
+//                        }
+
+                        int length = src.length();
+                        int numlength = 0;
+                        int txtlength = 0;
+                        if (length != 0) {
+                            for (int i = 0; i < length; i++) {
+                                boolean digitsOnly = TextUtils.isDigitsOnly(String.valueOf(src).substring(i));
+                                if (digitsOnly) {
+                                    numlength++;
+                                    if (numlength > 4) {
+                                        src = String.valueOf(src).replace(String.valueOf(src).substring(i), "");
+                                        return src;
+                                    }
+                                } else {
+                                    txtlength++;
+                                    if (txtlength > 2) {
+                                        src = String.valueOf(src).replace(String.valueOf(src).substring(i), "");
+                                        return src;
+                                    }
+                                }
+                            }
+//                            if (numlength <= 4 && txtlength <= 2) {
+//                                return src;
+//                            } else if (numlength == 4 && txtlength < 2) {
+////                                setFillter("[a-zA-Z]+");
+//                                boolean digitsOnly = TextUtils.isDigitsOnly(String.valueOf(src).substring(length - 1));
+//                                if (digitsOnly) {
+//                                    String t = String.valueOf(src).replace(String.valueOf(src).substring(length - 1), "");
+//                                    return t;
+//                                } else {
+//                                    return src;
+//                                }
+//                            } else if (numlength < 4 && txtlength == 2) {
+//                                boolean digitsOnly = TextUtils.isDigitsOnly(String.valueOf(src).substring(length - 1));
+//                                if (digitsOnly) {
+//                                    return src;
+//                                } else {
+//                                    String t = String.valueOf(src).replace(String.valueOf(src).substring(length - 1), "");
+//                                    return t;
+//                                }
+//                            } else {
+//                                String t = String.valueOf(src).replace(String.valueOf(src).substring(length - 1), "");
+//                                return t;
+//                            }
+
+                            return src;
+                        }
+
+
+                        return "";
+                    }
+                }
         });
     }
 
@@ -311,6 +487,17 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 } else {
                     layout_search_list.setVisibility(View.VISIBLE);
                     layout_error.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.img_search:
+                if (edt_search_suggestion.getText().length() == 0) {
+                    Function.CustomMessage(UpgradeActivity.this, "Enter Prosper Id");
+                } else if (edt_search_suggestion.getText().length() < 4) {
+                    Function.CustomMessage(UpgradeActivity.this, "Enter minimum 4 digits");
+                } else if (!CheckValitation()) {
+                    Function.CustomMessage(UpgradeActivity.this, "Enter valid inputs");
+                } else {
+                    getProsperIdList();
                 }
                 break;
         }
@@ -440,7 +627,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
-    public void startPayment() {
+    public void startPayment(String amount) {
         /*
           You need to pass current activity in order to let Razorpay create CheckoutActivity
          */
@@ -448,7 +635,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         final Checkout co = new Checkout();
 //        co.setKeyID("rzp_test_A2vBDkxnd63ve4");
-
+        int totalAmount = Integer.valueOf(amount) * 100;
+        Log.i("Amount", String.valueOf(totalAmount));
         try {
             JSONObject options = new JSONObject();
             options.put("name", getString(R.string.app_name));
@@ -456,11 +644,11 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             //You can omit the image option to fetch the image from dashboard
             options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             options.put("currency", "INR");
-            options.put("amount", "100");
+            options.put("amount", String.valueOf(totalAmount));
 
             JSONObject preFill = new JSONObject();
-            preFill.put("email", "contact@slowr.in");
-            preFill.put("contact", "9876543210");
+            preFill.put("email", Sessions.getSession(Constant.UserEmail, getApplicationContext()));
+            preFill.put("contact", Sessions.getSession(Constant.UserPhone, getApplicationContext()));
             JSONObject ReadOnly = new JSONObject();
             JSONObject themeStyle = new JSONObject();
             ReadOnly.put("email", "true");
@@ -630,12 +818,12 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-                        startPayment();
+                        startPayment("");
                     } else {
                         _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                startPayment();
+                                startPayment("");
                             }
                         });
                     }
@@ -764,18 +952,18 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         TextView txt_prosper_content = view.findViewById(R.id.txt_prosper_content);
         Button btn_ok = view.findViewById(R.id.btn_check_out);
         txt_prosperId_popup.setText(getString(R.string.txt_rupee_simpal) + " " + amount);
-        txt_prosper_content.setText(getString(R.string.prosper_id) + " " + proId + "\n" + getString(R.string.txt_has_been_selected));
+        txt_prosper_content.setText(getString(R.string.prosper_id) + " " + proId + " " + getString(R.string.txt_has_been_selected));
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 spinnerPopup.dismiss();
                 if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-                    startPayment();
+                    startPayment(amount);
                 } else {
                     _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            startPayment();
+                            startPayment(amount);
                         }
                     });
                 }

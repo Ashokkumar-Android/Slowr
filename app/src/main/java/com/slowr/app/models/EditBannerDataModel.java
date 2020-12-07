@@ -22,7 +22,7 @@ public class EditBannerDataModel {
     private ArrayList<CityItemModel> cityList;
 
     @SerializedName("colourData")
-    ArrayList<String> colorCode;
+    ArrayList<ColorCodeItemModel> colorCode;
 
     @SerializedName("guideLines")
     String guideLines;
@@ -51,11 +51,11 @@ public class EditBannerDataModel {
         this.cityList = cityList;
     }
 
-    public ArrayList<String> getColorCode() {
+    public ArrayList<ColorCodeItemModel> getColorCode() {
         return colorCode;
     }
 
-    public void setColorCode(ArrayList<String> colorCode) {
+    public void setColorCode(ArrayList<ColorCodeItemModel> colorCode) {
         this.colorCode = colorCode;
     }
 

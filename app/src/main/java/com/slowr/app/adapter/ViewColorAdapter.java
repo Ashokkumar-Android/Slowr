@@ -13,14 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
+import com.slowr.app.models.ColorCodeItemModel;
 import com.slowr.app.models.UploadImageModel;
+import com.slowr.app.utils.Function;
 
 import java.util.ArrayList;
 
 public class ViewColorAdapter extends RecyclerView.Adapter<ViewColorAdapter.MyViewHolder> {
 
     public Context _cotx;
-    ArrayList<UploadImageModel> shareImageList;
+    ArrayList<ColorCodeItemModel> shareImageList;
     CallBack callBack;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -32,14 +34,14 @@ public class ViewColorAdapter extends RecyclerView.Adapter<ViewColorAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             //this.textViewVersion = (TextView) itemView.findViewById(R.id.textViewVersion);
-            this.img_ad_view = (View) itemView.findViewById(R.id.img_ad_view);
-            this.img_ad_border = (ImageView) itemView.findViewById(R.id.img_ad_border);
-            this.layout_root = (FrameLayout) itemView.findViewById(R.id.layout_root);
+            this.img_ad_view = itemView.findViewById(R.id.img_ad_view);
+            this.img_ad_border = itemView.findViewById(R.id.img_ad_border);
+            this.layout_root = itemView.findViewById(R.id.layout_root);
         }
 
     }
 
-    public ViewColorAdapter(Context ctx, ArrayList<UploadImageModel> shareImageLists) {
+    public ViewColorAdapter(Context ctx, ArrayList<ColorCodeItemModel> shareImageLists) {
         this.shareImageList = shareImageLists;
         this._cotx = ctx;
         Log.e("Constructor_Called", String.valueOf(shareImageList.size()));
@@ -59,10 +61,11 @@ public class ViewColorAdapter extends RecyclerView.Adapter<ViewColorAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int listPosition) {
-        UploadImageModel model = shareImageList.get(listPosition);
-        holder.img_ad_view.setBackgroundColor(Color.parseColor(model.getImgURL()));
+        ColorCodeItemModel model = shareImageList.get(listPosition);
+//        holder.img_ad_view.setBackgroundColor(Color.parseColor(model.getColorOne()));
+        Function.GradientBgSet(holder.img_ad_view,model.getColorOne(),model.getColorTwo());
 
-        if (model.isChanged()) {
+        if (model.isChange()) {
             holder.img_ad_border.setImageResource(R.drawable.bg_orenge_border_color);
         } else {
             holder.img_ad_border.setImageResource(R.drawable.bg_blue_border_color);
@@ -89,7 +92,7 @@ public class ViewColorAdapter extends RecyclerView.Adapter<ViewColorAdapter.MyVi
     }
 
     public interface CallBack {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

@@ -3,9 +3,13 @@ package com.slowr.app.activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.BulletSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,8 +34,6 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.slowr.app.R;
@@ -64,6 +66,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     TextView txt_prosperId_post;
     TextView txt_phone;
     TextView txt_view_profile;
+    TextView txt_guid_line;
     Button btn_chat_now;
     Button btn_call_now;
     ImageView img_ad_view;
@@ -101,6 +104,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String chatId = "";
     String adTitle = "";
     String catGroup = "";
+    String adShareUrl = "";
 
     View rootView = null;
     String imageStringArray = "";
@@ -148,6 +152,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         layout_root = findViewById(R.id.layout_root);
         img_unverified_user = findViewById(R.id.img_unverified_user);
         btn_call_now = findViewById(R.id.btn_call_now);
+        txt_guid_line = findViewById(R.id.txt_guid_line);
 
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_related_ad_list.setLayoutManager(linearLayoutManager3);
@@ -307,9 +312,9 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 }
 
                                 if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    if(catGroup.equals("1")){
+                                    if (catGroup.equals("1")) {
                                         txt_price.setText(getString(R.string.custom_rent));
-                                    }else {
+                                    } else {
                                         txt_price.setText(getString(R.string.custom_hire));
                                     }
                                 } else {
@@ -317,14 +322,22 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 }
 
                             } else {
-                                if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    if(catGroup.equals("1")){
+                                if (catGroup.equals("1")) {
+                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
                                         txt_price.setText(getString(R.string.custom_rent));
-                                    }else {
-                                        txt_price.setText(getString(R.string.custom_hire));
+                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
+                                        txt_price.setText(getString(R.string.hour_rent));
+                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
+                                        txt_price.setText(getString(R.string.day_rent));
                                     }
                                 } else {
-                                    txt_price.setVisibility(View.GONE);
+                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
+                                        txt_price.setText(getString(R.string.custom_hire));
+                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
+                                        txt_price.setText(getString(R.string.hour_hire));
+                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
+                                        txt_price.setText(getString(R.string.day_hire));
+                                    }
                                 }
                             }
 
@@ -341,7 +354,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                     .error(R.drawable.ic_default_profile)
                                     .into(img_user_profile);
                             if (dr.getEditDataModel().getUserDetailsModel().getIsProfileVerified().equals("0")) {
-                                img_unverified_user.setVisibility(View.VISIBLE);
+                                img_unverified_user.setVisibility(View.GONE);
                                 unVerified = true;
                             } else {
                                 img_unverified_user.setVisibility(View.GONE);
@@ -371,12 +384,14 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             if (shareImageList.size() != 0) {
                                 rc_image_list.setVisibility(View.VISIBLE);
                                 setCurrentImage(shareImageList.get(0).getImgURL());
+                                adShareUrl = shareImageList.get(0).getImgURL();
                             } else {
                                 rc_image_list.setVisibility(View.GONE);
                             }
                             postImageListAdapter.notifyDataSetChanged();
                             relatedAdList.clear();
-                            relatedAdList.addAll(dr.getEditDataModel().getAdList());
+                            if (dr.getEditDataModel().getAdList() != null)
+                                relatedAdList.addAll(dr.getEditDataModel().getAdList());
                             popularAdListAdapter.notifyDataSetChanged();
                             if (relatedAdList.size() != 0) {
                                 layout_relative_ad.setVisibility(View.VISIBLE);
@@ -394,6 +409,16 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             } else {
                                 layout_promoted.setVisibility(View.INVISIBLE);
                             }
+//                            String guideLineText = "";
+//                            for (int g = 0; g < dr.getEditDataModel().getGuideLines().size(); g++) {
+//                                if (guideLineText.equals("")) {
+//                                    guideLineText = "\u2022 " + dr.getEditDataModel().getGuideLines().get(g);
+//                                } else {
+//                                    guideLineText = guideLineText + "\n\u2022 " + dr.getEditDataModel().getGuideLines().get(g);
+//                                }
+//                            }
+                            if (dr.getEditDataModel().getGuideLines() != null && dr.getEditDataModel().getGuideLines().size() != 0)
+                                txt_guid_line.setText(makeBulletList(dr.getEditDataModel().getGuideLines()));
                         }
                     } else {
                         Function.CustomMessage(PostViewActivity.this, dr.getMessage());
@@ -415,6 +440,17 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         }
     };
 
+    public static CharSequence makeBulletList(ArrayList<String> lines) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        for (int i = 0; i < lines.size(); i++) {
+            CharSequence line = lines.get(i) + (i < lines.size() - 1 ? "\n" : "");
+            Spannable spannable = new SpannableString(line);
+            spannable.setSpan(new BulletSpan(5), 0, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            sb.append(spannable);
+        }
+        return sb;
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -430,7 +466,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
-                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup);
+                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup,adShareUrl);
                 break;
             case R.id.img_favorite:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -485,7 +521,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 }
                 break;
             case R.id.img_unverified_user:
-                ShowPopupProsper();
+//                ShowPopupProsper();
                 break;
             case R.id.btn_call_now:
                 if (_fun.checkPermission2(PostViewActivity.this))
@@ -494,7 +530,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 break;
             case R.id.txt_prosperId_post:
                 if (unVerified) {
-                    ShowPopupProsper();
+//                    ShowPopupProsper();
                 }
                 break;
             case R.id.txt_view_profile:
@@ -679,12 +715,13 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
                 Function.CustomMessage(PostViewActivity.this, getString(R.string.my_ad_favorite));
-                img_favorite.setLiked(false);
+                likeButton.setLiked(false);
             } else {
                 callAddFavorite();
             }
         } else {
             Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+            likeButton.setLiked(false);
         }
     }
 
@@ -693,12 +730,13 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
                 Function.CustomMessage(PostViewActivity.this, getString(R.string.my_ad_favorite));
-                img_favorite.setLiked(false);
+                likeButton.setLiked(false);
             } else {
                 callAddFavorite();
             }
         } else {
             Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+            likeButton.setLiked(false);
         }
     }
 
@@ -715,7 +753,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 break;
             }
         }
-        if(result){
+        if (result) {
             Function.CallNow(PostViewActivity.this, userPhone);
         }
     }

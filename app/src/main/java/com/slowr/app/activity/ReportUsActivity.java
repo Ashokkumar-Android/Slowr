@@ -250,6 +250,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void doValidation() {
+        Function.hideSoftKeyboard(ReportUsActivity.this, edt_name);
         String name = edt_name.getText().toString().trim();
         String email = edt_email.getText().toString().trim();
         String comments = edt_description.getText().toString();

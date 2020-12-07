@@ -1,39 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="match_parent"
     android:background="@color/color_white"
     android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ImageView
             android:id="@+id/defult_one"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center|bottom"
-            android:visibility="visible"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/layout_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/color_white_trans"
             android:layout_margin="@dimen/size_ten"
+            android:background="@color/color_white_trans"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.4"
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/size_ten"
-                android:paddingRight="@dimen/size_ten"
-                android:paddingTop="@dimen/size_ten"
-                android:paddingBottom="@dimen/size_ten">
+                android:padding="@dimen/size_ten">
+
+                <TextView
+                    android:id="@+id/txt_banner_content"
+                    style="@style/attribute_title"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="EPSON projector for office use."
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_twelve" />
 
 
                 <TextView
@@ -50,16 +56,12 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="@dimen/size_fourteen" />
 
-                <TextView
-                    android:id="@+id/txt_banner_content"
-                    style="@style/attribute_title"
-                    android:text="EPSON projector for office use."
-                    android:textColor="@color/color_black"
-                    android:textSize="@dimen/size_twelve" />
 
                 <TextView
                     android:id="@+id/txt_banner_price"
                     style="@style/attribute_title"
+                    android:ellipsize="end"
+                    android:maxLines="3"
                     android:text="Renting @ ₹1800/day"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_ten" />
@@ -70,33 +72,39 @@
                     android:layout_marginTop="@dimen/size_five"
                     android:drawableLeft="@drawable/ic_like"
                     android:drawablePadding="@dimen/size_five"
-                    android:text="4536"
                     android:gravity="center"
-                    android:visibility="gone"
+                    android:text="4536"
                     android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/size_ten" />
+                    android:textSize="@dimen/size_ten"
+                    android:visibility="gone" />
 
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="0.6"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/img_banner"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="120dp"
                     android:layout_margin="@dimen/size_five"
                     android:src="@drawable/ic_default_vertical" />
             </LinearLayout>
 
         </LinearLayout>
 
-
+        <ImageView
+            android:id="@+id/img_default_banner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/size_ten"
+            android:scaleType="fitCenter"/>
     </FrameLayout>
 
 </LinearLayout>

@@ -30,6 +30,9 @@ public class BannerItemModel {
     @SerializedName("prosper_id")
     String prosperId;
 
+    @SerializedName("is_default")
+    int isDefault;
+
 
     public String getBannerId() {
         return bannerId;
@@ -101,5 +104,13 @@ public class BannerItemModel {
 
     public void setProsperId(String prosperId) {
         this.prosperId = prosperId;
+    }
+
+    public int getIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(int isDefault) {
+        this.isDefault = isDefault;
     }
 }

@@ -20,7 +20,11 @@ public class AttributeItemModel {
     @SerializedName("is_title")
     private String isTitle;
 
+    @SerializedName("title_prefix")
+    private String isPrefix;
+
     private String inputValue = "";
+    private String textLength = "";
 
     public String getName() {
         return name;
@@ -78,13 +82,31 @@ public class AttributeItemModel {
         this.isTitle = isTitle;
     }
 
-    public AttributeItemModel(String name, String attributeValues, String type, String attributeId, String mandatory, String isTitle, String inputValue) {
+    public String getIsPrefix() {
+        return isPrefix;
+    }
+
+    public void setIsPrefix(String isPrefix) {
+        this.isPrefix = isPrefix;
+    }
+
+    public String getTextLength() {
+        return textLength;
+    }
+
+    public void setTextLength(String textLength) {
+        this.textLength = textLength;
+    }
+
+    public AttributeItemModel(String name, String attributeValues, String type, String attributeId, String mandatory, String isTitle, String isPrefix, String inputValue, String txtLength) {
         this.name = name;
         this.attributeValues = attributeValues;
         this.type = type;
         this.attributeId = attributeId;
         this.mandatory = mandatory;
         this.isTitle = isTitle;
+        this.isPrefix = isPrefix;
         this.inputValue = inputValue;
+        this.textLength = txtLength;
     }
 }

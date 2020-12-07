@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -184,8 +185,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 notificationManager.notify((int) (System.currentTimeMillis()) /* ID of notification */, notificationBuilder.build());
                 try {
                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
-//                    r.play();
+                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
+                    r.play();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -16,6 +16,14 @@ repositories {
 }
 /* End of Twitter Fabric SDK */
 android {
+    signingConfigs {
+        debug {
+            storeFile file('D:\\Slowr\\Keystore\\keystore.jks')
+            storePassword 'slowr123'
+            keyAlias = 'slowr'
+            keyPassword 'slowr123'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
@@ -23,7 +31,7 @@ android {
         applicationId "com.slowr.app"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
+        versionCode 3
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,6 +44,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [:]
         }
     }
 
@@ -78,11 +87,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.6.0'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
     implementation 'com.razorpay:checkout:1.6.4'
-
+    implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-dynamic-links'
     implementation 'com.google.firebase:firebase-analytics'
     implementation project(path: ':Chipview')
+    implementation project(path: ':cropper')
 
 
 }

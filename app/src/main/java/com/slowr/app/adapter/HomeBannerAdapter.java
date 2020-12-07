@@ -1,34 +1,40 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.like.LikeButton;
 import com.slowr.app.R;
+import com.slowr.app.components.carouselview.CarouselAdapter;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.BannerItemModel;
+import com.slowr.app.utils.Function;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.MyViewHolder> {
+public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewHolder> {
 
     ArrayList<BannerItemModel> bannerList;
     Callback callback;
     Context ctx;
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img_banner ;
@@ -38,6 +44,7 @@ public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.My
         TextView txt_banner_price;
         TextView txt_banner_like;
         LinearLayout layout_root ;
+        ImageView img_default_banner;
 
         public MyViewHolder(View view) {
             super(view);
@@ -48,6 +55,7 @@ public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.My
             txt_banner_price = view.findViewById(R.id.txt_banner_price);
             txt_banner_like = view.findViewById(R.id.txt_banner_like);
             layout_root = view.findViewById(R.id.layout_root);
+            img_default_banner = view.findViewById(R.id.img_default_banner);
 
             layout_root.setOnClickListener(this);
 
@@ -76,37 +84,62 @@ public class HomeBannerAdapter extends RecyclerView.Adapter<HomeBannerAdapter.My
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MyViewHolder onCreatePageViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_banner_item, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindPageViewHolder(MyViewHolder holder, int position) {
         BannerItemModel bannerItemModel = bannerList.get(position);
 
         holder.txt_prosperId.setText(bannerItemModel.getProsperId());
         holder.txt_banner_content.setText(bannerItemModel.getBannerTitle());
         holder.txt_banner_price.setText(bannerItemModel.getDescription());
-//        layout_root.setBackgroundColor(Color.parseColor(bannerItemModel.getColorCode()));
-        Glide.with(ctx)
-                .load(bannerItemModel.getBannerImage())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(holder.img_banner);
-        Glide.with(ctx)
-                .load(bannerItemModel.getBannerImage())
-                .transform(new BlurTransformation())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(holder.defult_one);
+        String[] col = bannerItemModel.getColorCode().split(",");
+        Function.GradientBgSet(holder.defult_one, col[0], col[1]);
+        if (bannerItemModel.getIsDefault() == 1) {
+            holder.layout_root.setVisibility(View.VISIBLE);
+            holder.img_default_banner.setVisibility(View.GONE);
+            Glide.with(ctx)
+                    .load(bannerItemModel.getBannerImage())
+                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_default_horizontal)
+                    .into(holder.img_banner);
+
+        } else {
+            holder.img_default_banner.setVisibility(View.VISIBLE);
+            holder.layout_root.setVisibility(View.GONE);
+
+            Glide.with(ctx)
+                    .load(bannerItemModel.getBannerImage())
+                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_default_horizontal)
+                    .into(holder.img_default_banner);
+
+        }
     }
 
     @Override
-    public int getItemCount() {
+    public int getPageCount() {
         return bannerList.size();
     }
+
+//    @Override
+//    public MyViewHolder onCreatePageViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        return null;
+//    }
+
+//    @Override
+//    public void onBindPageViewHolder(@NonNull MyViewHolder holder, int position) {
+//
+//    }
+
+//    @Override
+//    public int getPageCount() {
+//        return 0;
+//    }
 
     @Override
     public int getItemViewType(int position) {

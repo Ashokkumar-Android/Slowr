@@ -9,43 +9,41 @@
     tools:context=".activity.AboutUsActivity">
     <include
         layout="@layout/layout_header"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         android:padding="20dp">
 
-        <TextView
-            style="@style/attribute_title"
-            android:layout_gravity="center"
-            android:fontFamily="@font/nunito_regular"
-            android:text="@string/about_slowr"
-            android:textSize="@dimen/size_twenty" />
-
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="31dp"
+            android:layout_centerInParent="true"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/size_ten"
-            android:src="@drawable/ic_slowr_logo" />
+            android:src="@drawable/ic_slowr" />
+
 
 
         <TextView
+            android:id="@+id/txt_about_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="@font/nunito_regular"
             android:text="@string/about_sample"
             android:textColor="@color/color_black"
-            android:textSize="@dimen/size_fourteen" />
+            android:textSize="@dimen/size_fifteen" />
+
 
         <TextView
             android:id="@+id/txt_web_site"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:fontFamily="@font/roboto_bold"
             android:text="@string/slowr_link"
             android:textColor="@color/txt_orange"
@@ -54,7 +52,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
             android:gravity="center">
 
@@ -102,21 +100,12 @@
                     android:layout_height="50dp"
                     android:background="@drawable/circle_ripple_effect"
                     android:padding="8dp"
-                    app:srcCompat="@drawable/ic_google_logo" />
+                    app:srcCompat="@drawable/ic_ig_colour" />
             </LinearLayout>
         </LinearLayout>
 
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-        android:id="@+id/autoCompleteTextView"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="92dp"
-        android:layout_marginTop="144dp"
-        android:text=""
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    </ScrollView>
 </LinearLayout>

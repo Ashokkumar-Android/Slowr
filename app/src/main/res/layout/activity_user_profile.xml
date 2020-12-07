@@ -14,8 +14,10 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/layout_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -88,9 +90,10 @@
                                     android:layout_height="10dp"
                                     android:layout_centerInParent="true"
                                     android:layout_marginBottom="7dp"
-                                    android:visibility="gone"
                                     android:layout_toRightOf="@+id/txt_prosperId_post"
-                                    android:src="@drawable/ic_unverified_user" />
+                                    android:src="@drawable/ic_unverified_user"
+                                    android:visibility="gone" />
+
                                 <TextView
                                     android:id="@+id/txt_verified"
                                     style="@style/attribute_title"
@@ -100,7 +103,7 @@
                                     android:text="@string/txt_unverified"
                                     android:textColor="@color/txt_orange"
                                     android:textSize="@dimen/size_sixteen"
-                                    android:visibility="visible" />
+                                    android:visibility="gone" />
 
 
                             </LinearLayout>
@@ -114,6 +117,8 @@
                             <TextView
                                 android:id="@+id/txt_phone"
                                 style="@style/ad_view_title"
+                                android:drawableLeft="@drawable/ic_phone_call"
+                                android:drawablePadding="@dimen/size_five"
                                 android:text=""
                                 android:textSize="@dimen/size_twenty" />
 
@@ -123,6 +128,16 @@
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/vp_banner"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:minHeight="150dp"
+                android:layout_marginTop="@dimen/size_five"
+                android:layout_marginBottom="@dimen/size_five"
+                android:background="@color/color_white"
+                android:visibility="visible"/>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_ad_list"

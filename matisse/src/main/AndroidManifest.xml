@@ -5,11 +5,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application>
-        <activity
-            android:name="com.slowr.matisse.ui.MatisseCropActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
         <activity android:name="com.slowr.matisse.ui.MatisseActivity"
             android:screenOrientation="portrait">
         </activity>
@@ -17,8 +12,6 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.slowr.matisse.internal.ui.SelectedPreviewActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name="com.slowr.matisse.ui.ImageCropActivity"
-            android:screenOrientation="portrait"></activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

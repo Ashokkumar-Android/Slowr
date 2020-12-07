@@ -138,7 +138,8 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
                 String adId = adList.get(pos).getAdId();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
-                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup);
+                String url = adList.get(pos).getPhotoType();
+                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup,url);
             }
         });
     }

@@ -34,6 +34,7 @@
     <color name="bg_green">#2B9109</color>
     <color name="popup_text_col">#333333</color>
     <color name="chat_sticker_circle_bg">#AFAFAF</color>
+    <color name="inactive_border">#B5B5B5</color>
 
     <color name="disabled_color">#44000000</color>
     <color name="error_color">#E7492E</color>

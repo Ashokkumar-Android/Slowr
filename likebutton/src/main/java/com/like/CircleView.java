@@ -54,7 +54,7 @@ public class CircleView extends View {
 
 
     private void init() {
-        circlePaint.setStyle(Paint.Style.FILL);
+        circlePaint.setStyle(Paint.Style.STROKE);
         circlePaint.setAntiAlias(true);
         maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         maskPaint.setAntiAlias(true);

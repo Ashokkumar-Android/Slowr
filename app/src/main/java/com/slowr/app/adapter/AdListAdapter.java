@@ -133,19 +133,29 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
         } else {
             holder.layout_promoted.setVisibility(View.GONE);
             if (movie.getAdType().equals("1")) {
-                holder.img_promote.setVisibility(View.VISIBLE);
+//                holder.img_promote.setVisibility(View.VISIBLE);
+                holder.img_promote.setVisibility(View.GONE);
             } else {
                 holder.img_promote.setVisibility(View.GONE);
             }
         }
         if (movie.getAdStatus().equals("1")) {
             holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
+            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
+            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.bg_green));
+            holder.img_share.setVisibility(View.VISIBLE);
         } else if (movie.getAdStatus().equals("2")) {
             holder.txt_active_status.setText(ctx.getString(R.string.txt_in_active));
             holder.img_promote.setVisibility(View.GONE);
+            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_gray_border_color));
+            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.inactive_border));
+            holder.img_share.setVisibility(View.GONE);
         } else {
             holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
             holder.img_promote.setVisibility(View.GONE);
+            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
+            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+            holder.img_share.setVisibility(View.GONE);
         }
         if (movie.getAdFee() != null) {
             holder.txt_price.setVisibility(View.VISIBLE);
@@ -159,23 +169,31 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
 
             Log.i("Fave", movie.getIsFavorite());
             if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                if(movie.getCatGroup().equals("1")){
+                if (movie.getCatGroup().equals("1")) {
                     holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                }else {
+                } else {
                     holder.txt_price.setText(ctx.getString(R.string.custom_hire));
                 }
             } else {
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
         } else {
-            if ( movie.getAdDuration().equals("Custom")) {
-                if(movie.getCatGroup().equals("1")){
+            if (movie.getCatGroup().equals("1")) {
+                if (movie.getAdDuration().equals("Custom")) {
                     holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                }else {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                } else if (movie.getAdDuration().equals("Per Hour")) {
+                    holder.txt_price.setText(ctx.getString(R.string.hour_rent));
+                } else if (movie.getAdDuration().equals("Per Day")) {
+                    holder.txt_price.setText(ctx.getString(R.string.day_rent));
                 }
             } else {
-                holder.txt_price.setVisibility(View.GONE);
+                if (movie.getAdDuration().equals("Custom")) {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                } else if (movie.getAdDuration().equals("Per Hour")) {
+                    holder.txt_price.setText(ctx.getString(R.string.hour_hire));
+                } else if (movie.getAdDuration().equals("Per Day")) {
+                    holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                }
             }
 
         }

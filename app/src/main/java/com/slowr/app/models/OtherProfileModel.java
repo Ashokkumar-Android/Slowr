@@ -17,6 +17,9 @@ public class OtherProfileModel {
     @SerializedName("profile_details")
     private UserDetailsModel userDetailsModel;
 
+    @SerializedName("banners")
+    ArrayList<BannerItemModel> bannerList;
+
     public boolean isStatus() {
         return status;
     }
@@ -47,5 +50,13 @@ public class OtherProfileModel {
 
     public void setUserDetailsModel(UserDetailsModel userDetailsModel) {
         this.userDetailsModel = userDetailsModel;
+    }
+
+    public ArrayList<BannerItemModel> getBannerList() {
+        return bannerList;
+    }
+
+    public void setBannerList(ArrayList<BannerItemModel> bannerList) {
+        this.bannerList = bannerList;
     }
 }

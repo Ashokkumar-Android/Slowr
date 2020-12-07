@@ -3,10 +3,12 @@ package com.slowr.app.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.slowr.app.R;
+import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 
 public class SplashActivity extends AppCompatActivity {
@@ -19,6 +21,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                Constant.ParentId = "";
                 if (_fun.isInternetAvailable(SplashActivity.this)) {
                     Intent i = new Intent(SplashActivity.this, HomeActivity.class);
                     startActivity(i);
@@ -38,5 +41,7 @@ public class SplashActivity extends AppCompatActivity {
 
             }
         }, 3000);
+        Log.i("AppVersionCode", String.valueOf(Function.getAppVersionCode(SplashActivity.this)));
+        Log.i("AppVersionName", Function.getAppVersionName(SplashActivity.this));
     }
 }

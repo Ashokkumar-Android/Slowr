@@ -331,9 +331,10 @@
 
                     </LinearLayout>
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/size_five"
+                        android:gravity="center"
                         android:orientation="horizontal">
 
                         <Button
@@ -350,11 +351,12 @@
                             android:textAllCaps="false"
                             android:textColor="@color/color_white"
                             android:textSize="@dimen/size_fourteen"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                         <View
                             android:layout_width="10dp"
-                            android:layout_height="1dp" />
+                            android:layout_height="1dp"
+                            android:visibility="gone"/>
 
                         <Button
                             android:id="@+id/btn_call_now"
@@ -406,8 +408,8 @@
                     android:text="@string/txt_guid_lines" />
 
                 <TextView
+                    android:id="@+id/txt_guid_line"
                     style="@style/ad_view_title"
-                    android:text="@string/txt_guid_lines_content"
                     android:textSize="@dimen/size_sixteen" />
 
                 <TextView

@@ -90,7 +90,7 @@
                         android:text="@string/txt_verified"
                         android:textColor="@color/bg_green"
                         android:textSize="@dimen/size_sixteen"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
                 </RelativeLayout>
 
 
@@ -171,12 +171,14 @@
                     android:fontFamily="@font/nunito_regular"
                     android:text="@string/profile_verification"
                     android:textAllCaps="false"
+                    android:visibility="gone"
                     android:textColor="@color/color_white"
                     android:textSize="@dimen/size_sixteen" />
 
                 <View
                     android:layout_width="@dimen/size_twenty"
-                    android:layout_height="1dp" />
+                    android:layout_height="1dp"
+                    android:visibility="gone"/>
 
                 <Button
                     android:id="@+id/btn_fancy_prosper_id"

@@ -33,24 +33,39 @@
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_eighteen" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/size_ten"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_ok"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_centerInParent="true"
-                android:layout_margin="@dimen/size_twenty"
-                android:background="@drawable/bg_orenge"
-                android:fontFamily="@font/nunito_regular"
-                android:gravity="center"
-                android:paddingLeft="@dimen/size_twenty"
-                android:paddingRight="@dimen/size_twenty"
-                android:text="@string/txt_continue"
-                android:textAllCaps="false"
-                android:textColor="@color/color_white"
-                android:textSize="@dimen/size_thirteen" />
+                <Button
+                    android:id="@+id/btn_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_twenty"
+                    android:paddingRight="@dimen/size_twenty"
+                    android:text="@string/txt_continue"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
 
+                <TextView
+                    android:id="@+id/txt_skip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:padding="@dimen/size_five"
+                    android:visibility="gone"
+                    android:text="@string/txt_skip"
+                    android:textColor="@color/txt_orange" />
 
+            </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

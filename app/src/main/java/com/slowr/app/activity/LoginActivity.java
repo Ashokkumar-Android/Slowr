@@ -7,7 +7,9 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -66,7 +68,6 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
     //-----------------------------------Twitter Sign In -----------------------------------//
     private TwitterHelper twitterHelper;
     private ImageView tSignInButton;
-
 
 
     private TextView btn_sign_up;
@@ -180,6 +181,31 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
             @Override
             public void onOtpCompleted(String _otp) {
                 otp = _otp;
+            }
+        });
+        edt_otp.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (otp.isEmpty()) {
+                        Function.CustomMessage(LoginActivity.this, "Kindly enter OTP");
+                        return false;
+                    }
+
+                    if (isForgotPass) {
+                        String val = edt_email_forgot_password.getText().toString().trim();
+                        boolean digitsOnly = TextUtils.isDigitsOnly(val);
+                        if (digitsOnly) {
+                            verifyForgotPasswordPhoneOTP(otp);
+                        } else {
+                            verifyOTP(otp);
+                        }
+                    } else {
+                        verifyLoginOTP(otp);
+                    }
+                    return true;
+                }
+                return false;
             }
         });
         //--------------------------------Facebook login--------------------------------------//
@@ -344,10 +370,12 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                 JSONObject jsonObject = graphResponse.getJSONObject();
 
 //                String profileImg = "http://graph.facebook.com/" + id + "/picture?type=large";
-
+                String email = "";
                 String id = jsonObject.getString("id");
                 String name = jsonObject.getString("name");
-                String email = jsonObject.getString("email");
+                if (jsonObject.has("email")) {
+                    email = jsonObject.getString("email");
+                }
                 callLoginApi("2", email, "", name, "", "", "facebook", id);
 
 
@@ -504,7 +532,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                 break;
             case R.id.btn_verify_otp:
                 if (otp.isEmpty()) {
-                    Function.CustomMessage(LoginActivity.this,"Kindly enter OTP");
+                    Function.CustomMessage(LoginActivity.this, "Kindly enter OTP");
                     return;
                 }
 
@@ -536,7 +564,8 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                             });
                         }
                     } else {
-                        reSendOTP("1");
+//                        reSendOTP("1");
+                        sendOTP(true);
                     }
                     edt_otp.setText("");
                 } else {
@@ -665,6 +694,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         }
         params.put("mobile", phone);
         params.put("status", "1");
+        params.put("message_type", "2");
         Log.i("Params", params.toString());
 
 
@@ -715,19 +745,20 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         }
 
         if (digitsOnly) {
-            if (val.equals("1")) {
+//            if (val.equals("1")) {
                 if (!params.isEmpty()) {
                     params.clear();
                 }
                 params.put("mobile", email);
                 params.put("status", "2");
+                params.put("message_type", "3");
                 Log.i("Params", params.toString());
                 isOTPMail = false;
                 RetrofitClient.getClient().create(Api.class).sendOTP(params)
                         .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, true));
-            } else {
-                reSendOTP("2");
-            }
+//            } else {
+//                reSendOTP("2");
+//            }
         } else {
             isOTPMail = true;
             if (!params.isEmpty()) {

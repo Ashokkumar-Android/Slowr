@@ -48,6 +48,9 @@ public class EditDataModel {
     @SerializedName("path")
     public String urlPath;
 
+    @SerializedName("guidelines")
+    public ArrayList<String> guideLines;
+
     public String getCatGroup() {
         return catGroup;
     }
@@ -158,5 +161,13 @@ public class EditDataModel {
 
     public void setCategoryTitle(String categoryTitle) {
         this.categoryTitle = categoryTitle;
+    }
+
+    public ArrayList<String> getGuideLines() {
+        return guideLines;
+    }
+
+    public void setGuideLines(ArrayList<String> guideLines) {
+        this.guideLines = guideLines;
     }
 }

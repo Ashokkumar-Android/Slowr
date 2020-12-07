@@ -63,6 +63,7 @@
                     app:lineColor="@color/txt_gray_border"
                     app:rtlTextDirection="false"
                     app:state_filled="false"
+                    android:cursorVisible="true"
                     app:viewType="line" />
 
                 <LinearLayout

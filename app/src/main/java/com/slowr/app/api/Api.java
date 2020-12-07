@@ -2,6 +2,7 @@ package com.slowr.app.api;
 
 
 import com.slowr.app.models.AdModel;
+import com.slowr.app.models.AppVersionModel;
 import com.slowr.app.models.AreaModel;
 import com.slowr.app.models.AttributeModel;
 import com.slowr.app.models.BannerModel;
@@ -23,6 +24,7 @@ import com.slowr.app.models.LoginResponse;
 import com.slowr.app.models.NotificationModel;
 import com.slowr.app.models.OtherProfileModel;
 import com.slowr.app.models.PopularAdModel;
+import com.slowr.app.models.PrivacyModel;
 import com.slowr.app.models.ProductChatModel;
 import com.slowr.app.models.ProfileModel;
 import com.slowr.app.models.PromotePriceModel;
@@ -115,7 +117,7 @@ public interface Api {
 
     @Multipart
     @POST("post/store")
-    Call<DefaultResponse> savePostForm(@Part MultipartBody.Part[] file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Query("attributeId") HashMap<String, String> attributeId, @Query("attributeValue") HashMap<String, String> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
+    Call<DefaultResponse> savePostForm(@Part List<MultipartBody.Part> file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId") HashMap<Object, Object> attributeId, @Part("attributeValue") HashMap<Object, Object> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
 
     @POST("report-us")
     Call<ReportResponsModel> saveReport(@Body Object params);
@@ -232,10 +234,10 @@ public interface Api {
 
 
     @GET("page/terms-conditions")
-    Call<String> getTC();
+    Call<PrivacyModel> getTC();
 
     @GET("page/privacy-policy")
-    Call<String> getPrivacy();
+    Call<PrivacyModel> getPrivacy();
 
     @GET("chat")
     Call<ProductChatModel> getProductChat(@Header("Authorization") String contentRange);
@@ -255,6 +257,9 @@ public interface Api {
 
     @POST("service-exists")
     Call<DefaultResponse> serviceCheck(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("delete-notification")
+    Call<DefaultResponse> deleteNotification(@Body Object params, @Header("Authorization") String contentRange);
 
     @Multipart
     @POST("user-profile")
@@ -287,4 +292,8 @@ public interface Api {
     @Multipart
     @POST("banner/update")
     Call<DefaultResponse> UpdateBanner(@Part MultipartBody.Part file, @Part("title") RequestBody bannerTitle, @Part("banner_id") RequestBody bannerId, @Part("description") RequestBody bannerDecs, @Part("colour_code") RequestBody colorCode, @Header("Authorization") String contentRange);
+
+    @POST("check-app-version")
+    Call<AppVersionModel> appVersionCheck(@Body Object params);
+
 }

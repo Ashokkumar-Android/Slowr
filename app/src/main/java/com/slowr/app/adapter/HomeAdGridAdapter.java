@@ -72,6 +72,7 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
 //                        Function.bounceAnimateImageView(true, img_favorite);
                     } else {
                         Function.CustomMessage(ctx, ctx.getString(R.string.my_ad_favorite));
+                        img_favorite.setLiked(false);
                     }
                     break;
                 case R.id.img_share:
@@ -167,23 +168,31 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
             }
 
             if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                if(movie.getCatGroup().equals("1")){
+                if (movie.getCatGroup().equals("1")) {
                     holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                }else {
+                } else {
                     holder.txt_price.setText(ctx.getString(R.string.custom_hire));
                 }
             } else {
                 holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
         } else {
-            if ( movie.getAdDuration().equals("Custom")) {
-                if(movie.getCatGroup().equals("1")){
+            if (movie.getCatGroup().equals("1")) {
+                if (movie.getAdDuration().equals("Custom")) {
                     holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                }else {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                } else if (movie.getAdDuration().equals("Per Hour")) {
+                    holder.txt_price.setText(ctx.getString(R.string.hour_rent));
+                } else if (movie.getAdDuration().equals("Per Day")) {
+                    holder.txt_price.setText(ctx.getString(R.string.day_rent));
                 }
             } else {
-                holder.txt_price.setVisibility(View.GONE);
+                if (movie.getAdDuration().equals("Custom")) {
+                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                } else if (movie.getAdDuration().equals("Per Hour")) {
+                    holder.txt_price.setText(ctx.getString(R.string.hour_hire));
+                } else if (movie.getAdDuration().equals("Per Day")) {
+                    holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                }
             }
 
         }

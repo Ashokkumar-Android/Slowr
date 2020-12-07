@@ -1,25 +1,19 @@
 package com.slowr.app.activity;
 
-import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.models.PrivacyModel;
 
 import retrofit2.Call;
 
@@ -31,10 +25,10 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayout img_back;
     String pageFrom = "";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DeepLink();
         setContentView(R.layout.activity_policy);
         doDeclaration();
     }
@@ -68,42 +62,6 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void DeepLink() {
-        DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.slowr.in/"))
-                .setDomainUriPrefix("https://devlink.slowr.in")
-                // Open links with this app on Android
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
-                // Open links with com.example.ios on iOS
-                .setIosParameters(new DynamicLink.IosParameters.Builder("com.slowr.ios.beta").build())
-                .buildDynamicLink();
-
-        Uri dynamicLinkUri = dynamicLink.getUri();
-
-        Log.i("Share Link", String.valueOf(dynamicLinkUri));
-
-
-        FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
-                .addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
-                    @Override
-                    public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
-                        // Get deep link from result (may be null if no link is found)
-                        Uri deepLink = null;
-                        if (pendingDynamicLinkData != null) {
-                            deepLink = pendingDynamicLinkData.getLink();
-                            Toast.makeText(getApplicationContext(), String.valueOf(deepLink), Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("TAG", "getDynamicLink:onFailure", e);
-                    }
-                });
-    }
 
     @Override
     public void onClick(View v) {
@@ -132,17 +90,21 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    retrofit2.Callback<String> adListResponse = new retrofit2.Callback<String>() {
+    retrofit2.Callback<PrivacyModel> adListResponse = new retrofit2.Callback<PrivacyModel>() {
         @Override
-        public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+        public void onResponse(Call<PrivacyModel> call, retrofit2.Response<PrivacyModel> response) {
 
             Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
-
+            PrivacyModel privacyModel = response.body();
             try {
-                if (pageFrom.equals("1")) {
-                    txt_privacy_policy.setText(response.body());
-                } else {
-                    txt_terms_conditions.setText(response.body());
+                if (privacyModel.isStatus()) {
+
+
+                    if (pageFrom.equals("1")) {
+                        txt_privacy_policy.setText(Html.fromHtml(privacyModel.getPrivacyData()));
+                    } else {
+                        txt_terms_conditions.setText(Html.fromHtml(privacyModel.getPrivacyData()));
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

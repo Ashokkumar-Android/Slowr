@@ -1,9 +1,8 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,9 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.bumptech.glide.Glide;
 import com.slowr.app.R;
 import com.slowr.app.models.BannerItemModel;
+import com.slowr.app.utils.Function;
 
 import java.util.ArrayList;
-
-import jp.wasabeef.glide.transformations.BlurTransformation;
 
 
 public class BannerAdapter extends PagerAdapter {
@@ -52,6 +50,7 @@ public class BannerAdapter extends PagerAdapter {
 
         assert imageLayout != null;
         ImageView img_banner = imageLayout.findViewById(R.id.img_banner);
+        ImageView img_default_banner = imageLayout.findViewById(R.id.img_default_banner);
         ImageView defult_one = imageLayout.findViewById(R.id.defult_one);
         TextView txt_prosperId = imageLayout.findViewById(R.id.txt_prosperId);
         TextView txt_banner_content = imageLayout.findViewById(R.id.txt_banner_content);
@@ -63,11 +62,7 @@ public class BannerAdapter extends PagerAdapter {
         txt_banner_content.setText(bannerItemModel.getBannerTitle());
         txt_banner_price.setText(bannerItemModel.getDescription());
 //        layout_root.setBackgroundColor(Color.parseColor(bannerItemModel.getColorCode()));
-        Glide.with(context)
-                .load(bannerItemModel.getBannerImage())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(img_banner);
+
         view.addView(imageLayout, 0);
         imageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,34 +71,57 @@ public class BannerAdapter extends PagerAdapter {
                     callBack.onItemClick(position);
             }
         });
+        String[] col = bannerItemModel.getColorCode().split(",");
+        Function.GradientBgSet(defult_one, col[0], col[1]);
+        Log.i("BannerPostion", String.valueOf(position));
+        Log.i("BannerType", String.valueOf(bannerItemModel.getIsDefault()));
+        if (bannerItemModel.getIsDefault() != 0) {
+            layout_root.setVisibility(View.VISIBLE);
+            img_default_banner.setVisibility(View.GONE);
+            Glide.with(context)
+                    .load(bannerItemModel.getBannerImage())
+                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_default_horizontal)
+                    .into(img_banner);
 
-        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT,new int[]{
-                Color.parseColor("#8A2387"),
-                Color.parseColor("#E94057"),
-                Color.parseColor("#F27121")
-        });
+        } else {
+            layout_root.setVisibility(View.GONE);
+            img_default_banner.setVisibility(View.VISIBLE);
+            Glide.with(context)
+                    .load(bannerItemModel.getBannerImage())
+                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_default_horizontal)
+                    .into(img_default_banner);
 
-        // Set the color array to draw gradient
-//        gd.setColors(new int[]{
-//                Color.RED,
-//                Color.GREEN,
-//                Color.YELLOW
+        }
+
+//        GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.RIGHT_LEFT, new int[]{
+//                Color.parseColor("#8A2387"),
+//                Color.parseColor("#E94057"),
+//                Color.parseColor("#F27121")
 //        });
-
-        // Set the GradientDrawable gradient type linear gradient
-        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-
-        // Set GradientDrawable shape is a rectangle
-        gd.setShape(GradientDrawable.RECTANGLE);
-
-        // Set 3 pixels width solid blue color border
-        gd.setStroke(0, Color.BLUE);
-
-        // Set GradientDrawable width and in pixels
-//        gd.setSize(450, 150); // Width 450 pixels and height 150 pixels
-
-        // Set GradientDrawable as ImageView source image
-        defult_one.setImageDrawable(gd);
+//
+//        // Set the color array to draw gradient
+////        gd.setColors(new int[]{
+////                Color.RED,
+////                Color.GREEN,
+////                Color.YELLOW
+////        });
+//
+//        // Set the GradientDrawable gradient type linear gradient
+//        gd.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+//
+//        // Set GradientDrawable shape is a rectangle
+//        gd.setShape(GradientDrawable.RECTANGLE);
+//
+//        // Set 3 pixels width solid blue color border
+//        gd.setStroke(0, Color.BLUE);
+//
+//        // Set GradientDrawable width and in pixels
+////        gd.setSize(450, 150); // Width 450 pixels and height 150 pixels
+//
+//        // Set GradientDrawable as ImageView source image
+//        defult_one.setImageDrawable(gd);
 //        Glide.with(context)
 //                .load(bannerItemModel.getBannerImage())
 //                .transform(new BlurTransformation())
@@ -122,7 +140,9 @@ public class BannerAdapter extends PagerAdapter {
     @Override
     public void restoreState(Parcelable state, ClassLoader loader) {
     }
-
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
     @Override
     public Parcelable saveState() {
         return null;
