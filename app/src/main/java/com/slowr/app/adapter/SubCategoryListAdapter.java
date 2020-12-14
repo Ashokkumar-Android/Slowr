@@ -74,18 +74,21 @@ public class SubCategoryListAdapter extends RecyclerView.Adapter<SubCategoryList
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        SubCategoryItemModel movie = categoryListFilter.get(position);
-        holder.txt_category_name.setText(movie.getSubcategoryName().trim());
-        if (checkedPos.equals("")) {
-            holder.rb_select.setChecked(false);
-        } else {
-            if (checkedPos.equals(movie.getSubcategoryId())) {
-                holder.rb_select.setChecked(true);
-            } else {
+        try {
+            SubCategoryItemModel movie = categoryListFilter.get(position);
+            holder.txt_category_name.setText(movie.getSubcategoryName().trim());
+            if (checkedPos.equals("")) {
                 holder.rb_select.setChecked(false);
+            } else {
+                if (checkedPos.equals(movie.getSubcategoryId())) {
+                    holder.rb_select.setChecked(true);
+                } else {
+                    holder.rb_select.setChecked(false);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -103,7 +106,7 @@ public class SubCategoryListAdapter extends RecyclerView.Adapter<SubCategoryList
     }
 
     public interface Callback {
-        public void itemClick(SubCategoryItemModel model);
+        void itemClick(SubCategoryItemModel model);
 
 
     }

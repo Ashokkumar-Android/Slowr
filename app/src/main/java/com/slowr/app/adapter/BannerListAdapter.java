@@ -74,22 +74,27 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        BannerItemModel model = categoryList.get(position);
+        try {
 
-        holder.txt_banner_title.setText(model.getBannerTitle().trim());
-        holder.txt_from_date.setText(" :  " + model.getBannerFromDate().trim());
-        holder.txt_to_date.setText(" :  " + model.getBannerToDate().trim());
-        if (model.getBannerStatus().equals("1")) {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
-            holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
-        } else if (model.getBannerStatus().equals("3")) {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_expired));
-            holder.btn_edit.setText(ctx.getString(R.string.txt_renew));
-        } else {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
-            holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
+
+            BannerItemModel model = categoryList.get(position);
+
+            holder.txt_banner_title.setText(model.getBannerTitle().trim());
+            holder.txt_from_date.setText(" :  " + model.getBannerFromDate().trim());
+            holder.txt_to_date.setText(" :  " + model.getBannerToDate().trim());
+            if (model.getBannerStatus().equals("1")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
+                holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
+            } else if (model.getBannerStatus().equals("3")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_expired));
+                holder.btn_edit.setText(ctx.getString(R.string.txt_renew));
+            } else {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
+                holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override

@@ -87,125 +87,131 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        final AttributeItemModel movie = categoryList.get(position);
-        if (movie.getMandatory().equals("1")) {
-            holder.txt_select_title.setText(movie.getName() + " *");
-        } else {
-            holder.txt_select_title.setText(movie.getName().trim());
-        }
+        try {
 
-        if (movie.getInputValue() != null && movie.getInputValue().equals("")) {
-            holder.txt_select_content.setHint("Type" + " " + movie.getName());
-            if (movie.getType().equals("select")) {
-                holder.txt_select_content.setText("");
+
+            final AttributeItemModel movie = categoryList.get(position);
+            if (movie.getMandatory().equals("1")) {
+                holder.txt_select_title.setText(movie.getName() + " *");
             } else {
-                holder.edt_attributeValue.setText("");
+                holder.txt_select_title.setText(movie.getName().trim());
             }
-        } else {
-            isChange = true;
-            if (movie.getType().equals("select")) {
-                holder.txt_select_content.setText(movie.getInputValue().trim());
-                holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
+
+            if (movie.getInputValue() != null && movie.getInputValue().equals("")) {
+                holder.txt_select_content.setHint("Type" + " " + movie.getName());
+                if (movie.getType().equals("select")) {
+                    holder.txt_select_content.setText("");
+                } else {
+                    holder.edt_attributeValue.setText("");
+                }
             } else {
-                holder.edt_attributeValue.setText(movie.getInputValue().trim());
-                holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
+                isChange = true;
+                if (movie.getType().equals("select")) {
+                    holder.txt_select_content.setText(movie.getInputValue().trim());
+                    holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
+                } else {
+                    holder.edt_attributeValue.setText(movie.getInputValue().trim());
+                    holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
+                }
+                isChange = false;
             }
-            isChange = false;
-        }
 
 
-        if (movie.getType().equals("select")) {
-            holder.layout_select.setVisibility(View.VISIBLE);
-            holder.layout_input.setVisibility(View.GONE);
+            if (movie.getType().equals("select")) {
+                holder.layout_select.setVisibility(View.VISIBLE);
+                holder.layout_input.setVisibility(View.GONE);
 
-            String[] strArray = movie.getAttributeValues().split(",");
-            ArrayList<AttributeSelectModel> attributeValueList = new ArrayList<>();
-            attributeValueList.clear();
-            for (int i = 0; i < strArray.length; i++) {
-                attributeValueList.add(new AttributeSelectModel("", strArray[i]));
+                String[] strArray = movie.getAttributeValues().split(",");
+                ArrayList<AttributeSelectModel> attributeValueList = new ArrayList<>();
+                attributeValueList.clear();
+                for (int i = 0; i < strArray.length; i++) {
+                    attributeValueList.add(new AttributeSelectModel("", strArray[i]));
+                }
+                AttributesAutoCompleteAdapter attributesAutoCompleteAdapter = new AttributesAutoCompleteAdapter(ctx, R.layout.layout_sub_category_item, attributeValueList);
+                //Getting the instance of AutoCompleteTextView
+                holder.txt_select_content.setThreshold(1);//will start working from first character
+                holder.txt_select_content.setAdapter(attributesAutoCompleteAdapter);
+                attributesAutoCompleteAdapter.setCallback(new AttributesAutoCompleteAdapter.Callback() {
+                    @Override
+                    public void itemClick(AttributeSelectModel model) {
+                        holder.txt_select_content.setText(model.getAttributeValue().trim());
+                        holder.txt_select_content.dismissDropDown();
+                        holder.txt_select_content.setSelection(holder.txt_select_content.getText().toString().length());
+                    }
+                });
+
+            } else {
+                holder.edt_attributeValue.setHint("Type" + " " + movie.getName());
+                holder.layout_select.setVisibility(View.GONE);
+                holder.layout_input.setVisibility(View.VISIBLE);
             }
-            AttributesAutoCompleteAdapter attributesAutoCompleteAdapter = new AttributesAutoCompleteAdapter(ctx, R.layout.layout_sub_category_item, attributeValueList);
-            //Getting the instance of AutoCompleteTextView
-            holder.txt_select_content.setThreshold(1);//will start working from first character
-            holder.txt_select_content.setAdapter(attributesAutoCompleteAdapter);
-            attributesAutoCompleteAdapter.setCallback(new AttributesAutoCompleteAdapter.Callback() {
+            if (isEditable) {
+                holder.edt_attributeValue.setEnabled(false);
+                holder.layout_drop_down.setEnabled(false);
+                holder.edt_attributeValue.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+                holder.txt_select_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+                holder.txt_select_content.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+                holder.txt_select_content.setFocusableInTouchMode(false);
+            } else {
+                holder.edt_attributeValue.setEnabled(true);
+                holder.layout_drop_down.setEnabled(true);
+            }
+            holder.edt_attributeValue.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void itemClick(AttributeSelectModel model) {
-                    holder.txt_select_content.setText(model.getAttributeValue().trim());
-                    holder.txt_select_content.dismissDropDown();
-                    holder.txt_select_content.setSelection(holder.txt_select_content.getText().toString().length());
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String val = holder.edt_attributeValue.getText().toString().trim();
+                    int desValue = holder.edt_attributeValue.getText().toString().length();
+                    movie.setInputValue(val);
+                    movie.setTextLength(String.valueOf(desValue));
+                    if (movie.getIsTitle().equals("1")) {
+                        callback.attributeEnterValue(val, position);
+                    }
+                    holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
+                    if (desValue == 50 && !isChange) {
+                        Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
+                    }
                 }
             });
 
-        } else {
-            holder.edt_attributeValue.setHint("Type" + " " + movie.getName());
-            holder.layout_select.setVisibility(View.GONE);
-            holder.layout_input.setVisibility(View.VISIBLE);
+            holder.txt_select_content.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String val = holder.txt_select_content.getText().toString().trim();
+                    int desValue = holder.txt_select_content.getText().toString().length();
+                    movie.setInputValue(val);
+                    movie.setTextLength(String.valueOf(desValue));
+                    if (movie.getIsTitle().equals("1")) {
+                        callback.attributeEnterValue(val, position);
+                    }
+                    holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
+                    if (desValue == 50 && !isChange) {
+                        Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (isEditable) {
-            holder.edt_attributeValue.setEnabled(false);
-            holder.layout_drop_down.setEnabled(false);
-            holder.edt_attributeValue.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-            holder.txt_select_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-            holder.txt_select_content.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-            holder.txt_select_content.setFocusableInTouchMode(false);
-        } else {
-            holder.edt_attributeValue.setEnabled(true);
-            holder.layout_drop_down.setEnabled(true);
-        }
-        holder.edt_attributeValue.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String val = holder.edt_attributeValue.getText().toString().trim();
-                int desValue = holder.edt_attributeValue.getText().toString().length();
-                movie.setInputValue(val);
-                movie.setTextLength(String.valueOf(desValue));
-                if (movie.getIsTitle().equals("1")) {
-                    callback.attributeEnterValue(val, position);
-                }
-                holder.txt_product_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                if (desValue == 50 && !isChange) {
-                    Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
-                }
-            }
-        });
-
-        holder.txt_select_content.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String val = holder.txt_select_content.getText().toString().trim();
-                int desValue = holder.txt_select_content.getText().toString().length();
-                movie.setInputValue(val);
-                movie.setTextLength(String.valueOf(desValue));
-                if (movie.getIsTitle().equals("1")) {
-                    callback.attributeEnterValue(val, position);
-                }
-                holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                if (desValue == 50 && !isChange) {
-                    Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
-                }
-            }
-        });
     }
 
     @Override

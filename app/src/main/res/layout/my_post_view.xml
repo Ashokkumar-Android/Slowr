@@ -13,11 +13,78 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-             android:id="@+id/layout_root"
+            android:id="@+id/layout_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:visibility="gone">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/layout_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/size_five"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/txt_orange">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:orientation="vertical"
+                    android:padding="@dimen/size_ten">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_alert" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/size_ten"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txt_alert_header"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Your Ad is on hold due to following reasons"
+                                android:textColor="@color/color_white"
+                                android:textSize="@dimen/size_fourteen" />
+
+                            <TextView
+                                android:id="@+id/txt_alert_content"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/size_five"
+                                android:text="Your Ad is on hold due to following reasons"
+                                android:textColor="@color/color_white"
+                                android:textSize="@dimen/size_fourteen" />
+
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/txt_alert_footer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:text="Your Ad is on hold due to following reasons"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_fourteen" />
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -34,7 +101,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/ic_default_vertical" />
+                        android:src="@drawable/ic_no_image" />
 
                     <ImageView
                         android:layout_width="match_parent"
@@ -183,6 +250,7 @@
                                 android:id="@+id/layout_fav"
                                 android:layout_width="70dp"
                                 android:layout_height="wrap_content"
+                                android:visibility="gone"
                                 android:orientation="horizontal">
 
                                 <!--                                <ImageView-->
@@ -377,8 +445,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/size_five"
-                            android:orientation="horizontal"
                             android:gravity="center"
+                            android:orientation="horizontal"
                             android:visibility="gone">
 
                             <Button
@@ -400,7 +468,7 @@
                             <View
                                 android:layout_width="10dp"
                                 android:layout_height="1dp"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <Button
                                 android:id="@+id/btn_call_now"

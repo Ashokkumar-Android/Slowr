@@ -65,10 +65,13 @@ public class SearchSuggistionAdapter extends RecyclerView.Adapter<SearchSuggisti
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        SuggistionItem movie = categoryListFilter.get(position);
+        try {
+            SuggistionItem movie = categoryListFilter.get(position);
 
-        holder.txt_category_name.setText(movie.getSearchValue().trim());
-
+            holder.txt_category_name.setText(movie.getSearchValue().trim());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -86,7 +89,7 @@ public class SearchSuggistionAdapter extends RecyclerView.Adapter<SearchSuggisti
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

@@ -109,100 +109,118 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        AdItemModel movie = categoryListFilter.get(position);
-
-        holder.txt_ad_title.setText(movie.getAdTitle().trim());
-        holder.txt_location.setText(movie.getAreaName() + ", " + movie.getCityName());
-        if (movie.getLikeCount().equals("0")) {
-            holder.txt_like_count.setText("");
-        } else {
-            holder.txt_like_count.setText(movie.getLikeCount());
-        }
+        try {
+            AdItemModel movie = categoryListFilter.get(position);
 
 
-        if (movie.getAdPromotion().equals("1")) {
-            holder.layout_promoted.setVisibility(View.VISIBLE);
-            holder.txt_premium_mark.setVisibility(View.GONE);
-            holder.img_top_page_mark.setVisibility(View.VISIBLE);
-            holder.img_promote.setVisibility(View.GONE);
-        } else if (movie.getAdPromotion().equals("2")) {
-            holder.layout_promoted.setVisibility(View.VISIBLE);
-            holder.txt_premium_mark.setVisibility(View.VISIBLE);
-            holder.img_top_page_mark.setVisibility(View.GONE);
-            holder.img_promote.setVisibility(View.GONE);
-        } else {
-            holder.layout_promoted.setVisibility(View.GONE);
-            if (movie.getAdType().equals("1")) {
+            holder.txt_ad_title.setText(movie.getAdTitle().trim());
+            holder.txt_location.setText(movie.getAreaName() + ", " + movie.getCityName());
+            if (movie.getLikeCount().equals("0")) {
+                holder.txt_like_count.setText("");
+            } else {
+                holder.txt_like_count.setText(movie.getLikeCount());
+            }
+
+
+            if (movie.getAdPromotion().equals("1")) {
+                holder.layout_promoted.setVisibility(View.VISIBLE);
+                holder.txt_premium_mark.setVisibility(View.GONE);
+                holder.img_top_page_mark.setVisibility(View.VISIBLE);
+                holder.img_promote.setVisibility(View.GONE);
+            } else if (movie.getAdPromotion().equals("2")) {
+                holder.layout_promoted.setVisibility(View.VISIBLE);
+                holder.txt_premium_mark.setVisibility(View.VISIBLE);
+                holder.img_top_page_mark.setVisibility(View.GONE);
+                holder.img_promote.setVisibility(View.GONE);
+            } else {
+                holder.layout_promoted.setVisibility(View.GONE);
+                if (movie.getAdType().equals("1")) {
 //                holder.img_promote.setVisibility(View.VISIBLE);
-                holder.img_promote.setVisibility(View.GONE);
-            } else {
-                holder.img_promote.setVisibility(View.GONE);
-            }
-        }
-        if (movie.getAdStatus().equals("1")) {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
-            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
-            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.bg_green));
-            holder.img_share.setVisibility(View.VISIBLE);
-        } else if (movie.getAdStatus().equals("2")) {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_in_active));
-            holder.img_promote.setVisibility(View.GONE);
-            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_gray_border_color));
-            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.inactive_border));
-            holder.img_share.setVisibility(View.GONE);
-        } else {
-            holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
-            holder.img_promote.setVisibility(View.GONE);
-            holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
-            holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
-            holder.img_share.setVisibility(View.GONE);
-        }
-        if (movie.getAdFee() != null) {
-            holder.txt_price.setVisibility(View.VISIBLE);
-            String price = "";
-            if (movie.getAdFee().contains(".")) {
-                String[] tempPrice = movie.getAdFee().split("\\.");
-                price = tempPrice[0];
-            } else {
-                price = movie.getAdFee();
-            }
-
-            Log.i("Fave", movie.getIsFavorite());
-            if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                if (movie.getCatGroup().equals("1")) {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                    holder.img_promote.setVisibility(View.GONE);
                 } else {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                    holder.img_promote.setVisibility(View.GONE);
                 }
-            } else {
-                holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
             }
-        } else {
-            if (movie.getCatGroup().equals("1")) {
-                if (movie.getAdDuration().equals("Custom")) {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                } else if (movie.getAdDuration().equals("Per Hour")) {
-                    holder.txt_price.setText(ctx.getString(R.string.hour_rent));
-                } else if (movie.getAdDuration().equals("Per Day")) {
-                    holder.txt_price.setText(ctx.getString(R.string.day_rent));
+            if (movie.getAdStatus().equals("1")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.bg_green));
+                holder.img_share.setVisibility(View.VISIBLE);
+            } else if (movie.getAdStatus().equals("2")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_in_active));
+                holder.img_promote.setVisibility(View.GONE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_gray_border_color));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.inactive_border));
+                holder.img_share.setVisibility(View.GONE);
+            } else if (movie.getAdStatus().equals("8")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_rejected));
+                holder.img_promote.setVisibility(View.GONE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_filled));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.color_white));
+                holder.img_share.setVisibility(View.GONE);
+            } else {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
+                holder.img_promote.setVisibility(View.GONE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+                holder.img_share.setVisibility(View.GONE);
+            }
+            if (movie.getAdFee() != null) {
+                holder.txt_price.setVisibility(View.VISIBLE);
+                String price = "";
+                if (movie.getAdFee().contains(".")) {
+                    String[] tempPrice = movie.getAdFee().split("\\.");
+                    price = tempPrice[0];
+                } else {
+                    price = movie.getAdFee();
+                }
+
+                Log.i("Fave", movie.getIsFavorite());
+                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+                    if (movie.getCatGroup().equals("1")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                    } else {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                    }
+                } else {
+                    holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
                 }
             } else {
-                if (movie.getAdDuration().equals("Custom")) {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                } else if (movie.getAdDuration().equals("Per Hour")) {
-                    holder.txt_price.setText(ctx.getString(R.string.hour_hire));
-                } else if (movie.getAdDuration().equals("Per Day")) {
-                    holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                if (movie.getCatGroup().equals("1")) {
+                    if (movie.getAdDuration().equals("Custom")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                    } else if (movie.getAdDuration().equals("Per Hour")) {
+                        holder.txt_price.setText(ctx.getString(R.string.hour_rent));
+                    } else if (movie.getAdDuration().equals("Per Day")) {
+                        holder.txt_price.setText(ctx.getString(R.string.day_rent));
+                    }
+                } else {
+                    if (movie.getAdDuration().equals("Custom")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                    } else if (movie.getAdDuration().equals("Per Hour")) {
+                        holder.txt_price.setText(ctx.getString(R.string.hour_hire));
+                    } else if (movie.getAdDuration().equals("Per Day")) {
+                        holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                    }
                 }
+
+            }
+            int defu = R.drawable.ic_no_image;
+
+            if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
+                defu = R.drawable.ic_no_image;
+            } else {
+                defu = R.drawable.ic_service_big;
             }
 
+            Glide.with(ctx)
+                    .load(movie.getPhotoType())
+                    .error(defu)
+                    .placeholder(defu)
+                    .into(holder.img_ad);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Glide.with(ctx)
-                .load(movie.getPhotoType())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(holder.img_ad);
-
     }
 
     @Override

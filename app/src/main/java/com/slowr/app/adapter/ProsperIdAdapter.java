@@ -63,11 +63,14 @@ public class ProsperIdAdapter extends RecyclerView.Adapter<ProsperIdAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        ProsperIdItemModel movie = categoryListFilter.get(position);
+        try {
+            ProsperIdItemModel movie = categoryListFilter.get(position);
 
-        holder.txt_prosperId_popup.setText(movie.getProsperId());
-        holder.txt_price.setText(ctx.getString(R.string.txt_rupee_simpal)+" "+movie.getProsPrice());
-
+            holder.txt_prosperId_popup.setText(movie.getProsperId());
+            holder.txt_price.setText(ctx.getString(R.string.txt_rupee_simpal) + " " + movie.getProsPrice());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -86,7 +89,7 @@ public class ProsperIdAdapter extends RecyclerView.Adapter<ProsperIdAdapter.MyVi
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

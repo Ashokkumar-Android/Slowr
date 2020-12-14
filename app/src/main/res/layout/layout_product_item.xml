@@ -30,7 +30,7 @@
                 android:layout_height="90dp"
                 android:padding="@dimen/size_five"
                 android:background="@drawable/bg_category"
-                android:src="@drawable/ic_default_vertical" />
+                android:src="@drawable/ic_no_image" />
 
             <TextView
                 android:id="@+id/txt_category_name"

@@ -131,7 +131,7 @@
                         android:layout_height="120dp"
                         android:layout_marginLeft="@dimen/size_ten"
                         android:layout_marginRight="@dimen/size_ten"
-                        android:src="@drawable/ic_default_vertical" />
+                        android:src="@drawable/ic_no_image" />
                 </LinearLayout>
             </LinearLayout>
 

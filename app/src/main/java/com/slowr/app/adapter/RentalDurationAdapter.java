@@ -67,15 +67,17 @@ public class RentalDurationAdapter extends RecyclerView.Adapter<RentalDurationAd
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        try {
+            holder.txt_category_name.setText(categoryListFilter.get(position));
 
-        holder.txt_category_name.setText(categoryListFilter.get(position));
-
-        if (position == checkedPos) {
-            holder.rb_select.setChecked(true);
-        } else {
-            holder.rb_select.setChecked(false);
+            if (position == checkedPos) {
+                holder.rb_select.setChecked(true);
+            } else {
+                holder.rb_select.setChecked(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
 
     }
 
@@ -94,7 +96,7 @@ public class RentalDurationAdapter extends RecyclerView.Adapter<RentalDurationAd
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

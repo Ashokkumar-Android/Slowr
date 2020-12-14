@@ -29,12 +29,13 @@
     </item>
     <item
         android:id="@+id/crop_image_menu_crop"
-        android:title="@string/crop_image_menu_crop"
+        android:title="@string/crop_image_menu_done"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/crop_image_menu_done"
         android:title="@string/crop_image_menu_done"
+        android:visible="false"
         app:showAsAction="always"/>
 
 

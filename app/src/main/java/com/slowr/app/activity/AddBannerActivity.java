@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -35,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.gioco.image.cropper.CropImage;
 import com.google.gson.JsonArray;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentResultListener;
@@ -129,7 +129,6 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     LinearLayoutManager listManager;
     private Function _fun = new Function();
     String imgPath = "";
-    Uri selectedImage;
     MultipartBody.Part bannerImage = null;
     String colorCodeOne = "";
     String colorCodeTwo = "";
@@ -164,230 +163,251 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void doDeclaration() {
-        Type = getIntent().getStringExtra("Type");
-        if (Type.equals("2")) {
-            bannerId = getIntent().getStringExtra("BannerID");
-        }
-        edt_banner_title = findViewById(R.id.edt_banner_title);
-        txt_title_count = findViewById(R.id.txt_title_count);
-        txt_from_date = findViewById(R.id.txt_from_date);
-        txt_to_date = findViewById(R.id.txt_to_date);
-        edt_description = findViewById(R.id.edt_description);
-        txt_description_count = findViewById(R.id.txt_description_count);
-        txt_city_content = findViewById(R.id.txt_city_content);
-        layout_city = findViewById(R.id.layout_city);
-        btn_add_image = findViewById(R.id.btn_add_image);
-        img_banner_view = findViewById(R.id.img_banner_view);
-        btn_preview_banner = findViewById(R.id.btn_preview_banner);
-        txt_summary_content = findViewById(R.id.txt_summary_content);
-        txt_total_price = findViewById(R.id.txt_total_price);
-        btn_confirm = findViewById(R.id.btn_confirm);
-        txt_guid_line = findViewById(R.id.txt_guid_line);
-        rc_color_list = findViewById(R.id.rc_color_list);
-        layout_banner_bg = findViewById(R.id.layout_banner_bg);
-        layout_banner_form = findViewById(R.id.layout_banner_form);
-        layout_preview = findViewById(R.id.layout_preview);
-        layout_list = findViewById(R.id.layout_list);
-        edt_list_search = findViewById(R.id.edt_list_search);
-        rc_list = findViewById(R.id.rc_list);
-        txt_page_title = findViewById(R.id.txt_page_title);
-        img_back = findViewById(R.id.img_back);
-        txt_page_action = findViewById(R.id.txt_page_action);
-        view_color = findViewById(R.id.view_color);
-        btn_customise = findViewById(R.id.btn_customise);
-        btn_done = findViewById(R.id.btn_done);
-        txt_preview_title = findViewById(R.id.txt_preview_title);
-        txt_prosperId = findViewById(R.id.txt_prosperId);
-        txt_preview_description = findViewById(R.id.txt_preview_description);
-        img_banner_preview = findViewById(R.id.img_banner_preview);
-        txt_banner_duration = findViewById(R.id.txt_banner_duration);
-        txt_city = findViewById(R.id.txt_city);
-        chips_input = findViewById(R.id.chips_input);
-
-        listManager = new LinearLayoutManager(AddBannerActivity.this, RecyclerView.HORIZONTAL, false);
-        rc_color_list.setLayoutManager(listManager);
-        rc_color_list.setItemAnimator(new DefaultItemAnimator());
-        viewColorAdapter = new ViewColorAdapter(getApplicationContext(), colorList);
-        rc_color_list.setAdapter(viewColorAdapter);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        rc_list.setLayoutManager(linearLayoutManager);
-        rc_list.setItemAnimator(new DefaultItemAnimator());
-        cityListAdapter = new CityMultiSelectAdapter(cityList, getApplicationContext());
-        rc_list.setAdapter(cityListAdapter);
-
-
-        txt_page_title.setText(getString(R.string.txt_banner));
-        txt_page_action.setText(getString(R.string.txt_ok));
-        txt_page_action.setVisibility(View.GONE);
-        img_back.setOnClickListener(this);
-        txt_from_date.setOnClickListener(this);
-        txt_to_date.setOnClickListener(this);
-        layout_city.setOnClickListener(this);
-        txt_page_action.setOnClickListener(this);
-        btn_add_image.setOnClickListener(this);
-        img_banner_view.setOnClickListener(this);
-        btn_confirm.setOnClickListener(this);
-        btn_customise.setOnClickListener(this);
-        btn_done.setOnClickListener(this);
-        btn_preview_banner.setOnClickListener(this);
-        Checkout.preload(getApplicationContext());
-        CountSet();
-
-        CallBackFunction();
-        if (Type.equals("2")) {
-            getBannerDetails();
-        } else {
-            getColor();
-        }
-        chips_input.addChipsListener(new ChipsInput.ChipsListener() {
-            @Override
-            public void onChipAdded(ChipInterface chip, int newSize) {
-                if (!changeChip) {
-                    selectChipList.add(new CityChipModel(chip.getId(), chip.getCityName(), chip.getPrice()));
-                    SummaryContent();
-                }
+        try {
+            Type = getIntent().getStringExtra("Type");
+            if (Type.equals("2")) {
+                bannerId = getIntent().getStringExtra("BannerID");
             }
+            edt_banner_title = findViewById(R.id.edt_banner_title);
+            txt_title_count = findViewById(R.id.txt_title_count);
+            txt_from_date = findViewById(R.id.txt_from_date);
+            txt_to_date = findViewById(R.id.txt_to_date);
+            edt_description = findViewById(R.id.edt_description);
+            txt_description_count = findViewById(R.id.txt_description_count);
+            txt_city_content = findViewById(R.id.txt_city_content);
+            layout_city = findViewById(R.id.layout_city);
+            btn_add_image = findViewById(R.id.btn_add_image);
+            img_banner_view = findViewById(R.id.img_banner_view);
+            btn_preview_banner = findViewById(R.id.btn_preview_banner);
+            txt_summary_content = findViewById(R.id.txt_summary_content);
+            txt_total_price = findViewById(R.id.txt_total_price);
+            btn_confirm = findViewById(R.id.btn_confirm);
+            txt_guid_line = findViewById(R.id.txt_guid_line);
+            rc_color_list = findViewById(R.id.rc_color_list);
+            layout_banner_bg = findViewById(R.id.layout_banner_bg);
+            layout_banner_form = findViewById(R.id.layout_banner_form);
+            layout_preview = findViewById(R.id.layout_preview);
+            layout_list = findViewById(R.id.layout_list);
+            edt_list_search = findViewById(R.id.edt_list_search);
+            rc_list = findViewById(R.id.rc_list);
+            txt_page_title = findViewById(R.id.txt_page_title);
+            img_back = findViewById(R.id.img_back);
+            txt_page_action = findViewById(R.id.txt_page_action);
+            view_color = findViewById(R.id.view_color);
+            btn_customise = findViewById(R.id.btn_customise);
+            btn_done = findViewById(R.id.btn_done);
+            txt_preview_title = findViewById(R.id.txt_preview_title);
+            txt_prosperId = findViewById(R.id.txt_prosperId);
+            txt_preview_description = findViewById(R.id.txt_preview_description);
+            img_banner_preview = findViewById(R.id.img_banner_preview);
+            txt_banner_duration = findViewById(R.id.txt_banner_duration);
+            txt_city = findViewById(R.id.txt_city);
+            chips_input = findViewById(R.id.chips_input);
 
-            @Override
-            public void onChipRemoved(ChipInterface chip, int newSize) {
-                for (int i = 0; i < selectChipList.size(); i++) {
-                    if (selectChipList.get(i).getId().equals(chip.getId())) {
-                        selectChipList.remove(i);
-                        break;
+            listManager = new LinearLayoutManager(AddBannerActivity.this, RecyclerView.HORIZONTAL, false);
+            rc_color_list.setLayoutManager(listManager);
+            rc_color_list.setItemAnimator(new DefaultItemAnimator());
+            viewColorAdapter = new ViewColorAdapter(getApplicationContext(), colorList);
+            rc_color_list.setAdapter(viewColorAdapter);
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+            rc_list.setLayoutManager(linearLayoutManager);
+            rc_list.setItemAnimator(new DefaultItemAnimator());
+            cityListAdapter = new CityMultiSelectAdapter(cityList, getApplicationContext());
+            rc_list.setAdapter(cityListAdapter);
+
+
+            txt_page_title.setText(getString(R.string.txt_banner));
+            txt_page_action.setText(getString(R.string.txt_ok));
+            txt_page_action.setVisibility(View.GONE);
+            img_back.setOnClickListener(this);
+            txt_from_date.setOnClickListener(this);
+            txt_to_date.setOnClickListener(this);
+            layout_city.setOnClickListener(this);
+            txt_page_action.setOnClickListener(this);
+            btn_add_image.setOnClickListener(this);
+            img_banner_view.setOnClickListener(this);
+            btn_confirm.setOnClickListener(this);
+            btn_customise.setOnClickListener(this);
+            btn_done.setOnClickListener(this);
+            btn_preview_banner.setOnClickListener(this);
+            Checkout.preload(getApplicationContext());
+            CountSet();
+
+            CallBackFunction();
+            if (Type.equals("2")) {
+                getBannerDetails();
+            } else {
+                getColor();
+            }
+            chips_input.addChipsListener(new ChipsInput.ChipsListener() {
+                @Override
+                public void onChipAdded(ChipInterface chip, int newSize) {
+                    if (!changeChip) {
+                        selectChipList.add(new CityChipModel(chip.getId(), chip.getCityName(), chip.getPrice()));
+                        SummaryContent();
                     }
                 }
-                SummaryContent();
-            }
 
-            @Override
-            public void onTextChanged(CharSequence text) {
+                @Override
+                public void onChipRemoved(ChipInterface chip, int newSize) {
+                    for (int i = 0; i < selectChipList.size(); i++) {
+                        if (selectChipList.get(i).getId().equals(chip.getId())) {
+                            selectChipList.remove(i);
+                            break;
+                        }
+                    }
+                    SummaryContent();
+                }
 
-            }
+                @Override
+                public void onTextChanged(CharSequence text) {
 
-            @Override
-            public void onKeyboardDone() {
-                Function.hideSoftKeyboard(AddBannerActivity.this, img_back);
-                layout_list.setVisibility(View.GONE);
-                layout_banner_form.setVisibility(View.VISIBLE);
-                txt_page_title.setText(getString(R.string.txt_banner));
-                txt_page_action.setVisibility(View.GONE);
-                isList = false;
-                SummaryContent();
-            }
-        });
+                }
+
+                @Override
+                public void onKeyboardDone() {
+                    Function.hideSoftKeyboard(AddBannerActivity.this, img_back);
+                    layout_list.setVisibility(View.GONE);
+                    layout_banner_form.setVisibility(View.VISIBLE);
+                    txt_page_title.setText(getString(R.string.txt_banner));
+                    txt_page_action.setVisibility(View.GONE);
+                    isList = false;
+                    SummaryContent();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getBannerDetails() {
-        if (_fun.isInternetAvailable(AddBannerActivity.this)) {
-            RetrofitClient.getClient().create(Api.class).getBannerDetails(bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, bannerDetailsResponse, false));
-        } else {
-            _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    RetrofitClient.getClient().create(Api.class).getBannerDetails(bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, bannerDetailsResponse, false));
-                }
-            });
+        try {
+            if (_fun.isInternetAvailable(AddBannerActivity.this)) {
+                RetrofitClient.getClient().create(Api.class).getBannerDetails(bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(AddBannerActivity.this, bannerDetailsResponse, false));
+            } else {
+                _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        RetrofitClient.getClient().create(Api.class).getBannerDetails(bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                .enqueue(new RetrofitCallBack(AddBannerActivity.this, bannerDetailsResponse, false));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void CallBackFunction() {
-        viewColorAdapter.setCallBack(new ViewColorAdapter.CallBack() {
-            @Override
-            public void itemClick(int pos) {
-                for (int i = 0; i < colorList.size(); i++) {
-                    if (i == pos) {
-                        colorList.get(i).setChange(true);
-                    } else {
-                        colorList.get(i).setChange(false);
+        try {
+            viewColorAdapter.setCallBack(new ViewColorAdapter.CallBack() {
+                @Override
+                public void itemClick(int pos) {
+                    for (int i = 0; i < colorList.size(); i++) {
+                        if (i == pos) {
+                            colorList.get(i).setChange(true);
+                        } else {
+                            colorList.get(i).setChange(false);
+                        }
                     }
-                }
-                viewColorAdapter.notifyDataSetChanged();
-                colorCodeOne = colorList.get(pos).getColorOne();
-                colorCodeTwo = colorList.get(pos).getColorTwo();
+                    viewColorAdapter.notifyDataSetChanged();
+                    colorCodeOne = colorList.get(pos).getColorOne();
+                    colorCodeTwo = colorList.get(pos).getColorTwo();
 
-                Function.GradientBgSet(layout_banner_bg, colorCodeOne, colorCodeTwo);
-                Function.GradientBgSet(view_color, colorCodeOne, colorCodeTwo);
-            }
-        });
+                    Function.GradientBgSet(layout_banner_bg, colorCodeOne, colorCodeTwo);
+                    Function.GradientBgSet(view_color, colorCodeOne, colorCodeTwo);
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getColor() {
-        if (_fun.isInternetAvailable(AddBannerActivity.this)) {
-            RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
-        } else {
-            _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
-                }
-            });
+        try {
+            if (_fun.isInternetAvailable(AddBannerActivity.this)) {
+                RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
+            } else {
+                _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        RetrofitClient.getClient().create(Api.class).getColorCode(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                .enqueue(new RetrofitCallBack(AddBannerActivity.this, colorResponse, true));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void CountSet() {
-        txt_description_count.setText(getString(R.string.txt_des_count_banner, "0"));
-        txt_title_count.setText(getString(R.string.txt_title_count, "0"));
-        edt_description.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        try {
+            txt_description_count.setText(getString(R.string.txt_des_count_banner, "0"));
+            txt_title_count.setText(getString(R.string.txt_title_count, "0"));
+            edt_description.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                int desValue = edt_description.getText().toString().length();
-                txt_description_count.setText(getString(R.string.txt_des_count_banner, String.valueOf(desValue)));
-                if (desValue == 100 && !changeDeductedAmount) {
-                    Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_limit_reached));
                 }
-            }
-        });
-        edt_banner_title.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                int desValue = edt_banner_title.getText().toString().length();
-                txt_title_count.setText(getString(R.string.txt_title_count, String.valueOf(desValue)));
-                if (desValue == 55 && !changeDeductedAmount) {
-                    Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_limit_reached));
                 }
-            }
-        });
-        edt_list_search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+                @Override
+                public void afterTextChanged(Editable s) {
+                    int desValue = edt_description.getText().toString().length();
+                    txt_description_count.setText(getString(R.string.txt_des_count_banner, String.valueOf(desValue)));
+                    if (desValue == 100 && !changeDeductedAmount) {
+                        Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_limit_reached));
+                    }
+                }
+            });
+            edt_banner_title.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                cityListAdapter.getFilter().filter(edt_list_search.getText().toString());
-            }
-        });
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    int desValue = edt_banner_title.getText().toString().length();
+                    txt_title_count.setText(getString(R.string.txt_title_count, String.valueOf(desValue)));
+                    if (desValue == 55 && !changeDeductedAmount) {
+                        Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_limit_reached));
+                    }
+                }
+            });
+            edt_list_search.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    cityListAdapter.getFilter().filter(edt_list_search.getText().toString());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void SummaryContent() {
@@ -437,208 +457,219 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.img_back:
-                if (isList) {
+        try {
+            switch (v.getId()) {
+                case R.id.img_back:
+                    if (isList) {
+                        layout_list.setVisibility(View.GONE);
+                        layout_banner_form.setVisibility(View.VISIBLE);
+                        txt_page_title.setText(getString(R.string.txt_banner));
+                        txt_page_action.setVisibility(View.GONE);
+                        isList = false;
+                    } else if (isPreview) {
+                        layout_banner_form.setVisibility(View.VISIBLE);
+                        layout_preview.setVisibility(View.GONE);
+                        isPreview = false;
+                    } else {
+                        if (checkData() && !Type.equals("2") && !isRenew) {
+                            WarningPopup();
+                        } else {
+                            finish();
+                        }
+                    }
+                    break;
+                case R.id.txt_from_date:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
+                    getDate("1");
+                    break;
+                case R.id.txt_to_date:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
+                    getDate("2");
+                    break;
+                case R.id.layout_city:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
+                    layout_list.setVisibility(View.VISIBLE);
+                    layout_banner_form.setVisibility(View.GONE);
+                    txt_page_title.setText(getString(R.string.txt_select) + " " + getString(R.string.txt_city_select));
+                    txt_page_action.setVisibility(View.VISIBLE);
+
+                    Function.openSoftKeyboard(AddBannerActivity.this, v);
+                    isList = true;
+                    break;
+                case R.id.txt_page_action:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
                     layout_list.setVisibility(View.GONE);
                     layout_banner_form.setVisibility(View.VISIBLE);
                     txt_page_title.setText(getString(R.string.txt_banner));
                     txt_page_action.setVisibility(View.GONE);
                     isList = false;
-                } else if (isPreview) {
+                    edt_list_search.setText("");
+//                setCity();
+                    SummaryContent();
+                    break;
+                case R.id.btn_add_image:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
+                    if (_fun.checkPermission(AddBannerActivity.this)) {
+                        MatisseActivity.PAGE_FROM = 2;
+                        Matisse.from(AddBannerActivity.this)
+                                .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
+//                            .choose(MimeType.of(MimeType.GIF), false)
+//                            .choose(MimeType.ofAll())
+
+                                .countable(true)
+                                .capture(true)
+                                .theme(R.style.Matisse_Dracula)
+                                .captureStrategy(
+                                        new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
+                                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
+                                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                                .thumbnailScale(0.85f)
+                                .imageEngine(new GlideEngine())
+                                .maxSelectable(1)
+                                .showSingleMediaType(true)
+                                .forResult(50);
+
+
+                    }
+                    break;
+                case R.id.img_banner_view:
+                    Function.hideSoftKeyboard(AddBannerActivity.this, v);
+                    if (_fun.checkPermission(AddBannerActivity.this)) {
+                        MatisseActivity.PAGE_FROM = 2;
+                        Matisse.from(AddBannerActivity.this)
+                                .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
+//                            .choose(MimeType.of(MimeType.GIF), false)
+//                            .choose(MimeType.ofAll())
+
+                                .countable(true)
+                                .capture(true)
+                                .theme(R.style.Matisse_Dracula)
+                                .captureStrategy(
+                                        new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
+                                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
+                                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                                .thumbnailScale(0.85f)
+                                .imageEngine(new GlideEngine())
+                                .maxSelectable(1)
+                                .showSingleMediaType(true)
+                                .forResult(50);
+
+
+                    }
+                    break;
+                case R.id.btn_confirm:
+                    doValidation("1");
+                    break;
+                case R.id.btn_customise:
+                    layout_banner_form.setVisibility(View.GONE);
+                    layout_preview.setVisibility(View.VISIBLE);
+                    txt_preview_title.setText(edt_banner_title.getText().toString());
+                    txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+                    txt_preview_description.setText(edt_description.getText().toString());
+                    isPreview = true;
+                    break;
+                case R.id.btn_preview_banner:
+                    btn_customise.performClick();
+                    break;
+                case R.id.btn_done:
                     layout_banner_form.setVisibility(View.VISIBLE);
                     layout_preview.setVisibility(View.GONE);
                     isPreview = false;
-                } else {
-                    if (checkData() && !Type.equals("2") && !isRenew) {
-                        WarningPopup();
-                    } else {
-                        finish();
-                    }
-                }
-                break;
-            case R.id.txt_from_date:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                getDate("1");
-                break;
-            case R.id.txt_to_date:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                getDate("2");
-                break;
-            case R.id.layout_city:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                layout_list.setVisibility(View.VISIBLE);
-                layout_banner_form.setVisibility(View.GONE);
-                txt_page_title.setText(getString(R.string.txt_select) + " " + getString(R.string.txt_city_select));
-                txt_page_action.setVisibility(View.VISIBLE);
-
-                Function.openSoftKeyboard(AddBannerActivity.this, v);
-                isList = true;
-                break;
-            case R.id.txt_page_action:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                layout_list.setVisibility(View.GONE);
-                layout_banner_form.setVisibility(View.VISIBLE);
-                txt_page_title.setText(getString(R.string.txt_banner));
-                txt_page_action.setVisibility(View.GONE);
-                isList = false;
-                edt_list_search.setText("");
-//                setCity();
-                SummaryContent();
-                break;
-            case R.id.btn_add_image:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                if (_fun.checkPermission(AddBannerActivity.this)) {
-                    MatisseActivity.PAGE_FROM = 2;
-                    Matisse.from(AddBannerActivity.this)
-                            .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
-//                            .choose(MimeType.of(MimeType.GIF), false)
-//                            .choose(MimeType.ofAll())
-
-                            .countable(true)
-                            .capture(true)
-                            .theme(R.style.Matisse_Dracula)
-                            .captureStrategy(
-                                    new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
-                            .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
-                            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                            .thumbnailScale(0.85f)
-                            .imageEngine(new GlideEngine())
-                            .maxSelectable(1)
-                            .showSingleMediaType(true)
-                            .forResult(50);
-
-
-                }
-                break;
-            case R.id.img_banner_view:
-                Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                if (_fun.checkPermission(AddBannerActivity.this)) {
-                    MatisseActivity.PAGE_FROM = 2;
-                    Matisse.from(AddBannerActivity.this)
-                            .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
-//                            .choose(MimeType.of(MimeType.GIF), false)
-//                            .choose(MimeType.ofAll())
-
-                            .countable(true)
-                            .capture(true)
-                            .theme(R.style.Matisse_Dracula)
-                            .captureStrategy(
-                                    new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
-                            .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
-                            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                            .thumbnailScale(0.85f)
-                            .imageEngine(new GlideEngine())
-                            .maxSelectable(1)
-                            .showSingleMediaType(true)
-                            .forResult(50);
-
-
-                }
-                break;
-            case R.id.btn_confirm:
-                doValidation("1");
-                break;
-            case R.id.btn_customise:
-                layout_banner_form.setVisibility(View.GONE);
-                layout_preview.setVisibility(View.VISIBLE);
-                txt_preview_title.setText(edt_banner_title.getText().toString());
-                txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
-                txt_preview_description.setText(edt_description.getText().toString());
-                isPreview = true;
-                break;
-            case R.id.btn_preview_banner:
-                btn_customise.performClick();
-                break;
-            case R.id.btn_done:
-                layout_banner_form.setVisibility(View.VISIBLE);
-                layout_preview.setVisibility(View.GONE);
-                isPreview = false;
-                break;
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     private void doValidation(String type) {
-        String bannerTitle = edt_banner_title.getText().toString().trim();
-        String description = edt_description.getText().toString().trim();
+        try {
+            String bannerTitle = edt_banner_title.getText().toString().trim();
+            String description = edt_description.getText().toString().trim();
 
 
-        if (bannerTitle.equals("")) {
-            Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_enter_banner_title));
-            return;
-        }
-        if (!Type.equals("2")) {
-            if (!doDateValidation()) {
+            if (bannerTitle.equals("")) {
+                Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_enter_banner_title));
                 return;
             }
-        }
-        if (description.equals("")) {
-            Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_banner_description));
-            return;
-        }
-        if (cityId.equals("")) {
-            Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_select_city));
-            return;
-        }
-        if (!Type.equals("2") && !isRenew) {
-            if (imgPath.equals("")) {
-                Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_upload_banner_image));
+            if (!Type.equals("2")) {
+                if (!doDateValidation()) {
+                    return;
+                }
+            }
+            if (description.equals("")) {
+                Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_banner_description));
                 return;
             }
-        }
+            if (cityId.equals("")) {
+                Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_select_city));
+                return;
+            }
+            if (!Type.equals("2") && !isRenew) {
+                if (imgPath.equals("")) {
+                    Function.CustomMessage(AddBannerActivity.this, getString(R.string.txt_upload_banner_image));
+                    return;
+                }
+            }
 //        String totalDays = getCountOfDays(adStartDate, adEndDate);
-        if (Type.equals("1")) {
-            startPayment();
-        } else {
-            addBannerCall();
-        }
+            if (Type.equals("1")) {
+                startPayment();
+            } else {
+                addBannerCall();
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void addBannerCall() {
-        String bannerTitle = edt_banner_title.getText().toString().trim();
-        String description = edt_description.getText().toString().trim();
-        if (!imgPath.equals("")) {
-            File file = new File(Function.compressImage(imgPath));
-            final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-            bannerImage = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
-        }
-        final RequestBody bTitle = RequestBody.create(okhttp3.MultipartBody.FORM, bannerTitle);
-        final RequestBody fromDate = RequestBody.create(okhttp3.MultipartBody.FORM, adStartDate);
-        final RequestBody toDate = RequestBody.create(okhttp3.MultipartBody.FORM, adEndDate);
-        final RequestBody bDescription = RequestBody.create(okhttp3.MultipartBody.FORM, description);
-        final RequestBody _cityId = RequestBody.create(okhttp3.MultipartBody.FORM, cityId);
-        final RequestBody bAmount = RequestBody.create(okhttp3.MultipartBody.FORM, totalAmount);
-        final RequestBody bDays = RequestBody.create(okhttp3.MultipartBody.FORM, totalDays);
-        final RequestBody bColors = RequestBody.create(okhttp3.MultipartBody.FORM, colorCodeOne + "," + colorCodeTwo);
-        final RequestBody _bannerId = RequestBody.create(okhttp3.MultipartBody.FORM, bannerId);
-        final RequestBody transactionId = RequestBody.create(okhttp3.MultipartBody.FORM, paymentId);
-        final RequestBody promotionType = RequestBody.create(okhttp3.MultipartBody.FORM, "4");
-        Log.i("params", totalDays + " , " + _cityId);
-
-
-        if (_fun.isInternetAvailable(AddBannerActivity.this)) {
-            if (Type.equals("1")) {
-                RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
-            } else {
-                RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+        try {
+            String bannerTitle = edt_banner_title.getText().toString().trim();
+            String description = edt_description.getText().toString().trim();
+            if (!imgPath.equals("")) {
+                File file = new File(Function.compressImage(imgPath));
+                final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                bannerImage = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
             }
-        } else {
-            _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
-                @Override
-                public void isInternet() {
-                    if (Type.equals("1")) {
-                        RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
-                    } else {
-                        RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
-                    }
+            final RequestBody bTitle = RequestBody.create(okhttp3.MultipartBody.FORM, bannerTitle);
+            final RequestBody fromDate = RequestBody.create(okhttp3.MultipartBody.FORM, adStartDate);
+            final RequestBody toDate = RequestBody.create(okhttp3.MultipartBody.FORM, adEndDate);
+            final RequestBody bDescription = RequestBody.create(okhttp3.MultipartBody.FORM, description);
+            final RequestBody _cityId = RequestBody.create(okhttp3.MultipartBody.FORM, cityId);
+            final RequestBody bAmount = RequestBody.create(okhttp3.MultipartBody.FORM, totalAmount);
+            final RequestBody bDays = RequestBody.create(okhttp3.MultipartBody.FORM, totalDays);
+            final RequestBody bColors = RequestBody.create(okhttp3.MultipartBody.FORM, colorCodeOne + "," + colorCodeTwo);
+            final RequestBody _bannerId = RequestBody.create(okhttp3.MultipartBody.FORM, bannerId);
+            final RequestBody transactionId = RequestBody.create(okhttp3.MultipartBody.FORM, paymentId);
+            final RequestBody promotionType = RequestBody.create(okhttp3.MultipartBody.FORM, "4");
+            Log.i("params", totalDays + " , " + _cityId);
+
+
+            if (_fun.isInternetAvailable(AddBannerActivity.this)) {
+                if (Type.equals("1")) {
+                    RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                } else {
+                    RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
                 }
-            });
+            } else {
+                _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        if (Type.equals("1")) {
+                            RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                        } else {
+                            RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                        }
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -658,7 +689,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             //You can omit the image option to fetch the image from dashboard
             options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             options.put("currency", "INR");
-            options.put("amount",  String.valueOf(tAmount));
+            options.put("amount", String.valueOf(tAmount));
 
             JSONObject preFill = new JSONObject();
             JSONObject themeStyle = new JSONObject();
@@ -869,14 +900,14 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
                     Glide.with(AddBannerActivity.this)
                             .load(dr.getEditBannerDataModel().getBannerImage())
-                            .placeholder(R.drawable.ic_default_vertical)
-                            .error(R.drawable.ic_default_vertical)
+                            .placeholder(R.drawable.ic_no_image)
+                            .error(R.drawable.ic_no_image)
                             .into(img_banner_view);
 
                     Glide.with(AddBannerActivity.this)
                             .load(dr.getEditBannerDataModel().getBannerImage())
-                            .placeholder(R.drawable.ic_default_vertical)
-                            .error(R.drawable.ic_default_vertical)
+                            .placeholder(R.drawable.ic_no_image)
+                            .error(R.drawable.ic_no_image)
                             .into(img_banner_preview);
                     colorList.clear();
                     String[] col = dr.getEditBannerDataModel().getBannerDetailsModel().getColorCode().split(",");
@@ -1090,33 +1121,62 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 50) {
+//            if (data != null) {
+//                List<String> slist = Matisse.obtainPathResult(data);
+//                if (slist.size() > 0) {
+//                    for (int i = 0; i < slist.size(); i++) {
+////                        imgPath = Function.getBase64String(slist.get(i));
+//                        imgPath = slist.get(i);
+//
+//                    }
+//                }
+//
+//
+//            }
+//
+//
+//        }
+
         if (requestCode == 50) {
             if (data != null) {
                 List<String> slist = Matisse.obtainPathResult(data);
-                selectedImage = data.getData();
+                List<Uri> uris = Matisse.obtainResult(data);
                 if (slist.size() > 0) {
                     for (int i = 0; i < slist.size(); i++) {
-//                        imgPath = Function.getBase64String(slist.get(i));
                         imgPath = slist.get(i);
-                        Glide.with(this)
-                                .load(slist.get(i))
-                                .placeholder(R.drawable.ic_default_vertical)
-                                .error(R.drawable.ic_default_vertical)
-                                .into(img_banner_view);
-
-                        Glide.with(this)
-                                .load(slist.get(i))
-                                .placeholder(R.drawable.ic_default_vertical)
-                                .error(R.drawable.ic_default_vertical)
-                                .into(img_banner_preview);
+                        CropImage.activity(uris.get(i))
+                                .setFixAspectRatio(false)
+                                .start(AddBannerActivity.this);
+                        Log.i("Path", slist.get(i));
                     }
                 }
 
-
             }
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+
+            if (result.getType() == 2) {
+                Uri resultUri = result.getUri();
+                imgPath = resultUri.getPath();
+            }
+
+            Glide.with(this)
+                    .load(imgPath)
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
+                    .into(img_banner_view);
+
+            Glide.with(this)
+                    .load(imgPath)
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
+                    .into(img_banner_preview);
 
 
         }
+
+
     }
 
     public void ShowPopupSuccess(String mesg) {

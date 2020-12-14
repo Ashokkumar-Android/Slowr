@@ -1,35 +1,43 @@
 {
   "project_info": {
-    "project_number": "882805150019",
-    "firebase_url": "https://slowr-6be76.firebaseio.com",
-    "project_id": "slowr-6be76",
-    "storage_bucket": "slowr-6be76.appspot.com"
+    "project_number": "1055916262363",
+    "firebase_url": "https://slowr-31384.firebaseio.com",
+    "project_id": "slowr-31384",
+    "storage_bucket": "slowr-31384.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:882805150019:android:f9e8f22e210ce3f23c5ff6",
+        "mobilesdk_app_id": "1:1055916262363:android:f63ed963c38375afba1dfe",
         "android_client_info": {
           "package_name": "com.slowr.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "882805150019-clacd31n12lh2thehnnj40rfa46stojh.apps.googleusercontent.com",
+          "client_id": "1055916262363-35he80rrhu7l6fi0uegbqdqk65491bqe.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDkj7-byYLILZnEIg--v3UILfnL21jj5ZI"
+          "current_key": "AIzaSyB1jKKq33jdHU01zpTYxaPaAA8ZNhqAoMQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "882805150019-clacd31n12lh2thehnnj40rfa46stojh.apps.googleusercontent.com",
+              "client_id": "1055916262363-35he80rrhu7l6fi0uegbqdqk65491bqe.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1055916262363-iapbpcuu2abmg3cefevjobn8h5tc9d9e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.app.slowr.dev",
+                "app_store_id": "1541274926"
+              }
             }
           ]
         }

@@ -65,22 +65,26 @@ public class ProductCategoryListAdapter extends RecyclerView.Adapter<ProductCate
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        if (position == categoryList.size() - 1) {
-            holder.view_right.setVisibility(View.VISIBLE);
-        } else {
-            holder.view_right.setVisibility(View.GONE);
+        try {
+            if (position == categoryList.size() - 1) {
+                holder.view_right.setVisibility(View.VISIBLE);
+            } else {
+                holder.view_right.setVisibility(View.GONE);
+            }
+
+
+            CategoryItemModel movie = categoryList.get(position);
+
+            holder.txt_category_name.setText(movie.getName().trim());
+
+            Glide.with(ctx)
+                    .load(movie.getMobile_icon())
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
+                    .into(holder.img_category_icon);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-
-        CategoryItemModel movie = categoryList.get(position);
-
-        holder.txt_category_name.setText(movie.getName().trim());
-
-        Glide.with(ctx)
-                .load(movie.getMobile_icon())
-                .placeholder(R.drawable.ic_default_horizontal)
-                .error(R.drawable.ic_default_horizontal)
-                .into(holder.img_category_icon);
     }
 
     @Override
@@ -98,7 +102,7 @@ public class ProductCategoryListAdapter extends RecyclerView.Adapter<ProductCate
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

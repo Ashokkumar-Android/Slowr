@@ -110,35 +110,38 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        NotificationItemModel movie = categoryListFilter.get(position);
-        holder.txt_notification_title.setText(movie.getNotificationContent().trim());
-        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy");
-        holder.txt_date.setText(spf.format(movie.getNotificationDate()));
-        if (movie.isCheck()) {
-            holder.layout_bg.setBackgroundColor(ctx.getResources().getColor(R.color.txt_gray_trans));
-        } else {
-            holder.layout_bg.setBackgroundColor(Color.TRANSPARENT);
-        }
-        switch (Integer.valueOf(movie.getNotificationColor())) {
-            case 1:
-                holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.bg_green));
-                break;
-            case 2:
-                holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.txt_orange));
-                break;
-            case 3:
-                holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.colorPrimary));
-                break;
-        }
+        try {
+            NotificationItemModel movie = categoryListFilter.get(position);
+            holder.txt_notification_title.setText(movie.getNotificationContent().trim());
+            SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy");
+            holder.txt_date.setText(spf.format(movie.getNotificationDate()));
+            if (movie.isCheck()) {
+                holder.layout_bg.setBackgroundColor(ctx.getResources().getColor(R.color.txt_gray_trans));
+            } else {
+                holder.layout_bg.setBackgroundColor(Color.TRANSPARENT);
+            }
+            switch (Integer.valueOf(movie.getNotificationColor())) {
+                case 1:
+                    holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.bg_green));
+                    break;
+                case 2:
+                    holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.txt_orange));
+                    break;
+                case 3:
+                    holder.view_line.setBackgroundColor(ctx.getResources().getColor(R.color.colorPrimary));
+                    break;
+            }
 //        holder.txt_date.setText(movie.getInvoiceDate());
-        if (movie.getIsRead().equals("1")) {
-            holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-            holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
-        } else {
-            holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.color_black));
-            holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.color_black));
+            if (movie.getIsRead().equals("1")) {
+                holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+                holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.hint_txt_color));
+            } else {
+                holder.txt_notification_title.setTextColor(ctx.getResources().getColor(R.color.color_black));
+                holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.color_black));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override

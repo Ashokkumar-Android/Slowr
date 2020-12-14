@@ -60,6 +60,21 @@
                         android:layout_marginTop="@dimen/size_twenty"
                         android:src="@drawable/no_bill" />
 
+                    <Button
+                        android:id="@+id/btn_continue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/size_twenty"
+                        android:background="@drawable/bg_orenge"
+                        android:fontFamily="@font/nunito_regular"
+                        android:paddingLeft="@dimen/size_forty"
+                        android:paddingRight="@dimen/size_forty"
+                        android:text="@string/txt_home_page"
+                        android:textAllCaps="false"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_sixteen" />
+
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

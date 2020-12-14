@@ -16,7 +16,6 @@ import java.util.List;
 
 public class FilterOptionAdapter extends RecyclerView.Adapter<FilterOptionAdapter.MyViewHolder> {
 
-    //    private List<CityItemModel> categoryList;
     private List<FiltersModel> categoryListFilter;
     Callback callback;
     Context ctx;
@@ -63,11 +62,14 @@ public class FilterOptionAdapter extends RecyclerView.Adapter<FilterOptionAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        try{
         FiltersModel movie = categoryListFilter.get(position);
 
         holder.txt_filter_title.setText(movie.getFilterTitle().trim());
         holder.txt_filter_type_content.setText(movie.getSelectedValue());
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -85,43 +87,8 @@ public class FilterOptionAdapter extends RecyclerView.Adapter<FilterOptionAdapte
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }
-
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence charSequence) {
-//                String charString = charSequence.toString();
-//                if (charString.isEmpty()) {
-//                    categoryListFilter = categoryList;
-//                } else {
-//                    List<CityItemModel> filteredList = new ArrayList<>();
-//                    for (CityItemModel row : categoryList) {
-//
-//                        // name match condition. this might differ depending on your requirement
-//                        // here we are looking for name or phone number match
-//                        if (row.getCityName().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteredList.add(row);
-//                        }
-//                    }
-//
-//                    categoryListFilter = filteredList;
-//                }
-//
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = categoryListFilter;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//                categoryListFilter = (ArrayList<CityItemModel>) filterResults.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
 }

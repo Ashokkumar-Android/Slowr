@@ -133,76 +133,85 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        AdItemModel movie = categoryList.get(position);
+        try {
+            AdItemModel movie = categoryList.get(position);
 
-        holder.txt_ad_title.setText(movie.getAdTitle().trim());
-        holder.txt_location.setText(movie.getAreaName() + ", " + movie.getCityName());
-        if (movie.getLikeCount().equals("0")) {
-            holder.txt_like_count.setText("");
-        } else {
-            holder.txt_like_count.setText(movie.getLikeCount());
-        }
-        if (movie.getAdPromotion().equals("1")) {
-            holder.layout_promoted.setVisibility(View.VISIBLE);
-            holder.txt_premium_mark.setVisibility(View.GONE);
-            holder.img_top_page_mark.setVisibility(View.VISIBLE);
-        } else if (movie.getAdPromotion().equals("2")) {
-            holder.layout_promoted.setVisibility(View.VISIBLE);
-            holder.txt_premium_mark.setVisibility(View.VISIBLE);
-            holder.img_top_page_mark.setVisibility(View.GONE);
-        } else {
-            holder.layout_promoted.setVisibility(View.GONE);
-        }
-        if (movie.getAdFee() != null) {
-            holder.txt_price.setVisibility(View.VISIBLE);
-            String price = "";
-            if (movie.getAdFee().contains(".")) {
-                String[] tempPrice = movie.getAdFee().split("\\.");
-                price = tempPrice[0];
+            holder.txt_ad_title.setText(movie.getAdTitle().trim());
+            holder.txt_location.setText(movie.getAreaName() + ", " + movie.getCityName());
+            if (movie.getLikeCount().equals("0")) {
+                holder.txt_like_count.setText("");
             } else {
-                price = movie.getAdFee();
+                holder.txt_like_count.setText(movie.getLikeCount());
             }
+            if (movie.getAdPromotion().equals("1")) {
+                holder.layout_promoted.setVisibility(View.VISIBLE);
+                holder.txt_premium_mark.setVisibility(View.GONE);
+                holder.img_top_page_mark.setVisibility(View.VISIBLE);
+            } else if (movie.getAdPromotion().equals("2")) {
+                holder.layout_promoted.setVisibility(View.VISIBLE);
+                holder.txt_premium_mark.setVisibility(View.VISIBLE);
+                holder.img_top_page_mark.setVisibility(View.GONE);
+            } else {
+                holder.layout_promoted.setVisibility(View.GONE);
+            }
+            if (movie.getAdFee() != null) {
+                holder.txt_price.setVisibility(View.VISIBLE);
+                String price = "";
+                if (movie.getAdFee().contains(".")) {
+                    String[] tempPrice = movie.getAdFee().split("\\.");
+                    price = tempPrice[0];
+                } else {
+                    price = movie.getAdFee();
+                }
 
-            Log.i("Fave", movie.getIsFavorite());
-            if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                if(movie.getCatGroup().equals("1")){
-                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                }else {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                Log.i("Fave", movie.getIsFavorite());
+                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+                    if (movie.getCatGroup().equals("1")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                    } else {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                    }
+                } else {
+                    holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
                 }
             } else {
-                holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
-            }
-        } else {
-            if (movie.getCatGroup().equals("1")) {
-                if (movie.getAdDuration().equals("Custom")) {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                } else if (movie.getAdDuration().equals("Per Hour")) {
-                    holder.txt_price.setText(ctx.getString(R.string.hour_rent));
-                } else if (movie.getAdDuration().equals("Per Day")) {
-                    holder.txt_price.setText(ctx.getString(R.string.day_rent));
-                }
-            } else {
-                if (movie.getAdDuration().equals("Custom")) {
-                    holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                } else if (movie.getAdDuration().equals("Per Hour")) {
-                    holder.txt_price.setText(ctx.getString(R.string.hour_hire));
-                } else if (movie.getAdDuration().equals("Per Day")) {
-                    holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                if (movie.getCatGroup().equals("1")) {
+                    if (movie.getAdDuration().equals("Custom")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
+                    } else if (movie.getAdDuration().equals("Per Hour")) {
+                        holder.txt_price.setText(ctx.getString(R.string.hour_rent));
+                    } else if (movie.getAdDuration().equals("Per Day")) {
+                        holder.txt_price.setText(ctx.getString(R.string.day_rent));
+                    }
+                } else {
+                    if (movie.getAdDuration().equals("Custom")) {
+                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
+                    } else if (movie.getAdDuration().equals("Per Hour")) {
+                        holder.txt_price.setText(ctx.getString(R.string.hour_hire));
+                    } else if (movie.getAdDuration().equals("Per Day")) {
+                        holder.txt_price.setText(ctx.getString(R.string.day_hire));
+                    }
                 }
             }
-        }
-        if (movie.getIsFavorite().equals("0")) {
-            holder.img_favorite.setLiked(false);
+            if (movie.getIsFavorite().equals("0")) {
+                holder.img_favorite.setLiked(false);
 
-        } else {
-            holder.img_favorite.setLiked(true);
-        }
-        Glide.with(ctx)
-                .load(movie.getPhotoType())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .into(holder.img_ad);
+            } else {
+                holder.img_favorite.setLiked(true);
+            }
+            int defu = R.drawable.ic_no_image;
+
+            if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
+                defu = R.drawable.ic_no_image;
+            } else {
+                defu = R.drawable.ic_service_big;
+            }
+
+            Glide.with(ctx)
+                    .load(movie.getPhotoType())
+                    .error(defu)
+                    .placeholder(defu)
+                    .into(holder.img_ad);
 
 //        if (!movie.getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
 //            holder.img_favorite.setEnabled(true);
@@ -210,7 +219,9 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
 //            holder.img_favorite.setEnabled(false);
 //        }
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

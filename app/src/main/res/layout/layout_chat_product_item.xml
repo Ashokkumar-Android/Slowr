@@ -28,7 +28,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/size_ten"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_default_vertical" />
+                android:src="@drawable/ic_no_image" />
 
 
         </FrameLayout>

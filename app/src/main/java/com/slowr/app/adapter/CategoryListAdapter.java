@@ -61,15 +61,25 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        CategoryItemModel movie = categoryList.get(position);
+        try {
+            CategoryItemModel movie = categoryList.get(position);
 
-        holder.txt_category_name.setText(movie.getName().trim());
-        Glide.with(ctx)
-                .load(movie.getMobile_icon())
-                .placeholder(R.drawable.ic_default_horizontal)
-                .error(R.drawable.ic_default_horizontal)
-                .into(holder.img_category_icon);
+            holder.txt_category_name.setText(movie.getName().trim());
+            int defu = R.drawable.ic_no_image;
 
+            if (movie.getCatGroup().equals("1")) {
+                defu = R.drawable.ic_no_image;
+            } else {
+                defu = R.drawable.ic_service_big;
+            }
+            Glide.with(ctx)
+                    .load(movie.getMobile_icon())
+                    .placeholder(defu)
+                    .error(defu)
+                    .into(holder.img_category_icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -87,7 +97,7 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

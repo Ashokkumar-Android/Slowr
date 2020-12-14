@@ -74,19 +74,24 @@ public class AreaListAdapter extends RecyclerView.Adapter<AreaListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        AreaItemModel movie = categoryListFilter.get(position);
+        try {
 
-        holder.txt_category_name.setText(movie.getAreaName().trim());
-        if (checkedPos.equals("")) {
-            holder.rb_select.setChecked(false);
-        } else {
-            if (checkedPos.equals(movie.getAreaName())) {
-                holder.rb_select.setChecked(true);
-            } else {
+            AreaItemModel movie = categoryListFilter.get(position);
+
+            holder.txt_category_name.setText(movie.getAreaName().trim());
+            if (checkedPos.equals("")) {
                 holder.rb_select.setChecked(false);
+            } else {
+                if (checkedPos.equals(movie.getAreaName())) {
+                    holder.rb_select.setChecked(true);
+                } else {
+                    holder.rb_select.setChecked(false);
+                }
             }
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -105,7 +110,7 @@ public class AreaListAdapter extends RecyclerView.Adapter<AreaListAdapter.MyView
     }
 
     public interface Callback {
-        public void itemClick(AreaItemModel model);
+        void itemClick(AreaItemModel model);
 
 
     }

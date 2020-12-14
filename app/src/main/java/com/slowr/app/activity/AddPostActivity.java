@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -1561,12 +1562,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         if (!Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
             if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals(edt_mobile_number.getText().toString()) || postMobileNum != null && postMobileNum.equals(edt_mobile_number.getText().toString())) {
                 if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    savePostDetails();
+//                    savePostDetails();
+                    new AsyncTaskSavePost().execute("");
                 } else {
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            savePostDetails();
+//                            savePostDetails();
+                            new AsyncTaskSavePost().execute("");
                         }
                     });
                 }
@@ -1586,12 +1589,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             if (postMobileNum.equals(edt_mobile_number.getText().toString())) {
 
                 if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    savePostDetails();
+//                    savePostDetails();
+                    new AsyncTaskSavePost().execute("");
                 } else {
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            savePostDetails();
+//                            savePostDetails();
+                            new AsyncTaskSavePost().execute("");
                         }
                     });
                 }
@@ -1625,6 +1630,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void savePostDetails() {
+
         viewDialog.showDialog();
         isClickChange = true;
         try {
@@ -1722,8 +1728,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
             RequestBody.create(okhttp3.MultipartBody.FORM, isMobile);
             if (AdType == 0) {
-//                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
 //            if (tabNo == 1) {
 //                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
 //                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, true));
@@ -1743,9 +1749,9 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 //                }
 //            }
 
-                RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
-                        _adAreaId, _adStatus, _adNegos, paramsId, paramsValue, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+//                RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+//                        _adAreaId, _adStatus, _adNegos, paramsId, paramsValue, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
             } else if (AdType == 1) {
                 params.put("ads_id", adId);
 
@@ -1772,6 +1778,115 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             isClickChange = false;
         }
     }
+
+    private class AsyncTaskSavePost extends AsyncTask<String, String, HashMap<String, Object>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            viewDialog.showDialog();
+            isClickChange = true;
+        }
+
+        @Override
+        protected HashMap<String, Object> doInBackground(String... strings) {
+            try {
+                if (!params.isEmpty()) {
+                    params.clear();
+                }
+                String isNegos = "";
+                if (cb_price.isChecked()) {
+                    isNegos = "1";
+                } else {
+                    isNegos = "0";
+                }
+
+                String isMobile = "";
+                if (cb_mobile_number.isChecked()) {
+                    isMobile = "1";
+                } else {
+                    isMobile = "0";
+                }
+
+                String attId = "";
+                String attVal = "";
+                HashMap<Object, Object> paramsId = new HashMap<Object, Object>();
+                HashMap<Object, Object> paramsValue = new HashMap<Object, Object>();
+                for (int i = 0; i < attributeList.size(); i++) {
+                    paramsId.put(String.valueOf(i), attributeList.get(i).getAttributeId());
+                    paramsValue.put(String.valueOf(i), attributeList.get(i).getInputValue());
+                    if (i == 0) {
+                        attId = attributeList.get(i).getAttributeId();
+                        attVal = attributeList.get(i).getInputValue();
+                    } else {
+                        attId = attId + attributeList.get(i).getAttributeId();
+                        attVal = attVal + attributeList.get(i).getInputValue();
+                    }
+                }
+                JsonArray jsonArray = new JsonArray();
+                for (int i = 0; i < shareImageList.size(); i++) {
+                    if (shareImageList.get(i).getImgURL().equals("")) {
+                        jsonArray.add(Function.getBase64String(shareImageList.get(i).getUri()));
+                    } else {
+                        jsonArray.add(shareImageList.get(i).getImgURL());
+                    }
+                }
+                params.put("category_id", catId);
+                if (AdType != 2) {
+                    params.put("rental_fee", edt_price.getText().toString());
+                }
+                params.put("rental_duration", rentalDuration);
+                params.put("title", txt_post_title_content.getText().toString());
+                params.put("description", edt_description.getText().toString());
+                if (AdType != 2) {
+                    params.put("photos", jsonArray);
+                }
+                params.put("city_id", cityId);
+                params.put("locality_id", areaId);
+                params.put("status", adStatus);
+                params.put("is_rent_negotiable", isNegos);
+                params.put("attributeId", paramsId);
+                params.put("attributeValue", paramsValue);
+                params.put("mobile", edt_mobile_number.getText().toString());
+                params.put("is_mobile_visible", isMobile);
+                params.put("parent_id", parentId);
+                params.put("is_base", "1");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return params;
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, Object> params) {
+            super.onPostExecute(params);
+            if (AdType == 0) {
+                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+
+            } else if (AdType == 1) {
+                params.put("ads_id", adId);
+
+
+                RetrofitClient.getClient().create(Api.class).updatePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+
+            } else if (AdType == 2) {
+                if (EditType.equals("2")) {
+                    params.put("ads_id", adId);
+                    RetrofitClient.getClient().create(Api.class).updateRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                } else {
+                    RetrofitClient.getClient().create(Api.class).saveRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+
+                }
+            }
+
+            Log.i("Params", params.toString());
+            Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
+        }
+    }
+
 
     private void areaCallBack(AreaListAdapter areaListAdapter) {
         areaListAdapter.setCallback(new AreaListAdapter.Callback() {
@@ -2061,7 +2176,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     Function.CustomMessage(AddPostActivity.this, dr.getMessage());
                 } else {
                     isServiceValid = true;
-                    savePostDetails();
+//                    savePostDetails();
+                    new AsyncTaskSavePost().execute("");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -2359,12 +2475,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         Sessions.saveSession(Constant.UserPhone, edt_mobile_number.getText().toString(), getApplicationContext());
                     }
                     if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                        savePostDetails();
+//                        savePostDetails();
+                        new AsyncTaskSavePost().execute("");
                     } else {
                         _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                savePostDetails();
+//                                savePostDetails();
+                                new AsyncTaskSavePost().execute("");
                             }
                         });
                     }

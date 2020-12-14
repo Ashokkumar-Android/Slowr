@@ -73,6 +73,7 @@ public class ChildCategoryListAdapter extends RecyclerView.Adapter<ChildCategory
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        try{
         SubCategoryChildModel movie = categoryListFilter.get(position);
 
         holder.txt_category_name.setText(movie.getChildCategoryName().trim());
@@ -85,7 +86,9 @@ public class ChildCategoryListAdapter extends RecyclerView.Adapter<ChildCategory
                 holder.rb_select.setChecked(false);
             }
         }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -17,9 +17,8 @@ import java.util.List;
 
 public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapter.MyViewHolder> {
 
-    //    private List<CityItemModel> categoryList;
     private List<SortByModel> categoryListFilter;
-//    Callback callback;
+    //    Callback callback;
     Context ctx;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -78,15 +77,18 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        SortByModel movie = categoryListFilter.get(position);
+        try {
+            SortByModel movie = categoryListFilter.get(position);
 
-        holder.txt_category_name.setText(movie.getSortValue().trim());
-        if (movie.isSelect()) {
-            holder.rb_select.setChecked(true);
-        } else {
-            holder.rb_select.setChecked(false);
+            holder.txt_category_name.setText(movie.getSortValue().trim());
+            if (movie.isSelect()) {
+                holder.rb_select.setChecked(true);
+            } else {
+                holder.rb_select.setChecked(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -109,38 +111,4 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
 //
 //    }
 
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence charSequence) {
-//                String charString = charSequence.toString();
-//                if (charString.isEmpty()) {
-//                    categoryListFilter = categoryList;
-//                } else {
-//                    List<CityItemModel> filteredList = new ArrayList<>();
-//                    for (CityItemModel row : categoryList) {
-//
-//                        // name match condition. this might differ depending on your requirement
-//                        // here we are looking for name or phone number match
-//                        if (row.getCityName().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteredList.add(row);
-//                        }
-//                    }
-//
-//                    categoryListFilter = filteredList;
-//                }
-//
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = categoryListFilter;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//                categoryListFilter = (ArrayList<CityItemModel>) filterResults.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
 }

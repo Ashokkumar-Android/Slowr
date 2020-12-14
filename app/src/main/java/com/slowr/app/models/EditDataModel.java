@@ -51,6 +51,9 @@ public class EditDataModel {
     @SerializedName("guidelines")
     public ArrayList<String> guideLines;
 
+    @SerializedName("communication")
+    CommunicationModel communicationModel;
+
     public String getCatGroup() {
         return catGroup;
     }
@@ -169,5 +172,13 @@ public class EditDataModel {
 
     public void setGuideLines(ArrayList<String> guideLines) {
         this.guideLines = guideLines;
+    }
+
+    public CommunicationModel getCommunicationModel() {
+        return communicationModel;
+    }
+
+    public void setCommunicationModel(CommunicationModel communicationModel) {
+        this.communicationModel = communicationModel;
     }
 }

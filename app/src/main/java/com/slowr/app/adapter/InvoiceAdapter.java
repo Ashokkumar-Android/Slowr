@@ -68,14 +68,17 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        InvoiceItemModel movie = categoryListFilter.get(position);
-        if (movie.getInvoiceTitle() != null)
-            holder.txt_ad_title.setText(movie.getInvoiceTitle().trim());
+        try {
+            InvoiceItemModel movie = categoryListFilter.get(position);
+            if (movie.getInvoiceTitle() != null)
+                holder.txt_ad_title.setText(movie.getInvoiceTitle().trim());
 
-        holder.txt_invoice_date.setText(movie.getInvoiceDate());
-        holder.txt_invoice_no.setText(movie.getInvoiceNo());
+            holder.txt_invoice_date.setText(movie.getInvoiceDate());
+            holder.txt_invoice_no.setText(movie.getInvoiceNo());
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -93,7 +96,7 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
     }
 
     public interface Callback {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

@@ -368,14 +368,13 @@ public class Function {
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setSocialMetaTagParameters(builder.build())
                 .setLink(Uri.parse("https://www.slowr.com/" + catId + "/" + adId))
-                .setDomainUriPrefix("https://slowrapp.page.link")
+                .setDomainUriPrefix("https://appslowr.page.link")
                 // Open links with this app on Android
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 // Open links with com.example.ios on iOS
-                .setIosParameters(new DynamicLink.IosParameters.Builder("com.slowr.ios.beta").build())
+                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").build())
                 .buildShortDynamicLink()
                 .addOnCompleteListener(ctx, new OnCompleteListener<ShortDynamicLink>() {
-
 
                     @Override
                     public void onComplete(@NonNull Task<ShortDynamicLink> task) {

@@ -239,22 +239,17 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void setCurrentImage(String url) {
+        int defu = R.drawable.ic_no_image;
+
+        if (catGroup.equals("1")) {
+            defu = R.drawable.ic_no_image;
+        } else {
+            defu = R.drawable.ic_service_big;
+        }
         Glide.with(this)
                 .load(url)
-                .placeholder(R.drawable.ic_default_vertical)
-                .error(R.drawable.ic_default_vertical)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                })
+                .placeholder(defu)
+                .error(defu)
                 .into(img_ad_view);
     }
 
@@ -386,6 +381,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 setCurrentImage(shareImageList.get(0).getImgURL());
                                 adShareUrl = shareImageList.get(0).getImgURL();
                             } else {
+                                setCurrentImage("");
                                 rc_image_list.setVisibility(View.GONE);
                             }
                             postImageListAdapter.notifyDataSetChanged();

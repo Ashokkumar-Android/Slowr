@@ -79,7 +79,7 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
             holder.txt_price.setVisibility(View.VISIBLE);
             String price = "";
             if (chatModel.getRentalFee().contains(".")) {
-                String tempPrice[] = chatModel.getRentalFee().split("\\.");
+                String[] tempPrice = chatModel.getRentalFee().split("\\.");
                 price = tempPrice[0];
             } else {
                 price = chatModel.getRentalFee();
@@ -95,8 +95,8 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
         }
         Glide.with(ctx)
                 .load(chatModel.getAdImage())
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
+                .error(R.drawable.ic_no_image)
+                .placeholder(R.drawable.ic_no_image)
                 .into(holder.img_ad);
 
         if (chatModel.getUnreadCount().equals("0")) {
@@ -130,7 +130,7 @@ public class ProductChatAdapter extends RecyclerView.Adapter<ProductChatAdapter.
     }
 
     public interface CallBack {
-        public void onItemClick(ProductChatItemModel model);
+        void onItemClick(ProductChatItemModel model);
     }
 
     @Override

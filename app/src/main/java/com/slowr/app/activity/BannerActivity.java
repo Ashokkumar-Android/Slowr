@@ -125,8 +125,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 Function.GradientBgSet(layout_banner_bg, col[0], col[1]);
                 Glide.with(BannerActivity.this)
                         .load(bannerList.get(pos).getBannerImage())
-                        .placeholder(R.drawable.ic_default_vertical)
-                        .error(R.drawable.ic_default_vertical)
+                        .placeholder(R.drawable.ic_no_image)
+                        .error(R.drawable.ic_no_image)
                         .into(img_banner_preview);
                 if (bannerList.get(pos).getBannerStatus().equals("1")) {
                     btn_edit.setText(getString(R.string.txt_edit));

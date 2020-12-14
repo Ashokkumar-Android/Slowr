@@ -80,8 +80,8 @@ public class BannerAdapter extends PagerAdapter {
             img_default_banner.setVisibility(View.GONE);
             Glide.with(context)
                     .load(bannerItemModel.getBannerImage())
-                    .error(R.drawable.ic_default_horizontal)
-                    .placeholder(R.drawable.ic_default_horizontal)
+                    .error(R.drawable.ic_no_image)
+                    .placeholder(R.drawable.ic_no_image)
                     .into(img_banner);
 
         } else {
@@ -89,8 +89,8 @@ public class BannerAdapter extends PagerAdapter {
             img_default_banner.setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(bannerItemModel.getBannerImage())
-                    .error(R.drawable.ic_default_horizontal)
-                    .placeholder(R.drawable.ic_default_horizontal)
+                    .error(R.drawable.ic_no_image)
+                    .placeholder(R.drawable.ic_no_image)
                     .into(img_default_banner);
 
         }

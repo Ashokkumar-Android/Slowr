@@ -39,8 +39,8 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
         public MyViewHolder(View itemView) {
             super(itemView);
             //this.textViewVersion = (TextView) itemView.findViewById(R.id.textViewVersion);
-            this.imageViewIcon = (ImageView) itemView.findViewById(R.id.img_captured);
-            this.txt_add_image = (ImageView) itemView.findViewById(R.id.txt_add_image);
+            this.imageViewIcon = itemView.findViewById(R.id.img_captured);
+            this.txt_add_image = itemView.findViewById(R.id.txt_add_image);
             this.layout_delete = itemView.findViewById(R.id.layout_delete);
         }
     }
@@ -65,14 +65,15 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int listPosition) {
+        try{
         UploadImageModel model = shareImageList.get(listPosition);
 
 //        holder.imageViewIcon.setImageURI(UriList.get(listPosition));
         if (model.getImgURL().equals("")) {
             Glide.with(_cotx)
                     .load(model.getUri())
-                    .placeholder(R.drawable.ic_default_horizontal)
-                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -89,8 +90,8 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
         } else {
             Glide.with(_cotx)
                     .load(model.getImgURL())
-                    .placeholder(R.drawable.ic_default_horizontal)
-                    .error(R.drawable.ic_default_horizontal)
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -136,6 +137,9 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
                 callBack.itemClick(listPosition);
             }
         });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -151,9 +155,9 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
     }
 
     public interface CallBack {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
-        public void addClick();
+        void addClick();
     }
 
 }

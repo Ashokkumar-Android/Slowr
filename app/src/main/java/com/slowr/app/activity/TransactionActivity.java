@@ -40,7 +40,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class TransactionActivity extends AppCompatActivity implements View.OnClickListener,SwipeRefreshLayout.OnRefreshListener {
+public class TransactionActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     TextView txt_page_title;
     LinearLayout img_back;
     RecyclerView rc_favorite;
@@ -49,6 +49,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
     ArrayList<InvoiceItemModel> invoiceList = new ArrayList<>();
     LinearLayoutManager listManager;
     SwipeRefreshLayout layout_swipe_refresh;
+    Button btn_continue;
     HashMap<String, String> params = new HashMap<String, String>();
     private Function _fun = new Function();
     private PopupWindow spinnerPopup;
@@ -77,6 +78,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         rc_favorite = findViewById(R.id.rc_favorite);
         layout_no_result = findViewById(R.id.layout_no_result);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
+        btn_continue = findViewById(R.id.btn_continue);
         listManager = new LinearLayoutManager(TransactionActivity.this, RecyclerView.VERTICAL, false);
         rc_favorite.setLayoutManager(listManager);
         rc_favorite.setItemAnimator(new DefaultItemAnimator());
@@ -86,6 +88,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         layout_swipe_refresh.setOnRefreshListener(this);
         txt_page_title.setText(getString(R.string.transaction_history));
         img_back.setOnClickListener(this);
+        btn_continue.setOnClickListener(this);
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
             getInvoice(true);
         } else {
@@ -105,6 +108,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
         CallBackFunction();
     }
+
     private void ReadNotification(String noteId) {
         if (!params.isEmpty()) {
             params.clear();
@@ -125,6 +129,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
             });
         }
     }
+
     private void CallBackFunction() {
         invoiceAdapter.setCallback(new InvoiceAdapter.Callback() {
             @Override
@@ -220,6 +225,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
             call.cancel();
         }
     };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -229,6 +235,9 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
                     h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(h);
                 }
+                finish();
+                break;
+            case R.id.btn_continue:
                 finish();
                 break;
         }

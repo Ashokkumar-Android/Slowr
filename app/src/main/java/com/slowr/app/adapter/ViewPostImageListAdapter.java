@@ -38,9 +38,9 @@ public class ViewPostImageListAdapter extends RecyclerView.Adapter<ViewPostImage
         public MyViewHolder(View itemView) {
             super(itemView);
             //this.textViewVersion = (TextView) itemView.findViewById(R.id.textViewVersion);
-            this.img_ad_view = (ImageView) itemView.findViewById(R.id.img_ad_view);
-            this.img_ad_border = (ImageView) itemView.findViewById(R.id.img_ad_border);
-            this.layout_root = (FrameLayout) itemView.findViewById(R.id.layout_root);
+            this.img_ad_view = itemView.findViewById(R.id.img_ad_view);
+            this.img_ad_border = itemView.findViewById(R.id.img_ad_border);
+            this.layout_root = itemView.findViewById(R.id.layout_root);
         }
 
     }
@@ -65,38 +65,43 @@ public class ViewPostImageListAdapter extends RecyclerView.Adapter<ViewPostImage
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int listPosition) {
-        UploadImageModel model = shareImageList.get(listPosition);
+
+        try {
+            UploadImageModel model = shareImageList.get(listPosition);
 
 
-        Glide.with(_cotx)
-                .load(model.getImgURL())
-                .placeholder(R.drawable.ic_default_horizontal)
-                .error(R.drawable.ic_default_horizontal)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+            Glide.with(_cotx)
+                    .load(model.getImgURL())
+                    .placeholder(R.drawable.ic_no_image)
+                    .error(R.drawable.ic_no_image)
+                    .listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
-                        return false;
-                    }
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                })
-                .into(holder.img_ad_view);
-        if (model.isChanged()) {
-            holder.img_ad_border.setImageResource(R.drawable.bg_orenge_border_select);
-        } else {
-            holder.img_ad_border.setImageResource(R.drawable.bg_blue_border_select);
-        }
-
-        holder.layout_root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callBack.itemClick(listPosition);
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            return false;
+                        }
+                    })
+                    .into(holder.img_ad_view);
+            if (model.isChanged()) {
+                holder.img_ad_border.setImageResource(R.drawable.bg_orenge_border_select);
+            } else {
+                holder.img_ad_border.setImageResource(R.drawable.bg_blue_border_select);
             }
-        });
+
+            holder.layout_root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.itemClick(listPosition);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -112,7 +117,7 @@ public class ViewPostImageListAdapter extends RecyclerView.Adapter<ViewPostImage
     }
 
     public interface CallBack {
-        public void itemClick(int pos);
+        void itemClick(int pos);
 
 
     }

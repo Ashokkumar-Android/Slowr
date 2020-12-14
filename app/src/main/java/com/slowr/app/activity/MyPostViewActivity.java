@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -23,16 +23,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
@@ -91,6 +88,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     ImageView img_unverified_user;
     LinearLayout layout_root;
     LinearLayout layout_chat_call;
+    CardView layout_alert;
+    TextView txt_alert_header;
+    TextView txt_alert_content;
+    TextView txt_alert_footer;
+    FrameLayout layout_fav;
 
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
     HashMap<String, Object> params = new HashMap<String, Object>();
@@ -179,6 +181,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         btn_call_now = findViewById(R.id.btn_call_now);
         layout_chat_call = findViewById(R.id.layout_chat_call);
         btn_chat_now = findViewById(R.id.btn_chat_now);
+        layout_alert = findViewById(R.id.layout_alert);
+        txt_alert_header = findViewById(R.id.txt_alert_header);
+        txt_alert_content = findViewById(R.id.txt_alert_content);
+        txt_alert_footer = findViewById(R.id.txt_alert_footer);
+        layout_fav = findViewById(R.id.layout_fav);
         txt_page_title.setText(getString(R.string.nav_dash_board));
 
 
@@ -309,20 +316,17 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
 
     private void setCurrentImage(String url) {
+        int defu = R.drawable.ic_no_image;
+
+        if (catGroup.equals("1")) {
+            defu = R.drawable.ic_no_image;
+        } else {
+            defu = R.drawable.ic_service_big;
+        }
         Glide.with(this)
                 .load(url)
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        return false;
-                    }
-                })
+                .error(defu)
+                .placeholder(defu)
                 .into(img_ad_view);
     }
 
@@ -457,6 +461,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 adShareUrl = shareImageList.get(0).getImgURL();
                             } else {
                                 rc_image_list.setVisibility(View.GONE);
+                                setCurrentImage("");
                             }
                             postImageListAdapter.notifyDataSetChanged();
                             if (AdType.equals("1")) {
@@ -501,17 +506,34 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_active_status.setText("");
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
+                            } else if (AdStatus.equals("8")) {
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_filled));
+                                txt_active_status.setText(getString(R.string.txt_rejected));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.color_white));
+//                                layout_like.setEnabled(false);
+                                img_share.setVisibility(View.GONE);
+                                btn_edit.setVisibility(View.INVISIBLE);
                             } else {
                                 txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
                                 txt_active_status.setText(getString(R.string.txt_in_review));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
+
                             }
                             userId = editAdDetailsModel.getUserId();
                             if (!editAdDetailsModel.getUserId().equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
                                 txt_active_status.setVisibility(View.GONE);
                                 layout_action_button.setVisibility(View.GONE);
+                                layout_fav.setVisibility(View.VISIBLE);
                                 layout_chat_call.setVisibility(View.VISIBLE);
+                            }
+                            if (dr.getEditDataModel().getCommunicationModel() != null) {
+                                if (dr.getEditDataModel().getCommunicationModel().getComments() != null) {
+                                    layout_alert.setVisibility(View.VISIBLE);
+                                    txt_alert_header.setText(dr.getEditDataModel().getCommunicationModel().getHeaderMessage());
+                                    txt_alert_footer.setText(dr.getEditDataModel().getCommunicationModel().getFooterMessage());
+                                    txt_alert_content.setText(dr.getEditDataModel().getCommunicationModel().getComments());
+                                }
                             }
                         }
 
@@ -551,7 +573,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
-                Function.ShareLink(MyPostViewActivity.this, catId, adId, adTitle, catGroup,adShareUrl);
+                Function.ShareLink(MyPostViewActivity.this, catId, adId, adTitle, catGroup, adShareUrl);
                 break;
             case R.id.img_favorite:
                 if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {

@@ -104,8 +104,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     holder.img_right_chat.setVisibility(View.VISIBLE);
                     Glide.with(ctx)
                             .load(chatModel.getImgUrl())
-                            .placeholder(R.drawable.ic_default_horizontal)
-                            .error(R.drawable.ic_default_horizontal)
+                            .placeholder(R.drawable.ic_no_image)
+                            .error(R.drawable.ic_no_image)
                             .into(holder.img_right_chat);
                 }
             } else {
@@ -123,8 +123,8 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
                     holder.img_left_chat.setVisibility(View.VISIBLE);
                     Glide.with(ctx)
                             .load(chatModel.getImgUrl())
-                            .placeholder(R.drawable.ic_default_horizontal)
-                            .error(R.drawable.ic_default_horizontal)
+                            .placeholder(R.drawable.ic_no_image)
+                            .error(R.drawable.ic_no_image)
                             .into(holder.img_left_chat);
                 }
             } else {

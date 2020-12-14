@@ -1,33 +1,22 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.like.LikeButton;
 import com.slowr.app.R;
 import com.slowr.app.components.carouselview.CarouselAdapter;
-import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.utils.Function;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewHolder> {
 
@@ -37,13 +26,13 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView img_banner ;
+        ImageView img_banner;
         ImageView defult_one;
-        TextView txt_prosperId ;
+        TextView txt_prosperId;
         TextView txt_banner_content;
         TextView txt_banner_price;
         TextView txt_banner_like;
-        LinearLayout layout_root ;
+        LinearLayout layout_root;
         ImageView img_default_banner;
 
         public MyViewHolder(View view) {
@@ -92,32 +81,36 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
 
     @Override
     public void onBindPageViewHolder(MyViewHolder holder, int position) {
-        BannerItemModel bannerItemModel = bannerList.get(position);
+        try {
+            BannerItemModel bannerItemModel = bannerList.get(position);
 
-        holder.txt_prosperId.setText(bannerItemModel.getProsperId());
-        holder.txt_banner_content.setText(bannerItemModel.getBannerTitle());
-        holder.txt_banner_price.setText(bannerItemModel.getDescription());
-        String[] col = bannerItemModel.getColorCode().split(",");
-        Function.GradientBgSet(holder.defult_one, col[0], col[1]);
-        if (bannerItemModel.getIsDefault() == 1) {
-            holder.layout_root.setVisibility(View.VISIBLE);
-            holder.img_default_banner.setVisibility(View.GONE);
-            Glide.with(ctx)
-                    .load(bannerItemModel.getBannerImage())
-                    .error(R.drawable.ic_default_horizontal)
-                    .placeholder(R.drawable.ic_default_horizontal)
-                    .into(holder.img_banner);
+            holder.txt_prosperId.setText(bannerItemModel.getProsperId());
+            holder.txt_banner_content.setText(bannerItemModel.getBannerTitle());
+            holder.txt_banner_price.setText(bannerItemModel.getDescription());
+            String[] col = bannerItemModel.getColorCode().split(",");
+            Function.GradientBgSet(holder.defult_one, col[0], col[1]);
+            if (bannerItemModel.getIsDefault() == 1) {
+                holder.layout_root.setVisibility(View.VISIBLE);
+                holder.img_default_banner.setVisibility(View.GONE);
+                Glide.with(ctx)
+                        .load(bannerItemModel.getBannerImage())
+                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.drawable.ic_no_image)
+                        .into(holder.img_banner);
 
-        } else {
-            holder.img_default_banner.setVisibility(View.VISIBLE);
-            holder.layout_root.setVisibility(View.GONE);
+            } else {
+                holder.img_default_banner.setVisibility(View.VISIBLE);
+                holder.layout_root.setVisibility(View.GONE);
 
-            Glide.with(ctx)
-                    .load(bannerItemModel.getBannerImage())
-                    .error(R.drawable.ic_default_horizontal)
-                    .placeholder(R.drawable.ic_default_horizontal)
-                    .into(holder.img_default_banner);
+                Glide.with(ctx)
+                        .load(bannerItemModel.getBannerImage())
+                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.drawable.ic_no_image)
+                        .into(holder.img_default_banner);
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

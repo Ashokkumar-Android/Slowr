@@ -1,7 +1,6 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
 import com.slowr.app.models.ColorCodeItemModel;
-import com.slowr.app.models.UploadImageModel;
 import com.slowr.app.utils.Function;
 
 import java.util.ArrayList;
@@ -61,22 +59,26 @@ public class ViewColorAdapter extends RecyclerView.Adapter<ViewColorAdapter.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int listPosition) {
-        ColorCodeItemModel model = shareImageList.get(listPosition);
+        try {
+            ColorCodeItemModel model = shareImageList.get(listPosition);
 //        holder.img_ad_view.setBackgroundColor(Color.parseColor(model.getColorOne()));
-        Function.GradientBgSet(holder.img_ad_view,model.getColorOne(),model.getColorTwo());
+            Function.GradientBgSet(holder.img_ad_view, model.getColorOne(), model.getColorTwo());
 
-        if (model.isChange()) {
-            holder.img_ad_border.setImageResource(R.drawable.bg_orenge_border_color);
-        } else {
-            holder.img_ad_border.setImageResource(R.drawable.bg_blue_border_color);
-        }
-
-        holder.layout_root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callBack.itemClick(listPosition);
+            if (model.isChange()) {
+                holder.img_ad_border.setImageResource(R.drawable.bg_orenge_border_color);
+            } else {
+                holder.img_ad_border.setImageResource(R.drawable.bg_blue_border_color);
             }
-        });
+
+            holder.layout_root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.itemClick(listPosition);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

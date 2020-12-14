@@ -91,6 +91,7 @@ public class CityMultiSelectAdapter extends RecyclerView.Adapter<CityMultiSelect
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        try{
         CityItemModel movie = categoryListFilter.get(position);
 
         holder.txt_category_name.setText(movie.getCityName().trim());
@@ -100,7 +101,9 @@ public class CityMultiSelectAdapter extends RecyclerView.Adapter<CityMultiSelect
         } else {
             holder.rb_select.setChecked(false);
         }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.gioco.image.cropper.CropImage;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
@@ -687,27 +688,61 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 50) {
+//            if (data != null) {
+//                List<String> slist = Matisse.obtainPathResult(data);
+//                selectedImage = data.getData();
+//                if (slist.size() > 0) {
+//                    for (int i = 0; i < slist.size(); i++) {
+////                        imgPath = Function.getBase64String(slist.get(i));
+//                        imgPath = slist.get(i);
+//                        isImageChanged = true;
+//                        Glide.with(this)
+//                                .load(slist.get(i))
+//                                .circleCrop()
+//                                .placeholder(R.drawable.ic_default_profile)
+//                                .error(R.drawable.ic_default_profile)
+//                                .into(img_profile_pic);
+//                    }
+//                }
+//
+//
+//            }
+//
+//
+//        }
+
+
         if (requestCode == 50) {
             if (data != null) {
                 List<String> slist = Matisse.obtainPathResult(data);
-                selectedImage = data.getData();
+                List<Uri> uris = Matisse.obtainResult(data);
                 if (slist.size() > 0) {
                     for (int i = 0; i < slist.size(); i++) {
-//                        imgPath = Function.getBase64String(slist.get(i));
                         imgPath = slist.get(i);
-                        isImageChanged = true;
-                        Glide.with(this)
-                                .load(slist.get(i))
-                                .circleCrop()
-                                .placeholder(R.drawable.ic_default_profile)
-                                .error(R.drawable.ic_default_profile)
-                                .into(img_profile_pic);
+                        CropImage.activity(uris.get(i))
+                                .setFixAspectRatio(false)
+                                .start(ProfileActivity.this);
+                        Log.i("Path", slist.get(i));
                     }
                 }
 
+            }
+        } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
 
+            if (result.getType() == 2) {
+                Uri resultUri = result.getUri();
+                imgPath = resultUri.getPath();
             }
 
+            isImageChanged = true;
+            Glide.with(this)
+                    .load(imgPath)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_default_profile)
+                    .error(R.drawable.ic_default_profile)
+                    .into(img_profile_pic);
 
         } else if (requestCode == PROSPER_ID_CODE) {
             if (_fun.isInternetAvailable(ProfileActivity.this)) {
@@ -1070,7 +1105,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             }
         }
-        if(result){
+        if (result) {
             MatisseActivity.PAGE_FROM = 2;
             Matisse.from(ProfileActivity.this)
                     .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)

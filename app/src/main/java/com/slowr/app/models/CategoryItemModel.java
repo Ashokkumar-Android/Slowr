@@ -18,6 +18,9 @@ public class CategoryItemModel {
     @SerializedName("slug")
     private String slug;
 
+    @SerializedName("cat_group")
+    private String catGroup;
+
     @SerializedName("ad_title_label")
     String categoryTitle;
 
@@ -70,5 +73,13 @@ public class CategoryItemModel {
 
     public void setCategoryTitle(String categoryTitle) {
         this.categoryTitle = categoryTitle;
+    }
+
+    public String getCatGroup() {
+        return catGroup;
+    }
+
+    public void setCatGroup(String catGroup) {
+        this.catGroup = catGroup;
     }
 }

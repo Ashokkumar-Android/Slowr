@@ -250,6 +250,7 @@
     <string name="txt_active">ACTIVE</string>
     <string name="txt_in_active">IN ACTIVE</string>
     <string name="txt_in_review">IN REVIEW</string>
+    <string name="txt_rejected">REJECTED</string>
     <string name="txt_expired">EXPIRED</string>
 
     <string name="search_prosper_id">(eg, AA1234)</string>

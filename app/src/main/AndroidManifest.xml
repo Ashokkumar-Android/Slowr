@@ -106,10 +106,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="dl.slowr.com"
+                    android:host="appslowr.page.link"
                     android:scheme="http" />
                 <data
-                    android:host="dl.slowr.com"
+                    android:host="appslowr.page.link"
                     android:scheme="https" />
 
                 <data

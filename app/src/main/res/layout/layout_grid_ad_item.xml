@@ -24,7 +24,7 @@
                 android:layout_height="120dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_default_horizontal" />
+                android:src="@drawable/ic_no_image" />
 
 <!--            <ImageView-->
 <!--                android:id="@+id/img_favorite"-->

@@ -75,22 +75,25 @@ public class SortByAdapter extends RecyclerView.Adapter<SortByAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        SortByModel movie = categoryListFilter.get(position);
+        try {
+            SortByModel movie = categoryListFilter.get(position);
 
-        holder.txt_category_name.setText(movie.getSortValue().trim());
-        if (checkedPos.equals("")) {
-            holder.rb_select.setChecked(false);
-            holder.txt_category_name.setTextColor(ctx.getResources().getColor(R.color.color_black));
-        } else {
-            if (checkedPos.equals(movie.getSortId())) {
-                holder.rb_select.setChecked(true);
-                holder.txt_category_name.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
-            } else {
+            holder.txt_category_name.setText(movie.getSortValue().trim());
+            if (checkedPos.equals("")) {
                 holder.rb_select.setChecked(false);
                 holder.txt_category_name.setTextColor(ctx.getResources().getColor(R.color.color_black));
+            } else {
+                if (checkedPos.equals(movie.getSortId())) {
+                    holder.rb_select.setChecked(true);
+                    holder.txt_category_name.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+                } else {
+                    holder.rb_select.setChecked(false);
+                    holder.txt_category_name.setTextColor(ctx.getResources().getColor(R.color.color_black));
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -108,7 +111,7 @@ public class SortByAdapter extends RecyclerView.Adapter<SortByAdapter.MyViewHold
     }
 
     public interface Callback {
-        public void itemClick(SortByModel model);
+        void itemClick(SortByModel model);
 
 
     }

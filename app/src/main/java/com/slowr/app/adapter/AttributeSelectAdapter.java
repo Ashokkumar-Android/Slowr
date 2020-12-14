@@ -74,19 +74,24 @@ public class AttributeSelectAdapter extends RecyclerView.Adapter<AttributeSelect
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        AttributeSelectModel movie = categoryListFilter.get(position);
+        try {
 
-        holder.txt_category_name.setText(movie.getAttributeValue().trim());
-        if (checkedPos.equals("")) {
-            holder.rb_select.setChecked(false);
-        } else {
-            if (checkedPos.equals(movie.getId())) {
-                holder.rb_select.setChecked(true);
-            } else {
+
+            AttributeSelectModel movie = categoryListFilter.get(position);
+
+            holder.txt_category_name.setText(movie.getAttributeValue().trim());
+            if (checkedPos.equals("")) {
                 holder.rb_select.setChecked(false);
+            } else {
+                if (checkedPos.equals(movie.getId())) {
+                    holder.rb_select.setChecked(true);
+                } else {
+                    holder.rb_select.setChecked(false);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -104,7 +109,7 @@ public class AttributeSelectAdapter extends RecyclerView.Adapter<AttributeSelect
     }
 
     public interface Callback {
-        public void itemClick(AttributeSelectModel model);
+        void itemClick(AttributeSelectModel model);
 
 
     }

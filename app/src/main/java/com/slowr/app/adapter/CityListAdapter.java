@@ -74,6 +74,7 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+        try{
         CityItemModel movie = categoryListFilter.get(position);
 
         holder.txt_category_name.setText(movie.getCityName().trim());
@@ -86,7 +87,9 @@ public class CityListAdapter extends RecyclerView.Adapter<CityListAdapter.MyView
                 holder.rb_select.setChecked(false);
             }
         }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

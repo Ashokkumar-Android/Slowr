@@ -80,7 +80,7 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.img_face_book:
 
                 try {
-                    Intent f = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/slowr.india.1"));
+                    Intent f = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/Slowr-India-103484741627195"));
                     startActivity(f);
                 } catch (Exception e) {
 //                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/slowr.india.1")));
@@ -89,7 +89,7 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.img_instagram:
                 try {
-                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/slowrindia/"));
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://instagram.com/slowr_india?igshid=2wh9kd5hvdaz"));
                     startActivity(i);
                 } catch (Exception e) {
 //                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.instagram.com/slowrindia/"));

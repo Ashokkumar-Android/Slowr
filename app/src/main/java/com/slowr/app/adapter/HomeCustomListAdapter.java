@@ -64,22 +64,26 @@ public class HomeCustomListAdapter extends RecyclerView.Adapter<HomeCustomListAd
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        HomeAdsModel model = categoryList.get(position);
+        try {
+            HomeAdsModel model = categoryList.get(position);
 
-        holder.txt_list_title.setText(model.getListTitle().trim());
-        popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx);
-        holder.rc_home_ad_list.setAdapter(popularAdListAdapter);
-        popularAdListAdapter.setCallback(new PopularAdListAdapter.Callback() {
-            @Override
-            public void itemClick(AdItemModel model) {
-                callback.itemClick(model);
+            holder.txt_list_title.setText(model.getListTitle().trim());
+            popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx);
+            holder.rc_home_ad_list.setAdapter(popularAdListAdapter);
+            popularAdListAdapter.setCallback(new PopularAdListAdapter.Callback() {
+                @Override
+                public void itemClick(AdItemModel model) {
+                    callback.itemClick(model);
+                }
+            });
+
+            if (model.getHomeAdsList().size() == 0) {
+                holder.txt_view_more.setVisibility(View.GONE);
+            } else {
+                holder.txt_view_more.setVisibility(View.VISIBLE);
             }
-        });
-
-        if(model.getHomeAdsList().size()==0){
-            holder.txt_view_more.setVisibility(View.GONE);
-        }else {
-            holder.txt_view_more.setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -98,7 +102,7 @@ public class HomeCustomListAdapter extends RecyclerView.Adapter<HomeCustomListAd
     }
 
     public interface Callback {
-        public void itemClick(AdItemModel model);
+        void itemClick(AdItemModel model);
 
         void viewMoreClick(int pos);
     }

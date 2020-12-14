@@ -36,23 +36,26 @@ public class ImageFullviewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = LayoutInflater.from(container.getContext()).inflate(R.layout.layout_image_view_item, container, false);
+        try {
+            ImageView img_full_view = itemView.findViewById(R.id.img_full_view);
 
-        ImageView img_full_view = itemView.findViewById(R.id.img_full_view);
+            Glide.with(_cotx)
+                    .asBitmap()
+                    .error(R.drawable.ic_no_image)
+                    .placeholder(R.drawable.ic_no_image)
+                    .load(shareImageList.get(position).getImgURL())
+                    .into(img_full_view);
 
-        Glide.with(_cotx)
-                .asBitmap()
-                .error(R.drawable.ic_default_horizontal)
-                .placeholder(R.drawable.ic_default_horizontal)
-                .load(shareImageList.get(position).getImgURL())
-                .into(img_full_view);
-
-        container.addView(itemView);
+            container.addView(itemView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return itemView;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        ((ViewPager) container).removeView((View) object);
+        container.removeView((View) object);
     }
 
     @Override
@@ -65,7 +68,7 @@ public class ImageFullviewPagerAdapter extends PagerAdapter {
     }
 
     public interface Callback {
-        public void onCloseClick(int pos, ViewGroup v);
+        void onCloseClick(int pos, ViewGroup v);
     }
 
 

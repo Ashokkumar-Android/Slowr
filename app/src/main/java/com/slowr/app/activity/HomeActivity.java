@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonArray;
@@ -150,6 +149,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private int lastVisibleItem, totalItemCount;
     boolean isLoading = false;
     boolean isEnd = false;
+
+    boolean isBannerStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -285,6 +286,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
         params.put("platform", "1");
         params.put("version", String.valueOf(Function.getAppVersionCode(HomeActivity.this)));
+        Log.i("params", params.toString());
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).appVersionCheck(params)
                     .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false));
@@ -374,7 +376,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
 
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup,url);
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup, url);
             }
         });
 
@@ -424,7 +426,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup,url);
+                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup, url);
             }
         });
 
@@ -732,7 +734,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     homeCustomListAdapter.notifyDataSetChanged();
 //                    bannerAdapter.notifyDataSetChanged();
                     homeBannerAdapter.notifyDataSetChanged();
-                    rc_banner.start(2, TimeUnit.SECONDS);
+                    if (!isBannerStarted) {
+                        isBannerStarted = true;
+                        rc_banner.start(2, TimeUnit.SECONDS);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
