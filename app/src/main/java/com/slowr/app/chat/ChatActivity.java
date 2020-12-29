@@ -153,10 +153,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onImageClick(int pos) {
                 String imageStringArray = chatList.get(pos).getImgUrl();
-                Intent a = new Intent(ChatActivity.this, ImageViewActivity.class);
-                a.putExtra("ImgURL", imageStringArray);
-                a.putExtra("ImgPos", 0);
-                startActivity(a);
+                if (imageStringArray != null && !imageStringArray.equals("")) {
+                    Intent a = new Intent(ChatActivity.this, ImageViewActivity.class);
+                    a.putExtra("ImgURL", imageStringArray);
+                    a.putExtra("ImgPos", 0);
+                    startActivity(a);
+                }
             }
         });
     }
@@ -379,17 +381,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {
                 img_send.setEnabled(true);
                 e.printStackTrace();
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             }
@@ -401,9 +403,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d("TAG", t.getMessage());
             call.cancel();
-            if(chatList.size()!=0){
+            if (chatList.size() != 0) {
                 txt_chat_warning.setVisibility(View.GONE);
-            }else {
+            } else {
                 txt_chat_warning.setVisibility(View.VISIBLE);
             }
         }
@@ -468,17 +470,17 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                     img_send.setEnabled(true);
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {
                 img_send.setEnabled(true);
                 e.printStackTrace();
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             }
@@ -491,9 +493,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("TAG", t.getMessage());
             call.cancel();
             img_send.setEnabled(true);
-            if(chatList.size()!=0){
+            if (chatList.size() != 0) {
                 txt_chat_warning.setVisibility(View.GONE);
-            }else {
+            } else {
                 txt_chat_warning.setVisibility(View.VISIBLE);
             }
         }
@@ -520,16 +522,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 } else {
                     Function.CustomMessage(ChatActivity.this, dr.getMessage());
                 }
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if(chatList.size()!=0){
+                if (chatList.size() != 0) {
                     txt_chat_warning.setVisibility(View.GONE);
-                }else {
+                } else {
                     txt_chat_warning.setVisibility(View.VISIBLE);
                 }
             }
@@ -541,9 +543,9 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
             Log.d("TAG", t.getMessage());
             call.cancel();
-            if(chatList.size()!=0){
+            if (chatList.size() != 0) {
                 txt_chat_warning.setVisibility(View.GONE);
-            }else {
+            } else {
                 txt_chat_warning.setVisibility(View.VISIBLE);
             }
         }

@@ -13,6 +13,7 @@
         android:visibility="gone">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/layout_image_tile"
             android:layout_width="match_parent"
             android:layout_height="230dp"
             android:layout_marginBottom="@dimen/size_five"
@@ -307,7 +308,7 @@
                                 android:layout_centerInParent="true"
                                 android:fontFamily="@font/nunito_regular"
                                 android:text=""
-                                android:textColor="@color/colorPrimary"
+                                android:textColor="@color/txt_orange"
                                 android:textSize="@dimen/size_twenty_six" />
 
                             <ImageView

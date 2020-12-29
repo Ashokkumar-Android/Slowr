@@ -99,7 +99,7 @@ public class ChangPasswordActivity extends AppCompatActivity implements View.OnC
             til_old_password.setErrorEnabled(false);
         }
 
-        if (oldPassword.length() < 6) {
+        if (oldPassword.length() < 4) {
             til_old_password.setError(getString(R.string.password_empty_alert));
             til_old_password.requestFocus();
             return;
@@ -115,7 +115,7 @@ public class ChangPasswordActivity extends AppCompatActivity implements View.OnC
             til_new_password.setErrorEnabled(false);
         }
 
-        if (password.length() < 6) {
+        if (password.length() < 4) {
             til_new_password.setError(getString(R.string.password_empty_alert));
             til_new_password.requestFocus();
             return;

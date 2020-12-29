@@ -21,7 +21,7 @@ public class RetrofitClient {
     private static final String BASE_URL_PRODUCTION = "https://slowr.com/slowrapi/public/api/v1/";
 
     //*\..........Local...........\*
-    private static final String BASE_URL_LOCAL = "http://192.168.0.109/slowr/slowrapi/public/api/v1/";
+    private static final String BASE_URL_LOCAL = "http://192.168.0.105/slowr/slowrapi/public/api/v1/";
 
     //*\.........GST..........\*
     private static final String BASE_URL_GST = "https://commonapi.mastersindia.co/commonapis/";

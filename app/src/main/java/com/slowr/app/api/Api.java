@@ -117,7 +117,12 @@ public interface Api {
 
     @Multipart
     @POST("post/store")
-    Call<DefaultResponse> savePostForm(@Part List<MultipartBody.Part> file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId") HashMap<Object, Object> attributeId, @Part("attributeValue") HashMap<Object, Object> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
+    Call<DefaultResponse> savePostForm(@Part List<MultipartBody.Part> file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @Part("attributeValue[]") List<RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
+
+
+    @Multipart
+    @POST("post/update")
+    Call<DefaultResponse> updatePostForm(@Part List<MultipartBody.Part> file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @Part("attributeValue[]") List<RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
 
     @POST("report-us")
     Call<ReportResponsModel> saveReport(@Body Object params);
@@ -296,4 +301,9 @@ public interface Api {
     @POST("check-app-version")
     Call<AppVersionModel> appVersionCheck(@Body Object params);
 
+    @GET("profile/remove")
+    Call<DefaultResponse> removeProfile(@Header("Authorization") String contentRange);
+
+    @POST("geo-location")
+    Call<DefaultResponse> deviceDetails(@Body Object params,@Header("Authorization") String contentRange);
 }

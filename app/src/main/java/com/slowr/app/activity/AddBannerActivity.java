@@ -773,7 +773,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             mYear = c.get(Calendar.YEAR);
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog dpd = new DatePickerDialog(AddBannerActivity.this,
+            DatePickerDialog dpd = new DatePickerDialog(AddBannerActivity.this,R.style.datepicker,
                     new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year,
@@ -807,6 +807,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             c1.add(Calendar.DAY_OF_MONTH, 1);
             dpd.getDatePicker().setMinDate(c1.getTimeInMillis());
             dpd.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

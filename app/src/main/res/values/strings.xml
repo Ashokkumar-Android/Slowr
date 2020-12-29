@@ -59,7 +59,7 @@
     <string name="txt_otp_content_email">Please enter the 4-digit OTP sent to your email</string>
     <string name="txt_email_content">Please enter the registered E-mail ID or Mobile Number</string>
     <string name="password_retype_password_alert">Password and Re-type password should be the same</string>
-    <string name="password_empty_alert">Password should contain at least 6 characters</string>
+    <string name="password_empty_alert">Password should contain at least 4 characters</string>
     <string name="old_password_required">Enter the Current Password</string>
     <string name="password_required">Enter the New Password</string>
     <string name="confirm_password_required">Enter the Re-type Password</string>
@@ -69,6 +69,7 @@
     <string name="enter_name">Enter Your Name</string>
     <string name="enter_name_minimum">Enter Minimum 3 Character</string>
     <string name="enter_locality_minimum">Enter Minimum 3 Character in Locality</string>
+    <string name="enter_locality_your">Enter Your Locality</string>
     <string name="enter_phone_number">Enter Mobile Number</string>
     <string name="enter_valid_phone_number">Enter Valid Mobile Number</string>
     <string name="enter_email">Enter Valid Email ID</string>
@@ -110,8 +111,8 @@
     <string name="txt_input_price_service">₹ Enter Hiring Fee</string>
     <string name="txt_negotiate">Fixed charges</string>
     <string name="txt_show_number">Don’t show my mobile number on Ad</string>
-    <string name="txt_upload_image_product">Upload Product Images (max 5 images). \nThe first image is the AD profile pic.</string>
-    <string name="txt_upload_image_service">Upload Product Images (max 5 images). \nThe first image is the User profile pic.</string>
+    <string name="txt_upload_image_product">Upload Product Images (max 5 images)*. \nThe first image is the AD profile pic.</string>
+    <string name="txt_upload_image_service">Upload Product Images (max 5 images)*. \nThe first image is the User profile pic.</string>
     <string name="post_ad">Post Ad</string>
     <string name="post_banner">Post Banner</string>
     <string name="preview_ad">Preview Ad</string>
@@ -140,6 +141,7 @@
     <string name="select_city">Select City to continue</string>
     <string name="enter_rental_fee">Enter Rental Fee</string>
     <string name="enter_hiring_fee">Enter Hiring Fee</string>
+    <string name="image_one_must">At least one image is mandatory. Please upload one to get more enquiries</string>
 
 
     <string-array name="price_array">
@@ -201,7 +203,7 @@
     <string name="txt_edit">Edit</string>
 
     <string name="profile_verification">Profile Verification</string>
-    <string name="fancy_prosper_id">Fancy Prosper ID</string>
+    <string name="fancy_prosper_id">Get Fancy Prosper ID</string>
 
     <string name="about_slowr">About Slowr</string>
     <string name="about_sample">About Us:- \nWorld’s first Online Classifieds to Rent or Rent out the Products and Hire or Get Hired.\nVision:- \nIncreasing the Revenue of every Indian Household.\nMission:- \nTo make People realize that each idle product in their home can produce revenue and every person in the family can generate revenue on their idle time. To keep building this platform rigid to accommodate the entire Indians to exchange their Products and Services and thus increasing the per capita as well as happiness.</string>
@@ -252,6 +254,8 @@
     <string name="txt_in_review">IN REVIEW</string>
     <string name="txt_rejected">REJECTED</string>
     <string name="txt_expired">EXPIRED</string>
+    <string name="txt_created">CREATED</string>
+    <string name="txt_edited">EDITED</string>
 
     <string name="search_prosper_id">(eg, AA1234)</string>
     <string name="transaction_history">Invoices</string>
@@ -274,6 +278,7 @@
     <string name="report_message">Are you sure you want to submit this Report?</string>
     <string name="active_message">Are you sure you want to make this Ad active?</string>
     <string name="inactive_message">Are you sure you want to make this Ad inactive?</string>
+    <string name="profile_remove_message">Are you sure you want to remove profile picture?</string>
 
     <string name="txt_please_login">Please Login.</string>
 
@@ -354,6 +359,7 @@
     <string name="txt_banner">My Banners</string>
     <string name="txt_banner_title">Banner Title *</string>
     <string name="txt_banner_duration">Banner Duration *</string>
+    <string name="txt_banner_inst">*Pick future dates only</string>
     <string name="txt_enter_banner_title">Enter Banner Title</string>
     <string name="txt_select_from_date">Select From Date</string>
     <string name="txt_select_to_date">Select To Date</string>
@@ -394,5 +400,13 @@
 
     <string name="pr_sample"></string>
     <string name="yes_take_me">Yes, take me there</string>
+
+    <string name="service_image_alert">*Your profile image is the Services Ad image</string>
+    <string name="txt_welcome_content">Remember Your Prosper Id is Your Website</string>
+
+    <string name="txt_no_ad_city_content">There are currently no ads in the selected city.\nClick the below button to post ads.</string>
+
+    <string name="txt_i_offer">I Offer</string>
+    <string name="txt_i_need">I Need</string>
 
 </resources>

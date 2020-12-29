@@ -59,6 +59,7 @@
                     </FrameLayout>
 
                     <ImageView
+                        android:id="@+id/img_slowr_logo"
                         android:layout_width="100dp"
                         android:layout_height="31dp"
                         android:layout_centerInParent="true"
@@ -110,7 +111,7 @@
                                 style="@style/txt_title"
                                 android:fontFamily="@font/nunito_regular"
                                 android:text=""
-                                android:textColor="@color/colorPrimary"
+                                android:textColor="@color/txt_orange"
                                 android:textSize="@dimen/size_eighteen" />
 
                             <ImageView

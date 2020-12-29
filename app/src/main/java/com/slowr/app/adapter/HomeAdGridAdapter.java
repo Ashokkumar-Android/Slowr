@@ -197,19 +197,21 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                 }
 
             }
-            int defu = R.drawable.ic_no_image;
 
             if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
-                defu = R.drawable.ic_no_image;
+                Glide.with(ctx)
+                        .load(movie.getPhotoType())
+                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.drawable.ic_no_image)
+                        .into(holder.img_ad);
             } else {
-                defu = R.drawable.ic_service_big;
+                Glide.with(ctx)
+                        .load(movie.getPhotoType())
+                        .circleCrop()
+                        .error(R.drawable.ic_service_big)
+                        .placeholder(R.drawable.ic_service_big)
+                        .into(holder.img_ad);
             }
-
-            Glide.with(ctx)
-                    .load(movie.getPhotoType())
-                    .error(defu)
-                    .placeholder(defu)
-                    .into(holder.img_ad);
 //        if (!movie.getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
 //            holder.img_favorite.setEnabled(true);
 //        }else {

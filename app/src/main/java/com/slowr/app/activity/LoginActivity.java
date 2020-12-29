@@ -465,7 +465,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                 String password = edt_change_password.getText().toString().trim();
                 String confirmPassword = edt_change_confirm_password.getText().toString().trim();
                 String email = edt_email_forgot_password.getText().toString().trim();
-                if (password.length() < 6) {
+                if (password.length() < 4) {
                     til_forgot_password.setError(getString(R.string.password_empty_alert));
                     til_forgot_password.requestFocus();
                     return;
@@ -656,7 +656,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
             til_password.setErrorEnabled(false);
         }
 
-        if (password.length() < 6) {
+        if (password.length() < 4) {
             til_password.setError(getString(R.string.password_empty_alert));
             til_password.requestFocus();
             return;

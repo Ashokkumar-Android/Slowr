@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -65,6 +66,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     int EDIT_CODE = 1299;
     String bannerId = "";
     boolean isPreview = false;
+    boolean isAddBanner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +215,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             }
             BannerModel dr = response.body();
             try {
+                isAddBanner = dr.isCreateBanner();
                 if (dr.isStatus()) {
 
                     bannerList.clear();
@@ -301,9 +304,13 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
 
                 break;
             case R.id.fb_add_banner:
-                Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
-                i.putExtra("Type", "1");
-                startActivityForResult(i, EDIT_CODE);
+                if (isAddBanner) {
+                    Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
+                    i.putExtra("Type", "1");
+                    startActivityForResult(i, EDIT_CODE);
+                }else {
+                    Toast.makeText(getApplicationContext(),"You have no ads to create banner",Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.btn_add_banner:
                 fb_add_banner.performClick();

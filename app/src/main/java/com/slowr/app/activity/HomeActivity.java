@@ -1,11 +1,15 @@
 package com.slowr.app.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,8 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
@@ -31,6 +37,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonArray;
 import com.slowr.app.R;
@@ -65,8 +76,11 @@ import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +101,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     Button btn_requirement_ad;
     SwipeRefreshLayout layout_swipe_refresh;
     CardView layout_filter_root;
+    CardView layout_no_ad_city;
+    Button btn_offer;
+    Button btn_need;
 
     RecyclerView rc_product_list;
     RecyclerView rc_service_list;
@@ -152,6 +169,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     boolean isBannerStarted = false;
 
+    FusedLocationProviderClient fusedLocationProviderClient;
+    Location currentLocation;
+    private static final int REQUEST_CODE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +208,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         rc_banner = findViewById(R.id.rc_banner);
         layout_filter_root = findViewById(R.id.layout_filter_root);
+        layout_no_ad_city = findViewById(R.id.layout_no_ad_city);
+        btn_offer = findViewById(R.id.btn_offer);
+        btn_need = findViewById(R.id.btn_need);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -235,6 +259,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         img_grid.setOnClickListener(this);
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
+        btn_need.setOnClickListener(this);
+        btn_offer.setOnClickListener(this);
         btn_requirement_ad.setOnClickListener(this);
         layout_swipe_refresh.setOnRefreshListener(this);
         CallBackFunction();
@@ -257,14 +283,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         }
 
-        if (isRegister) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ShowPopupProsper();
-                }
-            }, 200);
-        }
+
         rc_ad_list.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -278,6 +297,60 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         });
         Pageination();
         CheckAppUpdate();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        saveUserDetails();
+    }
+
+    private void saveUserDetails() {
+        GetLocationDetails();
+    }
+
+    private void GetLocationDetails() {
+        Log.i("User Location", "Step1");
+        if (_fun.checkPermissionLocation(HomeActivity.this)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+                return;
+            }
+            Task<Location> task = fusedLocationProviderClient.getLastLocation();
+            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    Log.i("User Location", "Step2");
+                    if (location != null) {
+                        currentLocation = location;
+                        Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.getDefault());
+                        List<Address> addresses = null;
+                        try {
+                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String cityName = addresses.get(0).getLocality();
+                        String stateName = addresses.get(0).getAdminArea();
+                        String countryName = addresses.get(0).getCountryName();
+                        if (!params.isEmpty()) {
+                            params.clear();
+                        }
+
+
+                        params.put("city", cityName);
+                        params.put("longitude", location.getLongitude());
+                        params.put("latitude", location.getLatitude());
+                        params.put("device_details", "Samsung");
+                        params.put("action", "1");
+
+                        RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
+                    } else {
+                        Log.i("User Location", "Step4");
+                    }
+                }
+            });
+        }
     }
 
     private void CheckAppUpdate() {
@@ -725,6 +798,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     homeAdList.clear();
                     if (dr.getHomeAdsList() != null)
                         homeAdList.addAll(dr.getHomeAdsList());
+
+                    if (homeAdList.size() == 0) {
+                        layout_no_ad_city.setVisibility(View.VISIBLE);
+                        rc_home_ad_list.setVisibility(View.GONE);
+                    } else {
+                        layout_no_ad_city.setVisibility(View.GONE);
+                        rc_home_ad_list.setVisibility(View.VISIBLE);
+                    }
                     bannerList.clear();
                     bannerList.addAll(dr.getBannerList());
                     NUM_PAGES = bannerList.size();
@@ -734,9 +815,19 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     homeCustomListAdapter.notifyDataSetChanged();
 //                    bannerAdapter.notifyDataSetChanged();
                     homeBannerAdapter.notifyDataSetChanged();
+
                     if (!isBannerStarted) {
                         isBannerStarted = true;
-                        rc_banner.start(2, TimeUnit.SECONDS);
+                        rc_banner.start(3, TimeUnit.SECONDS);
+                    }
+
+                    if (isRegister) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ShowPopupProsper();
+                            }
+                        }, 200);
                     }
                 }
             } catch (Exception e) {
@@ -771,6 +862,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     isLoading = false;
                     if (currentPageNo == 1) {
                         adList.clear();
+
                     }
 
                     if (isGrid) {
@@ -790,6 +882,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         homeAdGridAdapter.notifyDataSetChanged();
                     } else {
                         homeAdListAdapter.notifyDataSetChanged();
+                    }
+                    if (currentPageNo == 1 && adList.size() != 0) {
+                        rc_ad_list.smoothScrollToPosition(0);
+
                     }
                     layout_search_list.setVisibility(View.VISIBLE);
                     layout_home.setVisibility(View.GONE);
@@ -899,6 +995,35 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
     };
 
+    retrofit2.Callback<DefaultResponse> deviceDetailsResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                DefaultResponse dr = response.body();
+                if (dr.isStatus()) {
+
+
+                } else {
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -938,6 +1063,26 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 2);
                     p.putExtra("ParId", catId);
+                    startActivity(p);
+                } else {
+                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                }
+                break;
+            case R.id.btn_offer:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                } else {
+                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                }
+                break;
+            case R.id.btn_need:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 2);
+                    p.putExtra("ParId", "");
                     startActivity(p);
                 } else {
                     Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
@@ -1215,22 +1360,29 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         TextView txt_content_two = view.findViewById(R.id.txt_content_two);
         TextView txt_content_three = view.findViewById(R.id.txt_content_three);
         TextView txt_content_four = view.findViewById(R.id.txt_content_four);
+        ImageView img_cong_gif = view.findViewById(R.id.img_cong_gif);
+        CardView layoutRoot = view.findViewById(R.id.layout_prosper_root);
         Button btn_ok = view.findViewById(R.id.btn_ok);
+
+        Glide.with(HomeActivity.this)
+                .load(R.drawable.ic_congrts)
+                .placeholder(R.drawable.ic_congrts)
+                .into(img_cong_gif);
         txt_prosperId_popup.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
-        String contentOne = "<font color=#000000>Type </font> <font color=#FF7400>Slowr.com/" + Sessions.getSession(Constant.ProsperId, getApplicationContext()) + "</font><font color=#000000> on url. </font> ";
-        txt_content_one.setText(Html.fromHtml(contentOne));
-
-        String contentTwo = "<font color=#000000>This website will become\nyours </font> <font color=#0F4C81>exclusively!</font>";
-        contentTwo = contentTwo.replace("\n", "<br>");
-        txt_content_two.setText(Html.fromHtml(contentTwo));
-
-        String contentThree = "<font color=#000000>Showcase only </font> <font color=#2B9109>Your offerings</font><font color=#000000> to\nCustomers!!</font> ";
-        contentThree = contentThree.replace("\n", "<br>");
-        txt_content_three.setText(Html.fromHtml(contentThree));
-
-        String contentFour = "<font color=#000000>Prosper ID can be made more\n</font> <font color=#FF7400>Fancier</font><font color=#000000>  too!!!</font> ";
-        contentFour = contentFour.replace("\n", "<br>");
-        txt_content_four.setText(Html.fromHtml(contentFour));
+//        String contentOne = "<font color=#000000>Type </font> <font color=#FF7400>Slowr.com/" + Sessions.getSession(Constant.ProsperId, getApplicationContext()) + "</font><font color=#000000> on url. </font> ";
+//        txt_content_one.setText(Html.fromHtml(contentOne));
+//
+//        String contentTwo = "<font color=#000000>This website will become\nyours </font> <font color=#0F4C81>exclusively!</font>";
+//        contentTwo = contentTwo.replace("\n", "<br>");
+//        txt_content_two.setText(Html.fromHtml(contentTwo));
+//
+//        String contentThree = "<font color=#000000>Showcase only </font> <font color=#2B9109>Your offerings</font><font color=#000000> to\nCustomers!!</font> ";
+//        contentThree = contentThree.replace("\n", "<br>");
+//        txt_content_three.setText(Html.fromHtml(contentThree));
+//
+//        String contentFour = "<font color=#000000>Prosper ID can be made more\n</font> <font color=#FF7400>Fancier</font><font color=#000000>  too!!!</font> ";
+//        contentFour = contentFour.replace("\n", "<br>");
+//        txt_content_four.setText(Html.fromHtml(contentFour));
 
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1347,5 +1499,24 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }
         });
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        boolean result = false;
+        for (int i = 0; i < Constant.LocationPermissions.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(HomeActivity.this, Constant.LocationPermissions[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if (result) {
+            GetLocationDetails();
+        }
     }
 }

@@ -123,7 +123,13 @@
 
                     <View style="@style/attribute_line" />
                 </LinearLayout>
+
             </LinearLayout>
+            <TextView
+                style="@style/txt_create_post"
+                android:fontFamily="@font/nunito_regular"
+                android:text="@string/txt_banner_inst"
+                android:textColor="@color/txt_orange"/>
 
             <TextView
                 style="@style/txt_create_post"

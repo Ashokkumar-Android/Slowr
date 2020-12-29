@@ -2,6 +2,7 @@ package com.slowr.app.activity;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -21,11 +22,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.gioco.image.cropper.CropImage;
+import com.gioco.image.cropper.CropImageView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slowr.app.R;
 import com.slowr.app.api.Api;
@@ -41,6 +44,7 @@ import com.slowr.app.utils.Sessions;
 import com.slowr.matisse.Matisse;
 import com.slowr.matisse.MimeType;
 import com.slowr.matisse.engine.impl.GlideEngine;
+import com.slowr.matisse.filter.Filter;
 import com.slowr.matisse.internal.entity.CaptureStrategy;
 import com.slowr.matisse.ui.MatisseActivity;
 
@@ -80,6 +84,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     TextView txt_user_mobile_verify;
     TextView txt_user_email_verify;
     TextView txt_verified;
+    ImageView img_remove;
     private TextView txt_otp_content;
 
     private Function _fun = new Function();
@@ -148,6 +153,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btn_profile_verification = findViewById(R.id.btn_profile_verification);
         txt_verified = findViewById(R.id.txt_verified);
         txt_otp_content = findViewById(R.id.txt_otp_content);
+        img_remove = findViewById(R.id.img_remove);
 
         txt_page_title.setText(getString(R.string.txt_profile));
 
@@ -162,6 +168,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         btn_profile_verification.setOnClickListener(this);
         txt_verified.setOnClickListener(this);
         txt_user_email_verify.setOnClickListener(this);
+        img_remove.setOnClickListener(this);
         img_profile_pic.setEnabled(false);
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
@@ -386,6 +393,47 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.txt_user_email_verify:
                 sendEmailOTP();
                 break;
+            case R.id.img_remove:
+                AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
+                        ProfileActivity.this);
+
+                alertDialog2.setTitle("Profile");
+
+                alertDialog2.setMessage(getString(R.string.profile_remove_message));
+
+                alertDialog2.setPositiveButton("YES",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                RemoveProfilePic();
+                            }
+                        });
+
+                alertDialog2.setNegativeButton("NO",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                alertDialog2.show();
+
+                break;
+        }
+    }
+
+    private void RemoveProfilePic() {
+
+        if (_fun.isInternetAvailable(ProfileActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).removeProfile(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true));
+        } else {
+            _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).removeProfile(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true));
+                }
+            });
         }
     }
 
@@ -669,6 +717,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         txt_verified.setTextColor(getResources().getColor(R.color.txt_orange));
                         txt_verified.setEnabled(true);
                     }
+
+                    if (dr.getUserDetailsModel().getUserPhoto() != null && !dr.getUserDetailsModel().getUserPhoto().equals("")) {
+                        img_remove.setVisibility(View.VISIBLE);
+                    } else {
+                        img_remove.setVisibility(View.GONE);
+                    }
                 } else {
                     Function.CustomMessage(ProfileActivity.this, dr.getMessage());
                 }
@@ -721,7 +775,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     for (int i = 0; i < slist.size(); i++) {
                         imgPath = slist.get(i);
                         CropImage.activity(uris.get(i))
-                                .setFixAspectRatio(false)
+                                .setFixAspectRatio(true)
+                                .setAspectRatio(4,4)
+                                .setCropShape(CropImageView.CropShape.OVAL)
                                 .start(ProfileActivity.this);
                         Log.i("Path", slist.get(i));
                     }
@@ -1041,6 +1097,40 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             DefaultResponse dr = response.body();
             try {
                 if (dr.isStatus()) {
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    retrofit2.Callback<DefaultResponse> removeProfileResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                    Sessions.saveSession(Constant.UserProfile, "", getApplicationContext());
+                    Glide.with(ProfileActivity.this)
+                            .load(R.drawable.ic_default_profile)
+                            .circleCrop()
+                            .placeholder(R.drawable.ic_default_profile)
+                            .error(R.drawable.ic_default_profile)
+                            .into(img_profile_pic);
+                    img_remove.setVisibility(View.GONE);
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                 } else {
                 }
             } catch (Exception e) {

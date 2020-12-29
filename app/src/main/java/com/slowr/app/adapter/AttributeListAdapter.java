@@ -98,13 +98,14 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             }
 
             if (movie.getInputValue() != null && movie.getInputValue().equals("")) {
-                holder.txt_select_content.setHint("Type" + " " + movie.getName());
+//                holder.txt_select_content.setHint("Type" + " " + movie.getName());
                 if (movie.getType().equals("select")) {
                     holder.txt_select_content.setText("");
                 } else {
                     holder.edt_attributeValue.setText("");
                 }
             } else {
+//                holder.txt_select_content.setHint("Type" + " " + movie.getName());
                 isChange = true;
                 if (movie.getType().equals("select")) {
                     holder.txt_select_content.setText(movie.getInputValue().trim());
@@ -118,6 +119,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
 
 
             if (movie.getType().equals("select")) {
+                holder.txt_select_content.setHint("Type" + " " + movie.getName());
                 holder.layout_select.setVisibility(View.VISIBLE);
                 holder.layout_input.setVisibility(View.GONE);
 

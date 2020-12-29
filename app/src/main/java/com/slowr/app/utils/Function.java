@@ -135,7 +135,23 @@ public class Function {
         }
         return result;
     }
+    public boolean checkPermissionLocation(Activity activity) {
+        boolean result = false;
+        for (int i = 0; i < Constant.LocationPermissions.length; i++) {
+            int result1 = ContextCompat.checkSelfPermission(activity, Constant.LocationPermissions[i]);
+            if (result1 == PackageManager.PERMISSION_GRANTED) {
+                result = true;
+            } else {
+                result = false;
+                break;
+            }
+        }
+        if (!result) {
+            ActivityCompat.requestPermissions(activity, Constant.LocationPermissions, Constant.PERMISSION_REQUEST_CODE);
 
+        }
+        return result;
+    }
     public static final Uri getUriToDrawable(@NonNull Context context,
                                              @AnyRes int drawableId) {
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -247,6 +263,9 @@ public class Function {
     }
 
     public void ShowNoInternetPopup(final Activity ctx, NoInternetCallBack _noInternetCallBack) {
+        try{
+
+
         this.noInternetCallBack = _noInternetCallBack;
 
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -279,6 +298,9 @@ public class Function {
             showImagePopup.setOutsideTouchable(true);
             showImagePopup.showAtLocation(view, Gravity.CENTER, 0, 0);
 
+        }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -616,17 +638,6 @@ public class Function {
 
         return filepath;
     }
-
-//    public static String getFilename() {
-//        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
-//        if (!file.exists()) {
-//            file.mkdirs();
-//        }
-//        String uriSting = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
-//        return uriSting;
-//
-//    }
-
 
     public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;

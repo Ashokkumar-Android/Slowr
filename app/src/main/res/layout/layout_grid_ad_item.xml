@@ -113,6 +113,7 @@
                     style="@style/attribute_title"
                     android:maxLines="2"
                     android:text=""
+                    android:layout_marginLeft="@dimen/size_five"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_twelve" />
 

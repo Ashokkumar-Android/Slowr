@@ -2,7 +2,6 @@ package com.slowr.app.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
@@ -22,7 +21,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -30,10 +28,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.slowr.app.R;
@@ -84,6 +78,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     ImageView img_top_page_mark;
     ImageView txt_premium_mark;
     LinearLayout layout_root;
+    CardView layout_image_tile;
 
     ArrayList<AdItemModel> relatedAdList = new ArrayList<>();
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
@@ -153,6 +148,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         img_unverified_user = findViewById(R.id.img_unverified_user);
         btn_call_now = findViewById(R.id.btn_call_now);
         txt_guid_line = findViewById(R.id.txt_guid_line);
+        layout_image_tile = findViewById(R.id.layout_image_tile);
 
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_related_ad_list.setLayoutManager(linearLayoutManager3);
@@ -415,6 +411,11 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 //                            }
                             if (dr.getEditDataModel().getGuideLines() != null && dr.getEditDataModel().getGuideLines().size() != 0)
                                 txt_guid_line.setText(makeBulletList(dr.getEditDataModel().getGuideLines()));
+
+                            if (catGroup.equals("2")) {
+                                layout_image_tile.setVisibility(View.GONE);
+                                rc_image_list.setVisibility(View.GONE);
+                            }
                         }
                     } else {
                         Function.CustomMessage(PostViewActivity.this, dr.getMessage());
@@ -462,7 +463,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
-                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup,adShareUrl);
+                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup, adShareUrl);
                 break;
             case R.id.img_favorite:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -499,22 +500,24 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 
                 break;
             case R.id.img_ad_view:
-                if (!isPageChange) {
-                    isPageChange = true;
-                    Intent i = new Intent(PostViewActivity.this, ImageViewActivity.class);
-                    i.putExtra("ImgURL", imageStringArray);
-                    i.putExtra("ImgPos", imgSelectPos);
-                    startActivity(i);
-                }
+                if (imageStringArray != null && imageStringArray.equals(""))
+                    if (!isPageChange) {
+                        isPageChange = true;
+                        Intent i = new Intent(PostViewActivity.this, ImageViewActivity.class);
+                        i.putExtra("ImgURL", imageStringArray);
+                        i.putExtra("ImgPos", imgSelectPos);
+                        startActivity(i);
+                    }
                 break;
             case R.id.img_user_profile:
-                if (!isPageChange) {
-                    isPageChange = true;
-                    Intent a = new Intent(PostViewActivity.this, ImageViewActivity.class);
-                    a.putExtra("ImgURL", userProUrl);
-                    a.putExtra("ImgPos", 0);
-                    startActivity(a);
-                }
+                if (userProUrl != null && userProUrl.equals(""))
+                    if (!isPageChange) {
+                        isPageChange = true;
+                        Intent a = new Intent(PostViewActivity.this, ImageViewActivity.class);
+                        a.putExtra("ImgURL", userProUrl);
+                        a.putExtra("ImgPos", 0);
+                        startActivity(a);
+                    }
                 break;
             case R.id.img_unverified_user:
 //                ShowPopupProsper();

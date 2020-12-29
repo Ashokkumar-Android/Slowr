@@ -141,7 +141,12 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                     holder.img_promote.setVisibility(View.GONE);
                 }
             }
-            if (movie.getAdStatus().equals("1")) {
+            if (movie.getAdStatus().equals("0")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_created));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+                holder.img_share.setVisibility(View.GONE);
+            } else if (movie.getAdStatus().equals("1")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
                 holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
                 holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.bg_green));
@@ -152,17 +157,22 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_gray_border_color));
                 holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.inactive_border));
                 holder.img_share.setVisibility(View.GONE);
+            } else if (movie.getAdStatus().equals("3")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_edited));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+                holder.img_share.setVisibility(View.GONE);
             } else if (movie.getAdStatus().equals("8")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_rejected));
                 holder.img_promote.setVisibility(View.GONE);
-                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_filled));
-                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.color_white));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_reject_filled));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.rejected_txt));
                 holder.img_share.setVisibility(View.GONE);
             } else {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
                 holder.img_promote.setVisibility(View.GONE);
-                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
-                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_blue_border_select));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.colorPrimary));
                 holder.img_share.setVisibility(View.GONE);
             }
             if (movie.getAdFee() != null) {
@@ -205,19 +215,22 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 }
 
             }
-            int defu = R.drawable.ic_no_image;
 
             if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
-                defu = R.drawable.ic_no_image;
+                Glide.with(ctx)
+                        .load(movie.getPhotoType())
+                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.drawable.ic_no_image)
+                        .into(holder.img_ad);
             } else {
-                defu = R.drawable.ic_service_big;
+                Glide.with(ctx)
+                        .load(movie.getPhotoType())
+                        .circleCrop()
+                        .error(R.drawable.ic_service_big)
+                        .placeholder(R.drawable.ic_service_big)
+                        .into(holder.img_ad);
             }
 
-            Glide.with(ctx)
-                    .load(movie.getPhotoType())
-                    .error(defu)
-                    .placeholder(defu)
-                    .into(holder.img_ad);
         } catch (Exception e) {
             e.printStackTrace();
         }

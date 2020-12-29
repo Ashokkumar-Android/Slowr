@@ -49,6 +49,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gioco.image.cropper.CropImage;
+import com.gioco.image.cropper.CropImageView;
 import com.google.gson.JsonArray;
 import com.slowr.app.R;
 import com.slowr.app.adapter.AreaAutoCompleteAdapter;
@@ -157,6 +158,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     ImageView img_search;
     LinearLayout layout_product_container;
     View productDivider;
+    TextView txt_service_img_alert;
 
     CategoryListAdapter categoryListAdapter;
     SubCategoryListAdapter subCategoryListAdapter;
@@ -304,6 +306,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         layout_product_container = findViewById(R.id.layout_product_container);
         txt_product_type_count = findViewById(R.id.txt_product_type_count);
         txt_area_count = findViewById(R.id.txt_area_count);
+        txt_service_img_alert = findViewById(R.id.txt_service_img_alert);
 
         txt_page_action.setText(getString(R.string.txt_done));
         txt_page_action.setVisibility(View.GONE);
@@ -604,7 +607,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void afterTextChanged(Editable s) {
                 int desValue = txt_area_content.getText().toString().length();
                 txt_area_count.setText(getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                areaId = txt_area_content.getText().toString();
+                areaId = txt_area_content.getText().toString().trim();
                 if (desValue == 50 && !changeDeductedAmount) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
                 }
@@ -756,7 +759,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         AdTitleCreation();
                     } else {
                         txt_area_content.setText(edt_search.getText().toString());
-                        areaId = edt_search.getText().toString();
+                        areaId = edt_search.getText().toString().trim();
                     }
                     ListVisible(false);
                     isCity = false;
@@ -809,16 +812,23 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     layout_input_price.setVisibility(View.GONE);
                     view_rental_fee.setVisibility(View.GONE);
                     isRequirement = true;
+                    txt_area_content.setHint(getString(R.string.enter_locality_your));
+                    txt_service_img_alert.setVisibility(View.GONE);
                 } else {
                     AdType = 0;
-                    if (tabNo == 1) {
-                        layout_image_upload.setVisibility(View.VISIBLE);
-                    }
+//                    if (tabNo == 1) {
+                    layout_image_upload.setVisibility(View.VISIBLE);
+                    txt_service_img_alert.setVisibility(View.GONE);
+//                    } else {
+//                        txt_service_img_alert.setVisibility(View.VISIBLE);
+//                    }
                     if (rentalDurationPos != 2) {
                         layout_input_price.setVisibility(View.VISIBLE);
                         view_rental_fee.setVisibility(View.VISIBLE);
                     }
+
                     isRequirement = false;
+                    txt_area_content.setHint(getString(R.string.txt_select_locality));
                 }
 
 
@@ -1039,7 +1049,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                     txt_image_content.setText(getString(R.string.txt_upload_image_service));
                                     edt_price.setHint(getString(R.string.txt_input_price_service));
                                     txt_product_type_content.setHint(getString(R.string.select_profession));
-                                    layout_image_upload.setVisibility(View.GONE);
+                                    layout_image_upload.setVisibility(View.VISIBLE);
                                     isPostView = true;
                                     txt_parent_title.setText(tempServiceList.get(i).getName());
                                     parentId = tempServiceList.get(i).getId();
@@ -1324,6 +1334,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     if (AdType != 2) {
                         layout_image_upload.setVisibility(View.VISIBLE);
                     }
+//                    txt_service_img_alert.setVisibility(View.GONE);
                 }
                 break;
             case R.id.btn_service:
@@ -1343,7 +1354,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     txt_image_content.setText(getString(R.string.txt_upload_image_service));
                     edt_price.setHint(getString(R.string.txt_input_price_service));
                     txt_product_type_content.setHint(getString(R.string.select_profession));
-                    layout_image_upload.setVisibility(View.GONE);
+                    if (AdType != 2) {
+                        layout_image_upload.setVisibility(View.VISIBLE);
+                    }
+                    if (!isRequirement)
+                        txt_service_img_alert.setVisibility(View.GONE);
                 }
                 break;
             case R.id.img_drop_down:
@@ -1499,9 +1514,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
             return;
         }
+
+
         for (int i = 0; i < attributeList.size(); i++) {
 
-            if (attributeList.get(i).getMandatory().equals("1") && attributeList.get(i).getInputValue().equals("")) {
+            if (attributeList.get(i).getMandatory().equals("1") && attributeList.get(i).getInputValue().equals("") && !isRequirement) {
                 if (attributeList.get(i).getType().equals("select")) {
                     Function.CustomMessage(AddPostActivity.this, "Select " + attributeList.get(i).getName());
                 } else {
@@ -1555,6 +1572,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 //        }
+        if (AdType != 2&&shareImageList.size() == 0) {
+            Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
+            return;
+        }
+
         if (!cb_tc.isChecked()) {
             Function.CustomMessage(AddPostActivity.this, getString(R.string.accept_tc));
             return;
@@ -1562,14 +1584,22 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         if (!Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
             if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals(edt_mobile_number.getText().toString()) || postMobileNum != null && postMobileNum.equals(edt_mobile_number.getText().toString())) {
                 if (_fun.isInternetAvailable(AddPostActivity.this)) {
-//                    savePostDetails();
-                    new AsyncTaskSavePost().execute("");
+                    if (AdType == 0) {
+                        savePostDetails();
+                    } else {
+                        new AsyncTaskSavePost().execute("");
+                    }
+//
                 } else {
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-//                            savePostDetails();
-                            new AsyncTaskSavePost().execute("");
+                            if (AdType == 0) {
+                                savePostDetails();
+                            } else {
+                                new AsyncTaskSavePost().execute("");
+                            }
+//                            new AsyncTaskSavePost().execute("");
                         }
                     });
                 }
@@ -1589,14 +1619,22 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             if (postMobileNum.equals(edt_mobile_number.getText().toString())) {
 
                 if (_fun.isInternetAvailable(AddPostActivity.this)) {
-//                    savePostDetails();
-                    new AsyncTaskSavePost().execute("");
+                    if (AdType == 0) {
+                        savePostDetails();
+                    } else {
+                        new AsyncTaskSavePost().execute("");
+                    }
+//                    new AsyncTaskSavePost().execute("");
                 } else {
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-//                            savePostDetails();
-                            new AsyncTaskSavePost().execute("");
+                            if (AdType == 0) {
+                                savePostDetails();
+                            } else {
+                                new AsyncTaskSavePost().execute("");
+                            }
+//                            new AsyncTaskSavePost().execute("");
                         }
                     });
                 }
@@ -1634,11 +1672,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         viewDialog.showDialog();
         isClickChange = true;
         try {
-
-
-            if (!params.isEmpty()) {
-                params.clear();
-            }
             String isNegos = "";
             if (cb_price.isChecked()) {
                 isNegos = "1";
@@ -1653,50 +1686,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 isMobile = "0";
             }
 
-            String attId = "";
-            String attVal = "";
-            HashMap<Object, Object> paramsId = new HashMap<Object, Object>();
-            HashMap<Object, Object> paramsValue = new HashMap<Object, Object>();
+
+            List<RequestBody> attId = new ArrayList<>();
+            List<RequestBody> attVal = new ArrayList<>();
             for (int i = 0; i < attributeList.size(); i++) {
-                paramsId.put(String.valueOf(i), attributeList.get(i).getAttributeId());
-                paramsValue.put(String.valueOf(i), attributeList.get(i).getInputValue());
-                if (i == 0) {
-                    attId = attributeList.get(i).getAttributeId();
-                    attVal = attributeList.get(i).getInputValue();
-                } else {
-                    attId = attId + attributeList.get(i).getAttributeId();
-                    attVal = attVal + attributeList.get(i).getInputValue();
-                }
+                attId.add(RequestBody.create(okhttp3.MultipartBody.FORM, attributeList.get(i).getAttributeId()));
+                attVal.add(RequestBody.create(okhttp3.MultipartBody.FORM, attributeList.get(i).getInputValue()));
+
             }
-            JsonArray jsonArray = new JsonArray();
-            for (int i = 0; i < shareImageList.size(); i++) {
-                if (shareImageList.get(i).getImgURL().equals("")) {
-                    jsonArray.add(Function.getBase64String(shareImageList.get(i).getUri()));
-                } else {
-                    jsonArray.add(shareImageList.get(i).getImgURL());
-                }
-            }
-            params.put("category_id", catId);
-            if (AdType != 2) {
-                params.put("rental_fee", edt_price.getText().toString());
-            }
-            params.put("rental_duration", rentalDuration);
-            params.put("title", txt_post_title_content.getText().toString());
-            params.put("description", edt_description.getText().toString());
-            if (AdType != 2) {
-                params.put("photos", jsonArray);
-            }
-            params.put("city_id", cityId);
-            params.put("locality_id", areaId);
-            params.put("status", adStatus);
-            params.put("is_rent_negotiable", isNegos);
-            params.put("attributeId", paramsId);
-            params.put("attributeValue", paramsValue);
-            params.put("mobile", edt_mobile_number.getText().toString());
-            params.put("is_mobile_visible", isMobile);
-            params.put("parent_id", parentId);
-            params.put("is_base", "1");
-//
             final RequestBody _parentId = RequestBody.create(okhttp3.MultipartBody.FORM, parentId);
             final RequestBody _catId = RequestBody.create(okhttp3.MultipartBody.FORM, catId);
             final RequestBody _rentalFee = RequestBody.create(okhttp3.MultipartBody.FORM, edt_price.getText().toString());
@@ -1707,71 +1704,26 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             final RequestBody _adAreaId = RequestBody.create(okhttp3.MultipartBody.FORM, areaId);
             final RequestBody _adStatus = RequestBody.create(okhttp3.MultipartBody.FORM, adStatus);
             final RequestBody _adNegos = RequestBody.create(okhttp3.MultipartBody.FORM, isNegos);
-//        final RequestBody _adAttributesId = RequestBody.create(okhttp3.MultipartBody.FORM, paramsId);
-//        final RequestBody _adAttributesValue = RequestBody.create(okhttp3.MultipartBody.FORM, paramsValue);
             final RequestBody _adMobileNo = RequestBody.create(okhttp3.MultipartBody.FORM, edt_mobile_number.getText().toString());
             final RequestBody _adMobileVisible = RequestBody.create(okhttp3.MultipartBody.FORM, isMobile);
-//        final List<MultipartBody.Part> _adImage = new ArrayList<>();
-//            MultipartBody.Part[] _adImage = new MultipartBody.Part[shareImageList.size()];
+
             List<MultipartBody.Part> parts = new ArrayList<>();
             for (int i = 0; i < shareImageList.size(); i++) {
                 if (shareImageList.get(i).getImgURL().equals("")) {
-//                jsonArray.add(Function.getBase64String(shareImageList.get(i).getUri()));
-                    File file = new File(shareImageList.get(i).getUri());
+                    File file = new File(Function.compressImage(shareImageList.get(i).getUri()));
                     final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                    parts.add(MultipartBody.Part.createFormData("photos", file.getName(), requestFile));
-                } else {
-                    jsonArray.add(shareImageList.get(i).getImgURL());
+                    parts.add(MultipartBody.Part.createFormData("photos[]", file.getName(), requestFile));
                 }
 
             }
-
             RequestBody.create(okhttp3.MultipartBody.FORM, isMobile);
-            if (AdType == 0) {
-                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
-//            if (tabNo == 1) {
-//                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, true));
-//            } else {
-//                if (isServiceValid) {
-//                    RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, true));
-//                } else {
-//                    if (!params.isEmpty()) {
-//                        params.clear();
-//                    }
-//
-//                    params.put("parent_id", parentId);
-//                    params.put("attributeValue", txt_product_type_content.getText().toString());
-//                    RetrofitClient.getClient().create(Api.class).serviceCheck(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                            .enqueue(new RetrofitCallBack(AddPostActivity.this, checkServicePost, true));
-//                }
-//            }
 
-//                RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
-//                        _adAreaId, _adStatus, _adNegos, paramsId, paramsValue, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
-            } else if (AdType == 1) {
-                params.put("ads_id", adId);
+            RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+                    _adAreaId, _adStatus, _adNegos, attId, attVal, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+            Log.i("Form called", "True");
 
 
-                RetrofitClient.getClient().create(Api.class).updatePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
-
-            } else if (AdType == 2) {
-                if (EditType.equals("2")) {
-                    params.put("ads_id", adId);
-                    RetrofitClient.getClient().create(Api.class).updateRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
-                } else {
-                    RetrofitClient.getClient().create(Api.class).saveRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
-
-                }
-            }
-
-            Log.i("Params", params.toString());
             Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
         } catch (Exception e) {
             viewDialog.hideDialog();
@@ -1894,7 +1846,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void itemClick(AreaItemModel model) {
 //                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
                 txt_area_content.setText(model.getAreaName());
-                areaId = model.getAreaName();
+                areaId = model.getAreaName().trim();
                 ListVisible(false);
             }
         });
@@ -1937,9 +1889,17 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 if (slist.size() > 0) {
                     for (int i = 0; i < slist.size(); i++) {
                         imagePath = slist.get(i);
-                        CropImage.activity(uris.get(i))
-                                .setFixAspectRatio(false)
-                                .start(AddPostActivity.this);
+                        if (tabNo == 1) {
+                            CropImage.activity(uris.get(i))
+                                    .setFixAspectRatio(false)
+                                    .start(AddPostActivity.this);
+                        } else {
+                            CropImage.activity(uris.get(i))
+                                    .setFixAspectRatio(true)
+                                    .setAspectRatio(4, 4)
+                                    .setCropShape(CropImageView.CropShape.OVAL)
+                                    .start(AddPostActivity.this);
+                        }
                         Log.i("Path", slist.get(i));
                     }
                 }
@@ -2105,7 +2065,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             txt_area_content.setText(model.getAreaName().trim());
                             txt_area_content.dismissDropDown();
                             txt_area_content.setSelection(txt_area_content.getText().toString().length());
-                            areaId = model.getAreaName();
+                            areaId = model.getAreaName().trim();
                         }
                     });
                 } else {
@@ -2202,17 +2162,22 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 EditAdModel dr = response.body();
                 if (dr.isStatus()) {
                     if (dr.getEditDataModel().getAdDetailsModel() != null) {
+
                         changeDeductedAmount = true;
                         EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
+                        adStatus = editAdDetailsModel.getAdStatus();
                         layout_list.setVisibility(View.GONE);
                         isPostView = false;
                         layout_post_details.setVisibility(View.VISIBLE);
                         rc_category.setVisibility(View.VISIBLE);
                         rc_service.setVisibility(View.GONE);
-                        layout_product_type.setEnabled(false);
-                        txt_product_type_content.setTextColor(getResources().getColor(R.color.hint_txt_color));
-                        txt_product_type_content.setFocusableInTouchMode(false);
-                        txt_product_type_title.setTextColor(getResources().getColor(R.color.hint_txt_color));
+                        if (!adStatus.equals("0")) {
+                            layout_product_type.setEnabled(false);
+                            txt_product_type_content.setTextColor(getResources().getColor(R.color.hint_txt_color));
+                            txt_product_type_content.setFocusableInTouchMode(false);
+                            txt_product_type_title.setTextColor(getResources().getColor(R.color.hint_txt_color));
+
+                        }
                         layout_selection_button.setVisibility(View.GONE);
                         txt_product_type_title.setText(dr.getEditDataModel().getCategoryTitle() + " *");
                         txt_product_type_content.setHint("Enter " + dr.getEditDataModel().getCategoryTitle());
@@ -2223,7 +2188,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             txt_rental_fee_title.setText(getString(R.string.txt_rental_fee));
                             txt_image_content.setText(getString(R.string.txt_upload_image_product));
                             edt_price.setHint(getString(R.string.txt_input_price_product));
-                            txt_product_type_content.setHint(getString(R.string.select_product_type));
+//                            txt_product_type_content.setHint(getString(R.string.select_product_type));
                             layout_image_upload.setVisibility(View.VISIBLE);
                             if (!EditType.equals("1")) {
                                 layout_image_upload.setVisibility(View.GONE);
@@ -2235,12 +2200,16 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             txt_rental_fee_title.setText(getString(R.string.txt_hiring_fee));
                             txt_image_content.setText(getString(R.string.txt_upload_image_service));
                             edt_price.setHint(getString(R.string.txt_input_price_service));
-                            txt_product_type_content.setHint(getString(R.string.select_profession));
-                            layout_image_upload.setVisibility(View.GONE);
+//                            txt_product_type_content.setHint(getString(R.string.select_profession));
+                            if (!EditType.equals("1")) {
+                                layout_image_upload.setVisibility(View.GONE);
+                            }
+//                            if (AdType != 2)
+//                                txt_service_img_alert.setVisibility(View.VISIBLE);
                         }
                         txt_parent_title.setText(dr.getEditDataModel().getParentTitle());
 
-                        adStatus = editAdDetailsModel.getAdStatus();
+
                         txt_product_type_content.setText(dr.getEditDataModel().getProductType().get(0).getChildCategoryName().trim());
                         productTitle = dr.getEditDataModel().getProductType().get(0).getChildCategoryName().trim();
                         if (attributeList.size() != 0) {
@@ -2284,7 +2253,9 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             }
 
                         }
-                        attributeListAdapter.SetEditable(true);
+                        if (!adStatus.equals("0")) {
+                            attributeListAdapter.SetEditable(true);
+                        }
                         attributeListAdapter.notifyDataSetChanged();
 
                         rentalDurationList.clear();
@@ -2333,7 +2304,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         for (int a = 0; a < areaList.size(); a++) {
                             if (areaId.equals(areaList.get(a).getAreaId())) {
                                 txt_area_content.setText(areaList.get(a).getAreaName());
-                                areaId = areaList.get(a).getAreaName();
+                                areaId = areaList.get(a).getAreaName().trim();
                                 break;
                             }
                         }

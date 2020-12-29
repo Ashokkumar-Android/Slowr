@@ -161,6 +161,7 @@ public class AlbumMediaAdapter extends
     public void onThumbnailClicked(ImageView thumbnail, Item item, RecyclerView.ViewHolder holder) {
         if (mSelectionSpec.showPreview) {
             if (mOnMediaClickListener != null) {
+
                 mOnMediaClickListener.onMediaClick(null, item, holder.getAdapterPosition());
             }
         } else {
@@ -293,7 +294,7 @@ public class AlbumMediaAdapter extends
         CaptureViewHolder(View itemView) {
             super(itemView);
 
-            mHint = (TextView) itemView.findViewById(R.id.hint);
+            mHint = itemView.findViewById(R.id.hint);
         }
     }
 

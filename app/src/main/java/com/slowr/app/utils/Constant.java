@@ -60,5 +60,10 @@ public class Constant {
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CALL_PHONE};
 
+    public static final String[] LocationPermissions = new String[]{
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION};
+
 
 }

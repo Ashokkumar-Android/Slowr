@@ -17,14 +17,19 @@ package com.slowr.matisse.internal.ui;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.slowr.matisse.R;
 import com.slowr.matisse.internal.entity.Album;
@@ -83,7 +88,7 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        mRecyclerView = view.findViewById(R.id.recyclerview);
     }
 
     @Override
@@ -148,8 +153,25 @@ public class MediaSelectionFragment extends Fragment implements
     @Override
     public void onMediaClick(Album album, Item item, int adapterPosition) {
         if (mOnMediaClickListener != null) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(item.getContentUri().getPath(), options);
+            int imageHeight = options.outHeight;
+            int imageWidth = options.outWidth;
+
+            if (imageHeight < 150 || imageWidth < 150) {
+                LayoutInflater inflater = getLayoutInflater();
+                View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) getActivity().findViewById(R.id.custom_toast_layout));
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
+                tv.setText(getString(R.string.small_size));
+                Toast toast = new Toast(getActivity());
+                toast.setGravity(Gravity.CENTER, 0, 100);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.setView(layout);
+                toast.show();
+            }else {
             mOnMediaClickListener.onMediaClick((Album) getArguments().getParcelable(EXTRA_ALBUM),
-                    item, adapterPosition);
+                    item, adapterPosition);}
         }
     }
 

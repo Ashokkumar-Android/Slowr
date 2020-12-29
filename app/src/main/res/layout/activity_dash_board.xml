@@ -57,6 +57,7 @@
                     android:padding="@dimen/size_ten">
 
                     <LinearLayout
+                        android:id="@+id/layout_total_ads"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -83,6 +84,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/layout_active_ads"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -109,6 +111,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/layout_inactive_ads"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"

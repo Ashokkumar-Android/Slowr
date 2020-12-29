@@ -25,6 +25,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
     Context ctx;
 
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img_banner;
         ImageView defult_one;
@@ -52,17 +53,17 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.layout_root:
-                    callback.itemClick(bannerList.get(getAdapterPosition()));
-                    break;
-                case R.id.img_promote:
-                    break;
-                case R.id.img_share:
-                    break;
-
-
-            }
+//            switch (v.getId()) {
+//                case R.id.layout_root:
+//
+//                    break;
+//                case R.id.img_promote:
+//                    break;
+//                case R.id.img_share:
+//                    break;
+//
+//
+//            }
 
         }
     }
@@ -82,7 +83,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
     @Override
     public void onBindPageViewHolder(MyViewHolder holder, int position) {
         try {
-            BannerItemModel bannerItemModel = bannerList.get(position);
+            BannerItemModel  bannerItemModel = bannerList.get(position);
 
             holder.txt_prosperId.setText(bannerItemModel.getProsperId());
             holder.txt_banner_content.setText(bannerItemModel.getBannerTitle());
@@ -109,6 +110,12 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
                         .into(holder.img_default_banner);
 
             }
+            holder.layout_root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callback.itemClick(bannerItemModel);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }

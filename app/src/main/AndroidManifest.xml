@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 
 
@@ -197,7 +199,7 @@
             android:value="9952b4224ffea1b363591a8a4e77b91fdeb18259" /> <!-- Add your Payment API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_xhQLKhh7mxkA2D" />
+            android:value="rzp_test_hh28PqAbniWxep" />
     </application>
 
 </manifest>

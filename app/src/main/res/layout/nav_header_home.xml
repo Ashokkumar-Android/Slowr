@@ -47,7 +47,7 @@
                     style="@style/txt_title"
                     android:fontFamily="@font/nunito_regular"
                     android:text=""
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/txt_orange"
                     android:textSize="@dimen/size_twenty" />
 
             </LinearLayout>

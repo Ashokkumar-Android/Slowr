@@ -327,7 +327,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             til_password.setErrorEnabled(false);
         }
 
-        if (password.length() < 6) {
+        if (password.length() < 4) {
             til_password.setError(getString(R.string.password_empty_alert));
             til_password.requestFocus();
             return;

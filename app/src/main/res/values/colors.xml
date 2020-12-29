@@ -27,7 +27,7 @@
     <color name="bg_btn_linked_in_pressed">#008CC9</color>
 
     <color name="txt_gray">#707070</color>
-    <color name="txt_gray_trans">#99707070</color>
+    <color name="txt_gray_trans">#65707070</color>
     <color name="txt_gray_border">#BD707070</color>
     <color name="txt_orange">#F2672E</color>
     <color name="page_bg">#F5F5F5</color>
@@ -44,5 +44,10 @@
     <color name="intro_one">#0066A6</color>
     <color name="intro_two">#A8BF54</color>
     <color name="intro_three">#FAB750</color>
+
+    <color name="cong_bg">#f5f5f5</color>
+    <color name="rejected_txt">#B5B5B5</color>
+    <color name="rejected_fill">#F5F5F5</color>
+
 
 </resources>

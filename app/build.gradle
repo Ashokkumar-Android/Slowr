@@ -84,13 +84,14 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'jp.wasabeef:glide-transformations:4.0.0'
 
-    implementation 'com.google.firebase:firebase-analytics:17.6.0'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
     implementation 'com.razorpay:checkout:1.6.4'
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
     implementation 'com.google.firebase:firebase-dynamic-links'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.android.gms:play-services-location:17.1.0'
     implementation project(path: ':Chipview')
     implementation project(path: ':cropper')
 

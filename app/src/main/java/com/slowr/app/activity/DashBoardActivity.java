@@ -45,17 +45,24 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     TextView txt_in_active_count;
     NestedScrollView layout_root;
     LinearLayout layout_no_result;
+    LinearLayout layout_total_ads;
+    LinearLayout layout_active_ads;
+    LinearLayout layout_inactive_ads;
     Button btn_add_post;
     Button btn_add_post_header;
     EditText edt_search_ad;
     SwipeRefreshLayout layout_swipe_refresh;
     AdListAdapter adListAdapter;
     ArrayList<AdItemModel> adList = new ArrayList<>();
+    ArrayList<AdItemModel> tempAdList = new ArrayList<>();
+    int totalCount = 0;
+    int activeCount = 0;
+    int inActiveCount = 0;
+    int tabNo = 1;
 
     int MY_POST_VIEW_CODE = 1299;
     boolean isChanges = false;
     private Function _fun = new Function();
-    String shareMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,9 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         btn_add_post_header = findViewById(R.id.btn_add_post_header);
         edt_search_ad = findViewById(R.id.edt_search_ad);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
+        layout_total_ads = findViewById(R.id.layout_total_ads);
+        layout_active_ads = findViewById(R.id.layout_active_ads);
+        layout_inactive_ads = findViewById(R.id.layout_inactive_ads);
 
         txt_page_title.setText(getString(R.string.nav_dash_board));
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -87,6 +97,9 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         img_back.setOnClickListener(this);
         btn_add_post.setOnClickListener(this);
         btn_add_post_header.setOnClickListener(this);
+        layout_total_ads.setOnClickListener(this);
+        layout_active_ads.setOnClickListener(this);
+        layout_inactive_ads.setOnClickListener(this);
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         layout_swipe_refresh.setOnRefreshListener(this);
 //        getUserDetails();
@@ -151,7 +164,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 String adTitle = model.getAdTitle();
                 String catGroup = model.getCatGroup();
                 String url = model.getPhotoType();
-                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup,url);
+                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup, url);
             }
 
             @Override
@@ -191,11 +204,25 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 }
                 if (dr.isStatus()) {
                     adList.clear();
+                    tempAdList.clear();
+                    activeCount = 0;
+                    inActiveCount = 0;
                     adList.addAll(dr.getAdList());
+                    tempAdList.addAll(dr.getAdList());
                     adListAdapter.notifyDataSetChanged();
-                    txt_total_ad_count.setText(dr.getAdCountModel().getTotalAdCount());
-                    txt_active_ad_count.setText(dr.getAdCountModel().getActiveAdCount());
-                    txt_in_active_count.setText(dr.getAdCountModel().getInActiveAdCount());
+                    if (adList.size() != 0) {
+                        totalCount = adList.size();
+                        for (int i = 0; i < adList.size(); i++) {
+                            if (adList.get(i).getAdStatus().equals("2")) {
+                                inActiveCount++;
+                            } else {
+                                activeCount++;
+                            }
+                        }
+                        txt_total_ad_count.setText(String.valueOf(totalCount));
+                        txt_active_ad_count.setText(String.valueOf(activeCount));
+                        txt_in_active_count.setText(String.valueOf(inActiveCount));
+                    }
                 } else {
                     adList.clear();
                     adListAdapter.notifyDataSetChanged();
@@ -272,6 +299,41 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 a.putExtra("AdType", 0);
                 startActivityForResult(a, MY_POST_VIEW_CODE);
                 break;
+            case R.id.layout_total_ads:
+                if (tabNo != 1) {
+                    tabNo = 1;
+                    adList.clear();
+                    adList.addAll(tempAdList);
+                    adListAdapter.notifyDataSetChanged();
+                }
+                break;
+            case R.id.layout_active_ads:
+                if (tabNo != 2 && activeCount != 0) {
+                    tabNo = 2;
+                    adList.clear();
+                    for (int i = 0; i < tempAdList.size(); i++) {
+                        if (!tempAdList.get(i).getAdStatus().equals("2")) {
+                            adList.add(tempAdList.get(i));
+                        }
+                    }
+
+                    adListAdapter.notifyDataSetChanged();
+                }
+                break;
+            case R.id.layout_inactive_ads:
+                if (tabNo != 3 && inActiveCount != 0) {
+                    tabNo = 3;
+                    adList.clear();
+                    for (int i = 0; i < tempAdList.size(); i++) {
+                        if (tempAdList.get(i).getAdStatus().equals("2")) {
+                            adList.add(tempAdList.get(i));
+                        }
+                    }
+
+                    adListAdapter.notifyDataSetChanged();
+                }
+                break;
+
         }
     }
 

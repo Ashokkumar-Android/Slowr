@@ -5,21 +5,93 @@
     android:layout_height="match_parent"
     android:background="@color/txt_gray_trans"
     android:gravity="center"
-    android:orientation="vertical">
+
+    android:orientation="vertical"
+    android:visibility="visible">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/layout_prosper_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/size_ten"
-        app:cardBackgroundColor="@color/color_white"
-        app:cardCornerRadius="@dimen/size_ten">
+        android:visibility="visible"
+        app:cardBackgroundColor="@color/cong_bg">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/img_cong_gif"
+                android:layout_width="match_parent"
+                android:layout_height="225dp"
+                android:src="@drawable/ic_congrts"
+                android:scaleType="fitCenter" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/size_ten">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/prosper_id"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/edt_box_height" />
+
+                <TextView
+                    android:id="@+id/txt_prosper_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="AA1111"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/size_forty_five" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:text="@string/txt_welcome_content"
+                    android:textColor="@color/txt_orange"
+                    android:textSize="@dimen/size_fifteen" />
+
+                <Button
+                    android:id="@+id/btn_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_margin="@dimen/size_ten"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_twenty"
+                    android:paddingRight="@dimen/size_twenty"
+                    android:text="@string/txt_continue"
+                    android:textAllCaps="false"
+                    android:elevation="0dp"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
+
+
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="@dimen/size_ten">
+            android:padding="@dimen/size_ten"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -32,29 +104,12 @@
 
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_regular"
-                android:text="@string/prosper_id"
-                android:textColor="@color/color_black"
-                android:textSize="@dimen/edt_box_height" />
-
-            <TextView
-                android:id="@+id/txt_prosper_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_regular"
-                android:text="AA1111"
-                android:textColor="@color/colorPrimary"
-                android:textSize="@dimen/size_forty_five" />
-
-            <TextView
                 android:id="@+id/txt_content_one"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/nunito_regular"
-                android:text="@string/prosper_id"
                 android:gravity="center"
+                android:text="@string/prosper_id"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_sixteen" />
 
@@ -68,8 +123,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
-                android:text="@string/prosper_id"
                 android:gravity="center"
+                android:text="@string/prosper_id"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_sixteen" />
 
@@ -83,8 +138,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
-                android:text="@string/prosper_id"
                 android:gravity="center"
+                android:text="@string/prosper_id"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_sixteen" />
 
@@ -98,26 +153,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/size_ten"
                 android:fontFamily="@font/nunito_regular"
-                android:text="@string/prosper_id"
                 android:gravity="center"
+                android:text="@string/prosper_id"
                 android:textColor="@color/color_black"
                 android:textSize="@dimen/size_sixteen" />
-
-
-            <Button
-                android:id="@+id/btn_ok"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="@dimen/size_twenty"
-                android:background="@drawable/bg_orenge"
-                android:fontFamily="@font/nunito_regular"
-                android:gravity="center"
-                android:paddingLeft="@dimen/size_twenty"
-                android:paddingRight="@dimen/size_twenty"
-                android:text="@string/txt_continue"
-                android:textAllCaps="false"
-                android:textColor="@color/color_white"
-                android:textSize="@dimen/size_thirteen" />
 
 
         </LinearLayout>

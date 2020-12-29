@@ -502,6 +502,16 @@
                 android:text="@string/txt_des_count"
                 android:textColor="@color/color_hind" />
 
+            <TextView
+                android:id="@+id/txt_service_img_alert"
+                style="@style/txt_create_post"
+                android:layout_marginLeft="@dimen/size_five"
+                android:layout_marginTop="@dimen/size_ten"
+                android:layout_marginBottom="@dimen/size_five"
+                android:fontFamily="@font/nunito_regular"
+                android:textColor="@color/txt_orange"
+                android:visibility="gone"
+                android:text="@string/service_image_alert" />
 
             <LinearLayout
                 android:id="@+id/layout_image_upload"

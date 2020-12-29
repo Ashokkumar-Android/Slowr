@@ -93,6 +93,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     TextView txt_alert_content;
     TextView txt_alert_footer;
     FrameLayout layout_fav;
+    CardView layout_image_tile;
 
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
     HashMap<String, Object> params = new HashMap<String, Object>();
@@ -186,6 +187,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_alert_content = findViewById(R.id.txt_alert_content);
         txt_alert_footer = findViewById(R.id.txt_alert_footer);
         layout_fav = findViewById(R.id.layout_fav);
+        layout_image_tile = findViewById(R.id.layout_image_tile);
         txt_page_title.setText(getString(R.string.nav_dash_board));
 
 
@@ -459,6 +461,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 rc_image_list.setVisibility(View.VISIBLE);
                                 setCurrentImage(shareImageList.get(0).getImgURL());
                                 adShareUrl = shareImageList.get(0).getImgURL();
+                                if(shareImageList.size()==1){
+                                    rc_image_list.setVisibility(View.GONE);
+                                }
                             } else {
                                 rc_image_list.setVisibility(View.GONE);
                                 setCurrentImage("");
@@ -496,7 +501,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 //                                btn_promote.setVisibility(View.GONE);
 //                                layout_like.setEnabled(false);
 //                            }
-                            if (AdStatus.equals("1")) {
+                            if (AdStatus.equals("0")) {
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                                txt_active_status.setText(getString(R.string.txt_created));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.txt_orange));
+//                                layout_like.setEnabled(false);
+                                img_share.setVisibility(View.GONE);
+                            } else if (AdStatus.equals("1")) {
                                 txt_active_status.setBackground(getResources().getDrawable(R.drawable.ic_active_slide));
                                 txt_active_status.setText("");
 //                                layout_like.setEnabled(true);
@@ -506,18 +517,28 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_active_status.setText("");
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
-                            } else if (AdStatus.equals("8")) {
-                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_filled));
+                            } else if (AdStatus.equals("3")) {
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                                txt_active_status.setText(getString(R.string.txt_edited));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.txt_orange));
+//                                layout_like.setEnabled(false);
+                                img_share.setVisibility(View.GONE);
+                            }
+
+                            else if (AdStatus.equals("8")) {
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_reject_filled));
                                 txt_active_status.setText(getString(R.string.txt_rejected));
-                                txt_active_status.setTextColor(getResources().getColor(R.color.color_white));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.rejected_txt));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
                                 btn_edit.setVisibility(View.INVISIBLE);
                             } else {
-                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_blue_border_select));
                                 txt_active_status.setText(getString(R.string.txt_in_review));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.colorPrimary));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
+                                btn_edit.setVisibility(View.INVISIBLE);
 
                             }
                             userId = editAdDetailsModel.getUserId();
@@ -537,7 +558,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             }
                         }
 
-
+//                        if (catGroup.equals("2")) {
+//                            layout_image_tile.setVisibility(View.GONE);
+//                            rc_image_list.setVisibility(View.GONE);
+//                        }
                     } else {
                         Function.CustomMessage(MyPostViewActivity.this, dr.getMessage());
                     }
@@ -686,13 +710,14 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 startActivityForResult(p, EDIT_POST_CODE);
                 break;
             case R.id.img_ad_view:
-                if (!isPageChange) {
-                    isPageChange = true;
-                    Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
-                    a.putExtra("ImgURL", imageStringArray);
-                    a.putExtra("ImgPos", imgSelectPos);
-                    startActivity(a);
-                }
+                if (imageStringArray != null && imageStringArray.equals(""))
+                    if (!isPageChange) {
+                        isPageChange = true;
+                        Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
+                        a.putExtra("ImgURL", imageStringArray);
+                        a.putExtra("ImgPos", imgSelectPos);
+                        startActivity(a);
+                    }
                 break;
             case R.id.txt_active_status:
                 if (AdStatus.equals("1")) {
@@ -706,13 +731,14 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.img_user_profile:
-                if (!isPageChange) {
-                    isPageChange = true;
-                    Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
-                    a.putExtra("ImgURL", userProUrl);
-                    a.putExtra("ImgPos", 0);
-                    startActivity(a);
-                }
+                if (userProUrl != null && userProUrl.equals(""))
+                    if (!isPageChange) {
+                        isPageChange = true;
+                        Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
+                        a.putExtra("ImgURL", userProUrl);
+                        a.putExtra("ImgPos", 0);
+                        startActivity(a);
+                    }
                 break;
             case R.id.txt_view_profile:
                 if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {

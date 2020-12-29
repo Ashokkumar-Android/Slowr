@@ -8,6 +8,9 @@ public class BannerModel {
     @SerializedName("status")
     private boolean status;
 
+    @SerializedName("banner_create")
+    private boolean isCreateBanner;
+
     @SerializedName("message")
     private String message;
 
@@ -36,5 +39,13 @@ public class BannerModel {
 
     public void setBannerItemModelArrayList(ArrayList<BannerItemModel> bannerItemModelArrayList) {
         this.bannerItemModelArrayList = bannerItemModelArrayList;
+    }
+
+    public boolean isCreateBanner() {
+        return isCreateBanner;
+    }
+
+    public void setCreateBanner(boolean createBanner) {
+        isCreateBanner = createBanner;
     }
 }

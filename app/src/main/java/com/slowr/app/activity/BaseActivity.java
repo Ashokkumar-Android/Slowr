@@ -74,6 +74,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     TextView txt_prosperId_menu;
     TextView txt_total_count;
     LinearLayout layout_menu_header;
+    ImageView img_slowr_logo;
 //    SearchCallBack searchCallBack;
 
 
@@ -133,6 +134,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         txt_prosperId = findViewById(R.id.txt_prosperId);
         img_unverified_user_home = findViewById(R.id.img_unverified_user_home);
         txt_total_count = findViewById(R.id.txt_total_count);
+        img_slowr_logo = findViewById(R.id.img_slowr_logo);
         txt_page_title.setText(getString(R.string.txt_select_city));
         headerLayout = navigationView.getHeaderView(0);
         txt_prosperId_menu = headerLayout.findViewById(R.id.txt_prosperId_menu);
@@ -211,6 +213,14 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void ClickFunction() {
+        img_slowr_logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent h = new Intent(BaseActivity.this, HomeActivity.class);
+                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(h);
+            }
+        });
         edt_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

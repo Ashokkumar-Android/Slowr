@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -293,7 +294,7 @@ public class MatisseActivity extends AppCompatActivity implements
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
                 TextView tv = layout.findViewById(R.id.txt_toast_message);
-                tv.setText( getString(R.string.error_over_original_size, mSpec.originalMaxSize));
+                tv.setText(getString(R.string.error_over_original_size, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
                 toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
@@ -350,7 +351,7 @@ public class MatisseActivity extends AppCompatActivity implements
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
                 TextView tv = layout.findViewById(R.id.txt_toast_message);
-                tv.setText( getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
+                tv.setText(getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
                 Toast toast = new Toast(this);
                 toast.setGravity(Gravity.CENTER, 0, 100);
                 toast.setDuration(Toast.LENGTH_SHORT);
@@ -437,14 +438,37 @@ public class MatisseActivity extends AppCompatActivity implements
         }
 
         if (PAGE_FROM == 2) {
-            Intent result = new Intent();
-            ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
-            ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
-            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            setResult(RESULT_OK, result);
-            finish();
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(mSelectedCollection.asListOfString().get(0), options);
+            int imageHeight = options.outHeight;
+            int imageWidth = options.outWidth;
+
+            if (imageHeight < 150 || imageWidth < 150) {
+                LayoutInflater inflater = getLayoutInflater();
+                View layout = inflater.inflate(R.layout.layout_custom_toast, (ViewGroup) findViewById(R.id.custom_toast_layout));
+                TextView tv = layout.findViewById(R.id.txt_toast_message);
+                tv.setText(getString(R.string.small_size));
+                Toast toast = new Toast(this);
+                toast.setGravity(Gravity.CENTER, 0, 100);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.setView(layout);
+                toast.show();
+                mSelectedCollection.remove(mSelectedCollection.asList().get(0));
+
+
+            } else {
+                Intent result = new Intent();
+                ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
+                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
+                ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
+                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
+                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
+                setResult(RESULT_OK, result);
+                finish();
+//                Toast.makeText(getApplicationContext(), String.valueOf(imageHeight) + "," + String.valueOf(imageWidth), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
