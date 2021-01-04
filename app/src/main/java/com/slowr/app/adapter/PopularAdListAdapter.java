@@ -118,18 +118,29 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
             }
 
 
+            int defu = R.drawable.ic_no_image;
             if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
+                if (movie.getAdType().equals("1")) {
+                    defu = R.drawable.ic_no_image;
+                } else {
+                    defu = R.drawable.ic_need_product;
+                }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())
-                        .error(R.drawable.ic_no_image)
-                        .placeholder(R.drawable.ic_no_image)
+                        .error(defu)
+                        .placeholder(defu)
                         .into(holder.img_ad);
             } else {
+                if (movie.getAdType().equals("1")) {
+                    defu = R.drawable.ic_service_big;
+                } else {
+                    defu = R.drawable.ic_need_service;
+                }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())
                         .circleCrop()
-                        .error(R.drawable.ic_service_big)
-                        .placeholder(R.drawable.ic_service_big)
+                        .error(defu)
+                        .placeholder(defu)
                         .into(holder.img_ad);
             }
 //        if (movie.getPhotoType() != null) {

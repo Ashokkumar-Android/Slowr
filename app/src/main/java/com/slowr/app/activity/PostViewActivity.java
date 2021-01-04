@@ -107,6 +107,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     boolean isPageChange = false;
     private Function _fun = new Function();
 
+    String AdType = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -238,15 +240,30 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         int defu = R.drawable.ic_no_image;
 
         if (catGroup.equals("1")) {
-            defu = R.drawable.ic_no_image;
+            if (AdType.equals("1")) {
+                defu = R.drawable.ic_no_image;
+            } else {
+                defu = R.drawable.ic_need_product;
+            }
+            Glide.with(this)
+                    .load(url)
+                    .placeholder(defu)
+                    .error(defu)
+                    .into(img_ad_view);
         } else {
-            defu = R.drawable.ic_service_big;
+            if (AdType.equals("1")) {
+                defu = R.drawable.ic_service_big;
+            }else {
+                defu = R.drawable.ic_need_service;
+            }
+            Glide.with(this)
+                    .load(url)
+                    .circleCrop()
+                    .placeholder(defu)
+                    .error(defu)
+                    .into(img_ad_view);
         }
-        Glide.with(this)
-                .load(url)
-                .placeholder(defu)
-                .error(defu)
-                .into(img_ad_view);
+
     }
 
     private void GetAdDetails() {
@@ -275,6 +292,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             catGroup = dr.getEditDataModel().getCatGroup();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), PostViewActivity.this);
                             chatId = dr.getEditDataModel().getChatId();
+                            AdType = editAdDetailsModel.getAdType();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());
                             adTitle = editAdDetailsModel.getAdTitle().trim();
                             isFavorite = editAdDetailsModel.getIsFavorite();
@@ -376,9 +394,12 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 rc_image_list.setVisibility(View.VISIBLE);
                                 setCurrentImage(shareImageList.get(0).getImgURL());
                                 adShareUrl = shareImageList.get(0).getImgURL();
+                                if (shareImageList.size() == 1) {
+                                    rc_image_list.setVisibility(View.GONE);
+                                }
                             } else {
-                                setCurrentImage("");
                                 rc_image_list.setVisibility(View.GONE);
+                                setCurrentImage("");
                             }
                             postImageListAdapter.notifyDataSetChanged();
                             relatedAdList.clear();
@@ -412,10 +433,10 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             if (dr.getEditDataModel().getGuideLines() != null && dr.getEditDataModel().getGuideLines().size() != 0)
                                 txt_guid_line.setText(makeBulletList(dr.getEditDataModel().getGuideLines()));
 
-                            if (catGroup.equals("2")) {
-                                layout_image_tile.setVisibility(View.GONE);
-                                rc_image_list.setVisibility(View.GONE);
-                            }
+//                            if (catGroup.equals("2")) {
+//                                layout_image_tile.setVisibility(View.GONE);
+//                                rc_image_list.setVisibility(View.GONE);
+//                            }
                         }
                     } else {
                         Function.CustomMessage(PostViewActivity.this, dr.getMessage());
@@ -500,7 +521,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 
                 break;
             case R.id.img_ad_view:
-                if (imageStringArray != null && imageStringArray.equals(""))
+                if (imageStringArray != null && !imageStringArray.equals(""))
                     if (!isPageChange) {
                         isPageChange = true;
                         Intent i = new Intent(PostViewActivity.this, ImageViewActivity.class);
@@ -510,7 +531,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     }
                 break;
             case R.id.img_user_profile:
-                if (userProUrl != null && userProUrl.equals(""))
+                if (userProUrl != null && !userProUrl.equals(""))
                     if (!isPageChange) {
                         isPageChange = true;
                         Intent a = new Intent(PostViewActivity.this, ImageViewActivity.class);

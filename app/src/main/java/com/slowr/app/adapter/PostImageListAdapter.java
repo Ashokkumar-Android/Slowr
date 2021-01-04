@@ -28,7 +28,7 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
     public Context _cotx;
     ArrayList<UploadImageModel> shareImageList;
     CallBack callBack;
-    int size = 100;
+    int size = 4;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -65,78 +65,78 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, final int listPosition) {
-        try{
-        UploadImageModel model = shareImageList.get(listPosition);
+        try {
+            UploadImageModel model = shareImageList.get(listPosition);
 
 //        holder.imageViewIcon.setImageURI(UriList.get(listPosition));
-        if (model.getImgURL().equals("")) {
-            Glide.with(_cotx)
-                    .load(model.getUri())
-                    .placeholder(R.drawable.ic_no_image)
-                    .error(R.drawable.ic_no_image)
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+            if (model.getImgURL().equals("")) {
+                Glide.with(_cotx)
+                        .load(model.getUri())
+                        .placeholder(R.drawable.ic_no_image)
+                        .error(R.drawable.ic_no_image)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
 
-                            return false;
-                        }
+                                return false;
+                            }
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(holder.imageViewIcon);
-        } else {
-            Glide.with(_cotx)
-                    .load(model.getImgURL())
-                    .placeholder(R.drawable.ic_no_image)
-                    .error(R.drawable.ic_no_image)
-                    .listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            return false;
-                        }
-                    })
-                    .into(holder.imageViewIcon);
-        }
-
-
-        if (listPosition == 0) {
-            if (shareImageList.size() > 4) {
-                holder.txt_add_image.setVisibility(View.GONE);
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
+                        .into(holder.imageViewIcon);
             } else {
-                holder.txt_add_image.setVisibility(View.VISIBLE);
+                Glide.with(_cotx)
+                        .load(model.getImgURL())
+                        .placeholder(R.drawable.ic_no_image)
+                        .error(R.drawable.ic_no_image)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+                        })
+                        .into(holder.imageViewIcon);
             }
 
-        } else {
-            holder.txt_add_image.setVisibility(View.GONE);
-        }
 
-        holder.imageViewIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            if (listPosition == 0) {
+                if (shareImageList.size() > size) {
+                    holder.txt_add_image.setVisibility(View.GONE);
+                } else {
+                    holder.txt_add_image.setVisibility(View.VISIBLE);
+                }
 
+            } else {
+                holder.txt_add_image.setVisibility(View.GONE);
             }
-        });
-        holder.txt_add_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callBack.addClick();
-            }
-        });
-        holder.layout_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                callBack.itemClick(listPosition);
-            }
-        });
+
+            holder.imageViewIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+            holder.txt_add_image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.addClick();
+                }
+            });
+            holder.layout_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    callBack.itemClick(listPosition);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,6 +148,10 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
 
         return shareImageList.size();
 
+    }
+
+    public void ChangeSize(int _size) {
+        this.size = _size;
     }
 
     public void setCallBack(CallBack callBack) {

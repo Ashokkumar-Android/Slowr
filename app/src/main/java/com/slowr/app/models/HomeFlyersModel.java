@@ -4,16 +4,24 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
-public class HomeDetailsModel {
+public class HomeFlyersModel {
     @SerializedName("status")
     private boolean status;
 
     @SerializedName("message")
     private String message;
 
-
     @SerializedName("data")
-    private HomeCategoryModel homeDetailsModel;
+    ArrayList<HomeAdsModel> homeAdsList;
+
+
+    public ArrayList<HomeAdsModel> getHomeAdsList() {
+        return homeAdsList;
+    }
+
+    public void setHomeAdsList(ArrayList<HomeAdsModel> homeAdsList) {
+        this.homeAdsList = homeAdsList;
+    }
 
     public boolean isStatus() {
         return status;
@@ -31,11 +39,5 @@ public class HomeDetailsModel {
         this.message = message;
     }
 
-    public HomeCategoryModel getHomeDetailsModel() {
-        return homeDetailsModel;
-    }
 
-    public void setHomeDetailsModel(HomeCategoryModel homeDetailsModel) {
-        this.homeDetailsModel = homeDetailsModel;
-    }
 }

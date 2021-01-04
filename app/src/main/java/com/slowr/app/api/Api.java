@@ -17,8 +17,10 @@ import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
 import com.slowr.app.models.EditBannerModel;
 import com.slowr.app.models.GSTModel;
+import com.slowr.app.models.HomeBannerModel;
 import com.slowr.app.models.HomeDetailsModel;
 import com.slowr.app.models.HomeFilterAdModel;
+import com.slowr.app.models.HomeFlyersModel;
 import com.slowr.app.models.InvoiceModel;
 import com.slowr.app.models.LoginResponse;
 import com.slowr.app.models.NotificationModel;
@@ -150,6 +152,15 @@ public interface Api {
 
     @POST("home")
     Call<HomeDetailsModel> getHomeDetails(@Body Object params, @Header("Authorization") String contentRange);
+
+    @GET("home-categories-cities")
+    Call<HomeDetailsModel> getHomeCategory( @Header("Authorization") String contentRange);
+
+    @POST("home-flyers")
+    Call<HomeFlyersModel> getHomeFlyers(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("home-banners")
+    Call<HomeBannerModel> getHomeBanners(@Body Object params, @Header("Authorization") String contentRange);
 
     @GET("adsview/{categoryId}/{id}")
     Call<EditAdModel> getHomeAdDetails(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String contentRange);

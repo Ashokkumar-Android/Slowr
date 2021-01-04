@@ -44,7 +44,6 @@ import com.slowr.app.utils.Sessions;
 import com.slowr.matisse.Matisse;
 import com.slowr.matisse.MimeType;
 import com.slowr.matisse.engine.impl.GlideEngine;
-import com.slowr.matisse.filter.Filter;
 import com.slowr.matisse.internal.entity.CaptureStrategy;
 import com.slowr.matisse.ui.MatisseActivity;
 
@@ -294,9 +293,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 layout_profile_details.setVisibility(View.GONE);
                 img_profile_pic.setEnabled(true);
                 isEditView = true;
-                edt_name.setText(txt_user_name.getText().toString());
-                edt_email.setText(txt_email.getText().toString());
-                edt_phone_number.setText(txt_user_mobile.getText().toString());
+                if (txt_user_name.getText().toString().equals(getString(R.string.click_edit_name))) {
+                    edt_name.setText("");
+                } else {
+                    edt_name.setText(txt_user_name.getText().toString());
+                }
+                if (txt_email.getText().toString().equals(getString(R.string.click_edit_email))) {
+                    edt_email.setText("");
+                } else {
+                    edt_email.setText(txt_email.getText().toString());
+                }
+                if (txt_user_mobile.getText().toString().equals(getString(R.string.click_edit_phone))) {
+                    edt_phone_number.setText("");
+                } else {
+                    edt_phone_number.setText(txt_user_mobile.getText().toString());
+                }
                 break;
             case R.id.img_profile_pic:
                 if (_fun.checkPermission(ProfileActivity.this)) {
@@ -661,14 +672,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     layout_profile_details_edit.setVisibility(View.VISIBLE);
                     btn_edit.setVisibility(View.VISIBLE);
                     txt_prosperId.setText(dr.getUserDetailsModel().getProsperId());
-                    txt_user_name.setText(dr.getUserDetailsModel().getUserName());
-
-                    txt_user_mobile.setText(dr.getUserDetailsModel().getUserMobile());
-
-                    if (dr.getUserDetailsModel().getUserMobile() != null) {
-                        currentMobileNumber = dr.getUserDetailsModel().getUserMobile();
+                    if (dr.getUserDetailsModel().getUserName() != null && !dr.getUserDetailsModel().getUserName().equals("")) {
+                        txt_user_name.setText(dr.getUserDetailsModel().getUserName());
+                    } else {
+                        txt_user_name.setText(getString(R.string.click_edit_name));
                     }
-                    txt_email.setText(dr.getUserDetailsModel().getUserEmail());
+
+                    if (dr.getUserDetailsModel().getUserMobile() != null && !dr.getUserDetailsModel().getUserMobile().equals("")) {
+                        txt_user_mobile.setText(dr.getUserDetailsModel().getUserMobile());
+                        currentMobileNumber = dr.getUserDetailsModel().getUserMobile();
+                    } else {
+                        txt_user_mobile.setText(getString(R.string.click_edit_phone));
+                    }
+                    if (dr.getUserDetailsModel().getUserEmail() != null && !dr.getUserDetailsModel().getUserEmail().equals("")) {
+                        txt_email.setText(dr.getUserDetailsModel().getUserEmail());
+                    } else {
+                        txt_email.setText(getString(R.string.click_edit_email));
+                    }
+
 
                     if (dr.getUserDetailsModel().getUserMobile() != null && !dr.getUserDetailsModel().getUserMobile().equals(""))
                         if (dr.getUserDetailsModel().getIsMobileVerified().equals("1")) {
@@ -776,7 +797,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         imgPath = slist.get(i);
                         CropImage.activity(uris.get(i))
                                 .setFixAspectRatio(true)
-                                .setAspectRatio(4,4)
+                                .setAspectRatio(4, 4)
                                 .setCropShape(CropImageView.CropShape.OVAL)
                                 .start(ProfileActivity.this);
                         Log.i("Path", slist.get(i));

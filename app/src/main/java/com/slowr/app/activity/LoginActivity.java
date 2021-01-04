@@ -960,7 +960,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                         Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
                         signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         if (dr.getIsRegister().equals("1")) {
-                            signup.putExtra("PageFrom", "1");
+                            signup.putExtra("IsRegister", "True");
                         }
                         startActivity(signup);
                         finish();

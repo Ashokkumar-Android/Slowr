@@ -418,6 +418,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             view_rental_fee.setVisibility(View.GONE);
             getCategory();
             isRequirement = true;
+            txt_area_content.setHint(getString(R.string.enter_locality_your));
             tb_offer_need.setChecked(true);
         }
 
@@ -1041,6 +1042,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             for (int i = 0; i < tempServiceList.size(); i++) {
                                 if (tempServiceList.get(i).getId().equals(parentId)) {
                                     tabNo = 2;
+                                    postImageListAdapter.ChangeSize(0);
+                                    postImageListAdapter.notifyDataSetChanged();
                                     txt_product_type_title.setText(tempServiceList.get(i).getCategoryTitle() + " *");
                                     txt_product_type_content.setHint("Enter " + tempServiceList.get(i).getCategoryTitle());
                                     titleContent = tempServiceList.get(i).getCategoryTitle();
@@ -1049,7 +1052,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                     txt_image_content.setText(getString(R.string.txt_upload_image_service));
                                     edt_price.setHint(getString(R.string.txt_input_price_service));
                                     txt_product_type_content.setHint(getString(R.string.select_profession));
-                                    layout_image_upload.setVisibility(View.VISIBLE);
+                                    if (!isRequirement)
+                                        layout_image_upload.setVisibility(View.VISIBLE);
                                     isPostView = true;
                                     txt_parent_title.setText(tempServiceList.get(i).getName());
                                     parentId = tempServiceList.get(i).getId();
@@ -1318,6 +1322,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 Function.hideSoftKeyboard(AddPostActivity.this, v);
                 if (tabNo != 1) {
                     tabNo = 1;
+                    postImageListAdapter.ChangeSize(4);
+                    postImageListAdapter.notifyDataSetChanged();
                     btn_product.setBackground(getResources().getDrawable(R.drawable.bg_left_orenge));
                     btn_service.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_right));
                     btn_product.setTextColor(getResources().getColor(R.color.color_white));
@@ -1341,6 +1347,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 Function.hideSoftKeyboard(AddPostActivity.this, v);
                 if (tabNo != 2) {
                     tabNo = 2;
+                    postImageListAdapter.ChangeSize(0);
+                    postImageListAdapter.notifyDataSetChanged();
                     btn_product.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_left));
                     btn_service.setBackground(getResources().getDrawable(R.drawable.bg_right_orenge));
                     btn_product.setTextColor(getResources().getColor(R.color.txt_orange));
@@ -1572,7 +1580,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 //        }
-        if (AdType != 2&&shareImageList.size() == 0) {
+        if (AdType != 2 && shareImageList.size() == 0) {
             Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
             return;
         }
@@ -2183,6 +2191,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         txt_product_type_content.setHint("Enter " + dr.getEditDataModel().getCategoryTitle());
                         if (dr.getEditDataModel().getCatGroup().equals("1")) {
                             tabNo = 1;
+                            postImageListAdapter.ChangeSize(4);
+                            postImageListAdapter.notifyDataSetChanged();
 //                            txt_product_type_title.setText(getString(R.string.txt_product_type));
                             txt_rental_duration_title.setText(getString(R.string.txt_rental_duration));
                             txt_rental_fee_title.setText(getString(R.string.txt_rental_fee));
@@ -2195,6 +2205,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             }
                         } else {
                             tabNo = 2;
+                            postImageListAdapter.ChangeSize(0);
+                            postImageListAdapter.notifyDataSetChanged();
 //                            txt_product_type_title.setText(getString(R.string.txt_profession));
                             txt_rental_duration_title.setText(getString(R.string.txt_hiring_pattern));
                             txt_rental_fee_title.setText(getString(R.string.txt_hiring_fee));

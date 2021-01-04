@@ -107,6 +107,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
+                <ProgressBar
+                    android:id="@+id/pb_circule"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/txt_orange"
+                    android:layout_margin="@dimen/size_twenty_five"
+                    android:visibility="gone"/>
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/layout_no_ad_city"
                     android:layout_width="match_parent"

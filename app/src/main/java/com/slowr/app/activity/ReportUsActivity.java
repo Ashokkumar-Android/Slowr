@@ -233,8 +233,8 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
                 doValidation();
                 break;
             case R.id.btn_continue:
-                layout_report_details.setVisibility(View.VISIBLE);
-                layout_report_success.setVisibility(View.GONE);
+//                layout_report_details.setVisibility(View.VISIBLE);
+//                layout_report_success.setVisibility(View.GONE);
                 Intent h = new Intent(ReportUsActivity.this, HomeActivity.class);
                 h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(h);

@@ -193,6 +193,7 @@
                     android:src="@drawable/ic_no_banners" />
 
                 <TextView
+                    android:id="@+id/txt_no_banner_content_one"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_regular"
@@ -201,6 +202,7 @@
                     android:textSize="@dimen/size_eighteen" />
 
                 <TextView
+                    android:id="@+id/txt_no_banner_content_two"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"

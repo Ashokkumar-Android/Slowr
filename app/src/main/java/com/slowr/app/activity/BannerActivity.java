@@ -60,6 +60,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayout layout_preview;
     FrameLayout layout_list;
     LinearLayout layout_no_result;
+    TextView txt_no_banner_content_one;
+    TextView txt_no_banner_content_two;
 
     private Function _fun = new Function();
 
@@ -92,6 +94,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         layout_banner_bg = findViewById(R.id.layout_banner_bg);
         layout_no_result = findViewById(R.id.layout_no_result);
         btn_add_banner = findViewById(R.id.btn_add_banner);
+        txt_no_banner_content_one = findViewById(R.id.txt_no_banner_content_one);
+        txt_no_banner_content_two = findViewById(R.id.txt_no_banner_content_two);
 
 
         listManager = new LinearLayoutManager(BannerActivity.this, RecyclerView.VERTICAL, false);
@@ -224,6 +228,12 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
 
                 }
+                if (!isAddBanner) {
+                    txt_no_banner_content_one.setText(getString(R.string.txt_no_ad_banner));
+                    txt_no_banner_content_two.setText(getString(R.string.txt_no_ad_content));
+                    btn_add_banner.setText(getString(R.string.post_ad));
+                    fb_add_banner.setVisibility(View.GONE);
+                }
                 if (bannerList.size() == 0) {
                     layout_list.setVisibility(View.GONE);
                     layout_no_result.setVisibility(View.VISIBLE);
@@ -308,8 +318,10 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                     Intent i = new Intent(BannerActivity.this, AddBannerActivity.class);
                     i.putExtra("Type", "1");
                     startActivityForResult(i, EDIT_CODE);
-                }else {
-                    Toast.makeText(getApplicationContext(),"You have no ads to create banner",Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent p = new Intent(BannerActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    startActivity(p);
                 }
                 break;
             case R.id.btn_add_banner:

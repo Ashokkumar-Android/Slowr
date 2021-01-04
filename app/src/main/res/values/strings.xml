@@ -2,8 +2,8 @@
     <string name="app_name">Slowr</string>
 
 
-<!--    /* facebook app id Dev*/-->
-<!--    <string name="facebook_app_id">3156159024478062</string>-->
+    <!--    /* facebook app id Dev*/-->
+    <!--    <string name="facebook_app_id">3156159024478062</string>-->
 
     /* facebook app id Production*/
     <string name="facebook_app_id">366462401022941</string>
@@ -112,7 +112,7 @@
     <string name="txt_negotiate">Fixed charges</string>
     <string name="txt_show_number">Don’t show my mobile number on Ad</string>
     <string name="txt_upload_image_product">Upload Product Images (max 5 images)*. \nThe first image is the AD profile pic.</string>
-    <string name="txt_upload_image_service">Upload Product Images (max 5 images)*. \nThe first image is the User profile pic.</string>
+    <string name="txt_upload_image_service">We suggest you have a profile picture to gain more business reach.</string>
     <string name="post_ad">Post Ad</string>
     <string name="post_banner">Post Banner</string>
     <string name="preview_ad">Preview Ad</string>
@@ -402,11 +402,33 @@
     <string name="yes_take_me">Yes, take me there</string>
 
     <string name="service_image_alert">*Your profile image is the Services Ad image</string>
-    <string name="txt_welcome_content">Remember Your Prosper Id is Your Website</string>
+    <string name="txt_welcome_content">Remember your Prosper ID is your website</string>
 
     <string name="txt_no_ad_city_content">There are currently no ads in the selected city.\nClick the below button to post ads.</string>
 
     <string name="txt_i_offer">I Offer</string>
     <string name="txt_i_need">I Need</string>
+
+    <string name="click_edit_name">Click edit to add Name</string>
+    <string name="click_edit_email">Click edit to add Email</string>
+    <string name="click_edit_phone">Click edit to add Phone Number</string>
+    <string name="txt_no_ad_banner">To hoist new Banner, you should have atleast one Ad</string>
+    <string name="txt_no_ad_content">Click below to post your first Ad</string>
+
+
+    <string name="serial">SERIAL: </string>
+    <string name="model">MODEL: </string>
+    <string name="id">ID: </string>
+    <string name="manufacturer">MANUFACTURER: </string>
+    <string name="brand">BRAND: </string>
+    <string name="type">TYPE: </string>
+    <string name="user">USER: </string>
+    <string name="base">BASE: </string>
+    <string name="incremental">INCREMENTAL: </string>
+    <string name="sdk">SDK: </string>
+    <string name="board">BOARD: </string>
+    <string name="host">HOST: </string>
+    <string name="fingerprint">FINGERPRINT: </string>
+    <string name="versioncode">VERSION CODE: </string>
 
 </resources>

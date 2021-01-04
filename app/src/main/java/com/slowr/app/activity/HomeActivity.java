@@ -1,6 +1,5 @@
 package com.slowr.app.activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -21,12 +21,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
@@ -41,7 +41,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonArray;
 import com.slowr.app.R;
@@ -68,8 +67,10 @@ import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.FiltersModel;
 import com.slowr.app.models.HomeAdsModel;
+import com.slowr.app.models.HomeBannerModel;
 import com.slowr.app.models.HomeDetailsModel;
 import com.slowr.app.models.HomeFilterAdModel;
+import com.slowr.app.models.HomeFlyersModel;
 import com.slowr.app.models.SortByModel;
 import com.slowr.app.models.SuggistionItem;
 import com.slowr.app.utils.Constant;
@@ -110,6 +111,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     RecyclerView rc_ad_list;
     RecyclerView rc_home_ad_list;
     CarouselView rc_banner;
+    ProgressBar pb_circule;
 
     ProductCategoryListAdapter productCategoryListAdapter;
     ServiceCategoryListAdapter serviceCategoryListAdapter;
@@ -172,6 +174,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     FusedLocationProviderClient fusedLocationProviderClient;
     Location currentLocation;
     private static final int REQUEST_CODE = 101;
+    String cityName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,6 +215,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_no_ad_city = findViewById(R.id.layout_no_ad_city);
         btn_offer = findViewById(R.id.btn_offer);
         btn_need = findViewById(R.id.btn_need);
+        pb_circule = findViewById(R.id.pb_circule);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -267,7 +272,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 //        getCategory();
 //        setBanner();
         if (_fun.isInternetAvailable(HomeActivity.this)) {
-            getHomeDetails(true);
+            getHomeBannerDetails(true);
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -275,7 +280,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            getHomeDetails(true);
+                            getHomeBannerDetails(true);
                         }
                     });
                 }
@@ -297,7 +302,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         });
         Pageination();
         CheckAppUpdate();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(HomeActivity.this);
 
         saveUserDetails();
     }
@@ -309,14 +314,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private void GetLocationDetails() {
         Log.i("User Location", "Step1");
         if (_fun.checkPermissionLocation(HomeActivity.this)) {
-            if (ActivityCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
-                return;
-            }
-            Task<Location> task = fusedLocationProviderClient.getLastLocation();
-            task.addOnSuccessListener(new OnSuccessListener<Location>() {
+
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     Log.i("User Location", "Step2");
@@ -329,28 +328,55 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        String cityName = addresses.get(0).getLocality();
+                        cityName = addresses.get(0).getLocality();
                         String stateName = addresses.get(0).getAdminArea();
                         String countryName = addresses.get(0).getCountryName();
-                        if (!params.isEmpty()) {
-                            params.clear();
-                        }
 
-
-                        params.put("city", cityName);
-                        params.put("longitude", location.getLongitude());
-                        params.put("latitude", location.getLatitude());
-                        params.put("device_details", "Samsung");
-                        params.put("action", "1");
-
-                        RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
                     } else {
                         Log.i("User Location", "Step4");
                     }
+                    if (!params.isEmpty()) {
+                        params.clear();
+                    }
+
+                    String deviceDet = "{" + getHardwareAndSoftwareInfo() + "}";
+                    params.put("city", cityName);
+                    if (currentLocation != null) {
+                        params.put("longitude", String.valueOf(currentLocation.getLongitude()));
+                        params.put("latitude", String.valueOf(currentLocation.getLatitude()));
+                    } else {
+                        params.put("longitude", "");
+                        params.put("latitude", "");
+                    }
+                    params.put("device_details", deviceDet);
+                    if (isRegister) {
+                        params.put("action", "1");
+                    }
+                    Log.i("Params", params.toString());
+                    RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
                 }
             });
         }
+    }
+
+    private String getHardwareAndSoftwareInfo() {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+
+        return getString(R.string.serial) + " " + Build.SERIAL + "\n" +
+                getString(R.string.model) + " " + Build.MODEL + "\n" +
+                getString(R.string.id) + " " + Build.ID + "\n" +
+                getString(R.string.manufacturer) + " " + Build.MANUFACTURER + "\n" +
+                getString(R.string.brand) + " " + Build.BRAND + "\n" +
+                getString(R.string.type) + " " + Build.TYPE + "\n" +
+                getString(R.string.user) + " " + Build.USER + "\n" +
+                getString(R.string.base) + " " + Build.VERSION_CODES.BASE + "\n" +
+                getString(R.string.incremental) + " " + Build.VERSION.INCREMENTAL + "\n" +
+                getString(R.string.sdk) + " " + Build.VERSION.SDK + "\n" +
+                getString(R.string.board) + " " + Build.BOARD + "\n" +
+                getString(R.string.host) + " " + Build.HOST + "\n" +
+                getString(R.string.fingerprint) + " " + Build.FINGERPRINT + "\n" +
+                getString(R.string.versioncode) + " " + Build.VERSION.RELEASE;
     }
 
     private void CheckAppUpdate() {
@@ -381,16 +407,32 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
 
-    private void getHomeDetails(boolean isLoad) {
+    private void getHomeBannerDetails(boolean isLoad) {
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).getHomeDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+        RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
     }
 
+    private void getHomeAdsList(boolean isLoad) {
+        pb_circule.setVisibility(View.VISIBLE);
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+    }
+
+    private void getHomeDetails(boolean isLoad) {
+
+        RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+    }
 
     private void CallBackFunction() {
         homeBannerAdapter.setCallback(new HomeBannerAdapter.Callback() {
@@ -773,6 +815,48 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad));
     }
 
+    retrofit2.Callback<HomeBannerModel> homeBannerResponse = new retrofit2.Callback<HomeBannerModel>() {
+        @Override
+        public void onResponse(Call<HomeBannerModel> call, retrofit2.Response<HomeBannerModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            HomeBannerModel dr = response.body();
+            try {
+//                if (layout_swipe_refresh.isRefreshing()) {
+//                    layout_swipe_refresh.setRefreshing(false);
+//                }
+                if (response.isSuccessful()) {
+                    layout_home.setVisibility(View.GONE);
+                    bannerList.clear();
+                    bannerList.addAll(dr.getBannerList());
+                    NUM_PAGES = bannerList.size();
+                    currentPage = 0;
+                    homeBannerAdapter.notifyDataSetChanged();
+
+                    if (!isBannerStarted) {
+                        isBannerStarted = true;
+                        rc_banner.start(3, TimeUnit.SECONDS);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            getHomeDetails(false);
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+//            if (layout_swipe_refresh.isRefreshing()) {
+//                layout_swipe_refresh.setRefreshing(false);
+//            }
+            getHomeDetails(false);
+        }
+    };
+
     retrofit2.Callback<HomeDetailsModel> homeDetailsResponse = new retrofit2.Callback<HomeDetailsModel>() {
         @Override
         public void onResponse(Call<HomeDetailsModel> call, retrofit2.Response<HomeDetailsModel> response) {
@@ -788,13 +872,60 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                     layout_home.setVisibility(View.VISIBLE);
                     serviceList.clear();
-                    serviceList.addAll(dr.getServiceList());
+                    serviceList.addAll(dr.getHomeDetailsModel().getServiceList());
                     categoryList.clear();
-                    categoryList.addAll(dr.getProductList());
+                    categoryList.addAll(dr.getHomeDetailsModel().getProductList());
                     cityList.clear();
                     CityItemModel cityItemModel = new CityItemModel("", "All India", "", false);
                     cityList.add(cityItemModel);
-                    cityList.addAll(dr.getCityList());
+                    cityList.addAll(dr.getHomeDetailsModel().getCityList());
+
+                    productCategoryListAdapter.notifyDataSetChanged();
+                    serviceCategoryListAdapter.notifyDataSetChanged();
+                    if (isRegister) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ShowPopupProsper();
+                            }
+                        }, 200);
+                    }
+                    getHomeAdsList(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                getHomeAdsList(false);
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
+            getHomeAdsList(false);
+        }
+    };
+
+    retrofit2.Callback<HomeFlyersModel> homeFlyersResponse = new retrofit2.Callback<HomeFlyersModel>() {
+        @Override
+        public void onResponse(Call<HomeFlyersModel> call, retrofit2.Response<HomeFlyersModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            HomeFlyersModel dr = response.body();
+            pb_circule.setVisibility(View.GONE);
+            try {
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
+                if (response.isSuccessful()) {
+                    if (!isCategory)
+                        layout_home.setVisibility(View.VISIBLE);
+
                     homeAdList.clear();
                     if (dr.getHomeAdsList() != null)
                         homeAdList.addAll(dr.getHomeAdsList());
@@ -806,32 +937,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         layout_no_ad_city.setVisibility(View.GONE);
                         rc_home_ad_list.setVisibility(View.VISIBLE);
                     }
-                    bannerList.clear();
-                    bannerList.addAll(dr.getBannerList());
-                    NUM_PAGES = bannerList.size();
-                    currentPage = 0;
-                    productCategoryListAdapter.notifyDataSetChanged();
-                    serviceCategoryListAdapter.notifyDataSetChanged();
+
                     homeCustomListAdapter.notifyDataSetChanged();
-//                    bannerAdapter.notifyDataSetChanged();
-                    homeBannerAdapter.notifyDataSetChanged();
 
-                    if (!isBannerStarted) {
-                        isBannerStarted = true;
-                        rc_banner.start(3, TimeUnit.SECONDS);
-                    }
 
-                    if (isRegister) {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                ShowPopupProsper();
-                            }
-                        }, 200);
-                    }
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                if (layout_swipe_refresh.isRefreshing()) {
+                    layout_swipe_refresh.setRefreshing(false);
+                }
             }
         }
 //        }
@@ -840,6 +956,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            pb_circule.setVisibility(View.GONE);
             if (layout_swipe_refresh.isRefreshing()) {
                 layout_swipe_refresh.setRefreshing(false);
             }
@@ -1387,6 +1504,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isRegister = false;
                 spinnerPopup.dismiss();
             }
         });
@@ -1438,7 +1556,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }
         } else {
             if (_fun.isInternetAvailable(HomeActivity.this)) {
-                getHomeDetails(false);
+                getHomeBannerDetails(false);
             } else {
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -1446,7 +1564,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                getHomeDetails(false);
+                                getHomeBannerDetails(false);
                             }
                         });
                     }

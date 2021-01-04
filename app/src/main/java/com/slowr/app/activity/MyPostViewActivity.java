@@ -321,15 +321,31 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         int defu = R.drawable.ic_no_image;
 
         if (catGroup.equals("1")) {
-            defu = R.drawable.ic_no_image;
+            if (AdType.equals("1")) {
+                defu = R.drawable.ic_no_image;
+            } else {
+                defu = R.drawable.ic_need_product;
+            }
+            Glide.with(this)
+                    .load(url)
+                    .error(defu)
+                    .placeholder(defu)
+                    .into(img_ad_view);
         } else {
-            defu = R.drawable.ic_service_big;
+            if (AdType.equals("1")) {
+                defu = R.drawable.ic_service_big;
+            } else {
+                defu = R.drawable.ic_need_service;
+            }
+            Glide.with(this)
+                    .load(url)
+                    .circleCrop()
+                    .error(defu)
+                    .placeholder(defu)
+                    .into(img_ad_view);
         }
-        Glide.with(this)
-                .load(url)
-                .error(defu)
-                .placeholder(defu)
-                .into(img_ad_view);
+
+
     }
 
     private void GetAdDetails() {
@@ -461,7 +477,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 rc_image_list.setVisibility(View.VISIBLE);
                                 setCurrentImage(shareImageList.get(0).getImgURL());
                                 adShareUrl = shareImageList.get(0).getImgURL();
-                                if(shareImageList.size()==1){
+                                if (shareImageList.size() == 1) {
                                     rc_image_list.setVisibility(View.GONE);
                                 }
                             } else {
@@ -523,9 +539,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_active_status.setTextColor(getResources().getColor(R.color.txt_orange));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
-                            }
-
-                            else if (AdStatus.equals("8")) {
+                            } else if (AdStatus.equals("8")) {
                                 txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_reject_filled));
                                 txt_active_status.setText(getString(R.string.txt_rejected));
                                 txt_active_status.setTextColor(getResources().getColor(R.color.rejected_txt));
@@ -538,6 +552,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_active_status.setTextColor(getResources().getColor(R.color.colorPrimary));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
+
                                 btn_edit.setVisibility(View.INVISIBLE);
 
                             }
@@ -550,6 +565,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             }
                             if (dr.getEditDataModel().getCommunicationModel() != null) {
                                 if (dr.getEditDataModel().getCommunicationModel().getComments() != null) {
+                                    if (AdStatus.equals("9")) {
+                                        btn_edit.setVisibility(View.VISIBLE);
+                                    }
                                     layout_alert.setVisibility(View.VISIBLE);
                                     txt_alert_header.setText(dr.getEditDataModel().getCommunicationModel().getHeaderMessage());
                                     txt_alert_footer.setText(dr.getEditDataModel().getCommunicationModel().getFooterMessage());
@@ -710,7 +728,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 startActivityForResult(p, EDIT_POST_CODE);
                 break;
             case R.id.img_ad_view:
-                if (imageStringArray != null && imageStringArray.equals(""))
+                if (imageStringArray != null && !imageStringArray.equals(""))
                     if (!isPageChange) {
                         isPageChange = true;
                         Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
@@ -731,7 +749,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 break;
 
             case R.id.img_user_profile:
-                if (userProUrl != null && userProUrl.equals(""))
+                if (userProUrl != null && !userProUrl.equals(""))
                     if (!isPageChange) {
                         isPageChange = true;
                         Intent a = new Intent(MyPostViewActivity.this, ImageViewActivity.class);
