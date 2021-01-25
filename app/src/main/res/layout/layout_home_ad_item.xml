@@ -28,27 +28,27 @@
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_no_image" />
 
-<!--            <ImageView-->
-<!--                android:id="@+id/img_favorite"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_margin="@dimen/size_ten"-->
-<!--                android:background="@drawable/circle_ripple_effect"-->
-<!--                android:padding="2dp"-->
-<!--                android:src="@drawable/ic_favorite" />-->
+            <!--            <ImageView-->
+            <!--                android:id="@+id/img_favorite"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_margin="@dimen/size_ten"-->
+            <!--                android:background="@drawable/circle_ripple_effect"-->
+            <!--                android:padding="2dp"-->
+            <!--                android:src="@drawable/ic_favorite" />-->
             <com.like.LikeButton
                 android:id="@+id/img_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:like_drawable="@drawable/ic_fav_select"
-                app:unlike_drawable="@drawable/ic_fav_blue"
                 app:anim_scale_factor="2.5"
                 app:circle_end_color="@color/txt_orange"
                 app:circle_start_color="@color/txt_orange"
                 app:dots_primary_color="@color/txt_orange"
                 app:dots_secondary_color="@color/txt_orange"
                 app:icon_size="20dp"
-                app:icon_type="heart" />
+                app:icon_type="heart"
+                app:like_drawable="@drawable/ic_fav_select"
+                app:unlike_drawable="@drawable/ic_fav_blue" />
 
 
             <ImageView
@@ -126,10 +126,10 @@
                     android:id="@+id/txt_ad_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
                     android:fontFamily="@font/nunito_regular"
                     android:maxLines="2"
                     android:text=""
-                    android:ellipsize="end"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_sixteen" />
 
@@ -175,7 +175,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.6"
                         android:gravity="center|left"
                         android:orientation="horizontal">
 
@@ -197,7 +197,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="0.4"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:visibility="visible">
@@ -206,9 +206,19 @@
                             android:id="@+id/img_share"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:layout_marginRight="@dimen/size_twenty"
-
+                            android:layout_marginRight="@dimen/size_ten"
                             android:src="@drawable/ic_share" />
+
+                        <TextView
+                            android:id="@+id/txt_service_count"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:textColor="@color/txt_orange"
+                            android:layout_gravity="right|center"
+                            android:visibility="invisible"
+                            android:gravity="right"
+                            android:textSize="@dimen/size_fourteen" />
                     </LinearLayout>
 
                     <LinearLayout

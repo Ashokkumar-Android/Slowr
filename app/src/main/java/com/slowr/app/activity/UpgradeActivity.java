@@ -30,7 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.razorpay.Checkout;
-import com.razorpay.PaymentResultListener;
+import com.razorpay.PaymentData;
+import com.razorpay.PaymentResultWithDataListener;
 import com.slowr.app.R;
 import com.slowr.app.adapter.ProsperIdAdapter;
 import com.slowr.app.api.Api;
@@ -56,7 +57,7 @@ import java.util.Locale;
 
 import retrofit2.Call;
 
-public class UpgradeActivity extends AppCompatActivity implements View.OnClickListener, PaymentResultListener {
+public class UpgradeActivity extends AppCompatActivity implements View.OnClickListener, PaymentResultWithDataListener {
 
     private static final String TAG = UpgradeActivity.class.getSimpleName();
     TextView txt_page_title;
@@ -96,6 +97,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     String adId = "";
     String catId = "";
     String paymentId = "";
+    String orderId = "";
+    String paymentSignature = "";
     String selectedId = "";
     String pageFrom = "";
     String adTitle = "";
@@ -105,6 +108,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     ProsperIdAdapter prosperIdAdapter;
 
     private PopupWindow spinnerPopup;
+
+    String prosperAmount = "0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,7 +195,11 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         SearchFunction();
         CallBackFunction();
+        getPaymentHistory();
 //        setFillter();
+    }
+
+    private void getPaymentHistory() {
     }
 
     private void CallBackFunction() {
@@ -425,7 +434,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         params.put("prosper_id", edt_search_suggestion.getText().toString());
         Log.i("params", params.toString());
-
+//        RetrofitClient.getClient().create(Api.class).getProsperId(edt_search_suggestion.getText().toString())
+//                .enqueue(new RetrofitCallBack(UpgradeActivity.this, prosperIdListAPI, true));
 
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).searchProsperId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
@@ -627,7 +637,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
-    public void startPayment(String amount) {
+    public void startPayment(String amount, String orderId) {
         /*
           You need to pass current activity in order to let Razorpay create CheckoutActivity
          */
@@ -640,11 +650,12 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         try {
             JSONObject options = new JSONObject();
             options.put("name", getString(R.string.app_name));
-            options.put("description", "Ad promotion");
+            options.put("description", "Fancy Prosper ID Purchase");
             //You can omit the image option to fetch the image from dashboard
-            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
+//            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             options.put("currency", "INR");
             options.put("amount", String.valueOf(totalAmount));
+            options.put("order_id", orderId);
 
             JSONObject preFill = new JSONObject();
             preFill.put("email", Sessions.getSession(Constant.UserEmail, getApplicationContext()));
@@ -666,35 +677,35 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    @Override
-    public void onPaymentSuccess(String razorpayPaymentID) {
-        try {
-            paymentId = razorpayPaymentID;
-            savePromotion();
-        } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentSuccess", e);
-        }
-    }
-
-    @Override
-    public void onPaymentError(int code, String response) {
-        try {
-            if (promotionType.equals("2")) {
-                layout_upgrade.setVisibility(View.GONE);
-                layout_error.setVisibility(View.VISIBLE);
-            } else if (promotionType.equals("3")) {
-                layout_upgrade.setVisibility(View.GONE);
-                layout_error.setVisibility(View.VISIBLE);
-            } else {
-                layout_search_list.setVisibility(View.GONE);
-                layout_error.setVisibility(View.VISIBLE);
-            }
+//    @Override
+//    public void onPaymentSuccess(String razorpayPaymentID) {
+//        try {
+//            paymentId = razorpayPaymentID;
 //            savePromotion();
-            Log.e("Payment:", code + " " + response);
-        } catch (Exception e) {
-            Log.e(TAG, "Exception in onPaymentError", e);
-        }
-    }
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception in onPaymentSuccess", e);
+//        }
+//    }
+//
+//    @Override
+//    public void onPaymentError(int code, String response) {
+//        try {
+//            if (promotionType.equals("2")) {
+//                layout_upgrade.setVisibility(View.GONE);
+//                layout_error.setVisibility(View.VISIBLE);
+//            } else if (promotionType.equals("3")) {
+//                layout_upgrade.setVisibility(View.GONE);
+//                layout_error.setVisibility(View.VISIBLE);
+//            } else {
+//                layout_search_list.setVisibility(View.GONE);
+//                layout_error.setVisibility(View.VISIBLE);
+//            }
+////            savePromotion();
+//            Log.e("Payment:", code + " " + response);
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception in onPaymentError", e);
+//        }
+//    }
 
     public void validatePromotion() {
         if (!params.isEmpty()) {
@@ -728,24 +739,13 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         if (!params.isEmpty()) {
             params.clear();
         }
-        String totalAmount = "";
-        if (promotionType.equals("2")) {
-            totalAmount = txt_top_price.getText().toString().trim();
-        } else {
-            totalAmount = txt_premium_price.getText().toString().trim();
-        }
-        params.put("type", promotionType);
-        params.put("transaction_id", paymentId);
-        if (!promotionType.equals("1")) {
 
-            params.put("start_date", adStartDate);
-            params.put("end_date", adEndDate);
-            params.put("ads_id", adId);
-            params.put("category_id", catId);
-            params.put("total_amount", totalAmount);
-        } else {
-            params.put("prosper_id", selectedId);
-        }
+
+//        razorpay_payment_id,razorpay_order_id,razorpay_signature
+        params.put("razorpay_payment_id", paymentId);
+        params.put("razorpay_order_id", orderId);
+        params.put("razorpay_signature", paymentSignature);
+
         Log.i("params", params.toString());
 
 
@@ -758,6 +758,93 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                             .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true));
+                }
+            });
+        }
+    }
+
+
+//    public void savePromotion() {
+//        if (!params.isEmpty()) {
+//            params.clear();
+//        }
+//        String totalAmount = "";
+//        if (promotionType.equals("2")) {
+//            totalAmount = txt_top_price.getText().toString().trim();
+//        } else if (promotionType.equals("3")) {
+//            totalAmount = txt_premium_price.getText().toString().trim();
+//        } else {
+//            totalAmount = prosperAmount;
+//        }
+//        params.put("type", promotionType);
+//        params.put("transaction_id", paymentId);
+//        params.put("total_amount", totalAmount);
+//        params.put("order_id", orderId);
+//        if (!promotionType.equals("1")) {
+//
+//            params.put("start_date", adStartDate);
+//            params.put("end_date", adEndDate);
+//            params.put("ads_id", adId);
+//            params.put("category_id", catId);
+//
+//        } else {
+//            params.put("prosper_id", selectedId);
+//        }
+//        Log.i("params", params.toString());
+//
+//
+//        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+//            RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true));
+//        } else {
+//            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+//                @Override
+//                public void isInternet() {
+//                    RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+//                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true));
+//                }
+//            });
+//        }
+//    }
+
+
+    public void getOrderId() {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        String totalAmount = "";
+        if (promotionType.equals("2")) {
+            totalAmount = txt_top_price.getText().toString().trim();
+        } else if (promotionType.equals("3")) {
+            totalAmount = txt_premium_price.getText().toString().trim();
+        } else {
+            totalAmount = prosperAmount;
+        }
+        params.put("type", promotionType);
+        params.put("transaction_id", paymentId);
+        params.put("total_amount", totalAmount);
+        if (!promotionType.equals("1")) {
+
+            params.put("start_date", adStartDate);
+            params.put("end_date", adEndDate);
+            params.put("ads_id", adId);
+            params.put("category_id", catId);
+
+        } else {
+            params.put("prosper_id", selectedId);
+        }
+        Log.i("params", params.toString());
+
+
+        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getOrderId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true));
+        } else {
+            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getOrderId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true));
                 }
             });
         }
@@ -808,6 +895,44 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
+
+    retrofit2.Callback<DefaultResponse> getOrderIdApi = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            try {
+                DefaultResponse dr = response.body();
+                if (dr.isStatus()) {
+                    String totalAmount = "";
+                    if (promotionType.equals("2")) {
+                        totalAmount = txt_top_price.getText().toString().trim();
+                    } else if (promotionType.equals("3")) {
+                        totalAmount = txt_premium_price.getText().toString().trim();
+                    } else {
+                        totalAmount = prosperAmount;
+                    }
+                    orderId = dr.getOrderId();
+                    startPayment(totalAmount, dr.getOrderId());
+//                    finish();
+                } else {
+                    Function.CustomMessage(UpgradeActivity.this, dr.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     retrofit2.Callback<DefaultResponse> validatePromotionApi = new retrofit2.Callback<DefaultResponse>() {
         @Override
         public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
@@ -818,12 +943,12 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-                        startPayment("");
+                        startPayment("", "");
                     } else {
                         _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                             @Override
                             public void isInternet() {
-                                startPayment("");
+                                startPayment("", "");
                             }
                         });
                     }
@@ -953,17 +1078,20 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         Button btn_ok = view.findViewById(R.id.btn_check_out);
         txt_prosperId_popup.setText(getString(R.string.txt_rupee_simpal) + " " + amount);
         txt_prosper_content.setText(getString(R.string.prosper_id) + " " + proId + " " + getString(R.string.txt_has_been_selected));
+        prosperAmount = amount;
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 spinnerPopup.dismiss();
                 if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-                    startPayment(amount);
+//                    startPayment(amount);
+                    getOrderId();
                 } else {
                     _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            startPayment(amount);
+//                            startPayment(amount);
+                            getOrderId();
                         }
                     });
                 }
@@ -995,5 +1123,38 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    @Override
+    public void onPaymentSuccess(String razorpayPaymentID, PaymentData paymentData) {
+        try {
+            paymentId = paymentData.getPaymentId();
+            paymentSignature = paymentData.getSignature();
+            orderId = paymentData.getOrderId();
+
+            savePromotion();
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentSuccess", e);
+        }
+    }
+
+    @Override
+    public void onPaymentError(int code, String response, PaymentData paymentData) {
+        try {
+            if (promotionType.equals("2")) {
+                layout_upgrade.setVisibility(View.GONE);
+                layout_error.setVisibility(View.VISIBLE);
+            } else if (promotionType.equals("3")) {
+                layout_upgrade.setVisibility(View.GONE);
+                layout_error.setVisibility(View.VISIBLE);
+            } else {
+                layout_search_list.setVisibility(View.GONE);
+                layout_error.setVisibility(View.VISIBLE);
+            }
+//            savePromotion();
+            Log.e("Payment:", code + " " + response);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in onPaymentError", e);
+        }
     }
 }

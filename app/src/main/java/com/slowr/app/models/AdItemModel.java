@@ -61,6 +61,15 @@ public class AdItemModel {
     @SerializedName("cat_group")
     private String catGroup;
 
+    @SerializedName("service_ad_count")
+    private int serviceAdCount = 0;
+
+    @SerializedName("prosper_id")
+    private String prosperId;
+
+    @SerializedName("parent_id")
+    private String adParentId;
+
     boolean isProgress = false;
 
     public String getAdId() {
@@ -221,5 +230,29 @@ public class AdItemModel {
 
     public void setCatGroup(String catGroup) {
         this.catGroup = catGroup;
+    }
+
+    public int getServiceAdCount() {
+        return serviceAdCount;
+    }
+
+    public void setServiceAdCount(int serviceAdCount) {
+        this.serviceAdCount = serviceAdCount;
+    }
+
+    public String getProsperId() {
+        return prosperId;
+    }
+
+    public void setProsperId(String prosperId) {
+        this.prosperId = prosperId;
+    }
+
+    public String getAdParentId() {
+        return adParentId;
+    }
+
+    public void setAdParentId(String adParentId) {
+        this.adParentId = adParentId;
     }
 }

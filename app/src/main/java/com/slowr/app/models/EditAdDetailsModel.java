@@ -70,7 +70,8 @@ public class EditAdDetailsModel {
 
     @SerializedName("user_id")
     private String userId;
-
+    @SerializedName("parent_id")
+    private String parentId;
 
     public String getAdId() {
         return adId;
@@ -246,5 +247,13 @@ public class EditAdDetailsModel {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

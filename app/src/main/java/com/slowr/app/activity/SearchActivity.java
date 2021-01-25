@@ -22,6 +22,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -56,7 +57,7 @@ import java.util.HashMap;
 
 import retrofit2.Call;
 
-public class SearchActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class SearchActivity extends AppCompatActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     LinearLayout layout_ad_list;
     ImageView img_list;
     ImageView img_grid;
@@ -70,6 +71,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     TextView txt_page_title;
     EditText edt_search_suggestion;
     SwipeRefreshLayout layout_swipe_refresh;
+    ImageView img_search;
 
     RecyclerView rc_ad_list;
     RecyclerView rc_filter;
@@ -138,13 +140,16 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         txt_page_title = findViewById(R.id.txt_page_title);
         rc_filter = findViewById(R.id.rc_filter);
         edt_search_suggestion = findViewById(R.id.edt_search_suggestion);
+        img_search = findViewById(R.id.img_search);
+
+
         txt_page_title.setText(getString(R.string.txt_search));
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
         gridManager = new GridLayoutManager(SearchActivity.this, 2);
         listManager = new LinearLayoutManager(SearchActivity.this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(listManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, SearchActivity.this);
+        homeAdListAdapter = new HomeAdListAdapter(adList, SearchActivity.this,true);
         homeAdGridAdapter = new HomeAdGridAdapter(adList, SearchActivity.this);
         rc_ad_list.setAdapter(homeAdListAdapter);
 
@@ -165,6 +170,8 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
         btn_requirement_ad.setOnClickListener(this);
+        img_search.setOnClickListener(this);
+
         if (_fun.isInternetAvailable(SearchActivity.this)) {
             getRecentSearch();
         } else {
@@ -326,40 +333,40 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
             }
         });
 
-        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_RIGHT = 2;
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        searchSugeistionValue = edt_search_suggestion.getText().toString();
-                        if (searchSugeistionValue.isEmpty()) {
-                            Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
-                        } else {
-                            Function.hideSoftKeyboard(SearchActivity.this, edt_search);
-                            layout_ad_list.setVisibility(View.VISIBLE);
-                            layout_search_list.setVisibility(View.GONE);
-
-                            isCategory = true;
-
-                            searchCatId = "";
-
-                            searchSubCatId = "";
-
-
-                            searchChildCatId = "";
-
-                            txt_page_title.setText(searchSugeistionValue);
-                            currentPageNo = 1;
-                            getAdList(true);
-                        }
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+//        edt_search_suggestion.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                final int DRAWABLE_RIGHT = 2;
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    if (event.getRawX() >= (edt_search_suggestion.getRight() - edt_search_suggestion.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+//                        searchSugeistionValue = edt_search_suggestion.getText().toString();
+//                        if (searchSugeistionValue.isEmpty()) {
+//                            Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
+//                        } else {
+//                            Function.hideSoftKeyboard(SearchActivity.this, edt_search);
+//                            layout_ad_list.setVisibility(View.VISIBLE);
+//                            layout_search_list.setVisibility(View.GONE);
+//
+//                            isCategory = true;
+//
+//                            searchCatId = "";
+//
+//                            searchSubCatId = "";
+//
+//
+//                            searchChildCatId = "";
+//
+//                            txt_page_title.setText(searchSugeistionValue);
+//                            currentPageNo = 1;
+//                            getAdList(true);
+//                        }
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
     }
 
 
@@ -708,7 +715,6 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                         finish();
                     }
                 }
-                edt_search.setText("");
                 break;
             case R.id.img_list:
                 if (isGrid) {
@@ -740,8 +746,25 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                     p.putExtra("AdType", 2);
                     p.putExtra("ParId", "");
                     startActivity(p);
-                }else {
+                } else {
                     Function.CustomMessage(SearchActivity.this, getString(R.string.txt_please_login));
+                }
+                break;
+            case R.id.img_search:
+                searchSugeistionValue = edt_search_suggestion.getText().toString();
+                if (searchSugeistionValue.isEmpty()) {
+                    Function.CustomMessage(SearchActivity.this, getString(R.string.enter_something_search));
+                } else {
+                    Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
+                    layout_ad_list.setVisibility(View.VISIBLE);
+                    layout_search_list.setVisibility(View.GONE);
+                    isCategory = true;
+                    searchCatId = "";
+                    searchSubCatId = "";
+                    searchChildCatId = "";
+                    txt_page_title.setText(searchSugeistionValue);
+                    currentPageNo = 1;
+                    getAdList(true);
                 }
                 break;
         }

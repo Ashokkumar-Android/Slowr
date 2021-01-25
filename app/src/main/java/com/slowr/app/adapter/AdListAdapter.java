@@ -220,7 +220,13 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 if (movie.getAdType().equals("1")) {
                     defu = R.drawable.ic_no_image;
                 } else {
-                    defu = R.drawable.ic_need_product;
+                    if (movie.getAdParentId() != null && movie.getAdParentId().equals("1")) {
+                        defu = R.drawable.ic_need_space;
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
+                        defu = R.drawable.ic_need_pet;
+                    } else {
+                        defu = R.drawable.ic_need_product;
+                    }
                 }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())

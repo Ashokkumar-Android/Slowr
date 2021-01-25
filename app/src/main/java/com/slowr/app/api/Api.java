@@ -205,8 +205,16 @@ public interface Api {
     @POST("requirement/store")
     Call<DefaultResponse> saveRequirementPost(@Body Object params, @Header("Authorization") String contentRange);
 
-    @POST("promotion")
+    @POST("promotion-action")
     Call<DefaultResponse> savePromotion(@Body Object params, @Header("Authorization") String contentRange);
+
+
+//    @POST("promotion")
+//    Call<DefaultResponse> savePromotion(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("razorpay-order")
+    Call<DefaultResponse> getOrderId(@Body Object params, @Header("Authorization") String contentRange);
+
 
     @POST("ads-status")
     Call<DefaultResponse> changeAdStatus(@Body Object params, @Header("Authorization") String contentRange);
@@ -216,6 +224,9 @@ public interface Api {
 
     @POST("verification")
     Call<DefaultResponse> GSTVerificationSave(@Body Object params, @Header("Authorization") String contentRange);
+
+    @GET("testAlgolia/{testId}")
+    Call<ProsperIdModel> getProsperId(@Path(value = "testId", encoded = true) String catId);
 
     @GET("invoice/listing")
     Call<InvoiceModel> getInvoice(@Header("Authorization") String contentRange);
@@ -302,8 +313,12 @@ public interface Api {
     Call<DefaultResponse> getBannerDelete(@Path(value = "id", encoded = true) String bannerId, @Header("Authorization") String contentRange);
 
     @Multipart
-    @POST("promotion")
-    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("from") RequestBody fromDate, @Part("to") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("transaction_id") RequestBody paymentId, @Part("type") RequestBody promotionType, @Header("Authorization") String contentRange);
+    @POST("razorpay-order")
+    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("start_date") RequestBody fromDate, @Part("end_date") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("type") RequestBody promotionType, @Header("Authorization") String contentRange);
+
+//    @Multipart
+//    @POST("promotion")
+//    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("from") RequestBody fromDate, @Part("to") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("transaction_id") RequestBody paymentId, @Part("type") RequestBody promotionType, @Header("Authorization") String contentRange);
 
     @Multipart
     @POST("banner/update")

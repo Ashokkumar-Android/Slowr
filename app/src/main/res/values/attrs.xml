@@ -85,4 +85,12 @@
         <attr name="carouselMargin" format="dimension"/>
     </declare-styleable>
 
+    <declare-styleable name="GlowButton">
+        <attr name="buttonColor" format="color" />
+        <attr name="glowColor" format="color" />
+        <attr name="unpressedGlowSize" format="dimension" />
+        <attr name="pressedGlowSize" format="dimension" />
+        <attr name="glowcornerRadius" format="dimension" />
+    </declare-styleable>
+
 </resources>

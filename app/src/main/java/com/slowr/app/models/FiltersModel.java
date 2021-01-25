@@ -16,6 +16,9 @@ public class FiltersModel {
 
     String selectedValue = "Any";
 
+    @SerializedName("is_searchable")
+    public boolean isSearch = false;
+
     public String getFilterId() {
         return filterId;
     }
@@ -46,5 +49,13 @@ public class FiltersModel {
 
     public void setSelectedValue(String selectedValue) {
         this.selectedValue = selectedValue;
+    }
+
+    public boolean isSearch() {
+        return isSearch;
+    }
+
+    public void setSearch(boolean search) {
+        isSearch = search;
     }
 }

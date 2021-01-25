@@ -1,7 +1,6 @@
 package com.slowr.app.activity;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,8 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.slowr.app.R;
 import com.slowr.app.adapter.HomeAdListAdapter;
 import com.slowr.app.api.Api;
@@ -55,6 +52,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
     boolean isChange = false;
     private Function _fun = new Function();
     String shareMessage = "";
+    boolean isService = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         listManager = new LinearLayoutManager(FavoriteActivity.this, RecyclerView.VERTICAL, false);
         rc_favorite.setLayoutManager(listManager);
         rc_favorite.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, FavoriteActivity.this);
+        homeAdListAdapter = new HomeAdListAdapter(adList, FavoriteActivity.this,false);
         rc_favorite.setAdapter(homeAdListAdapter);
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
         layout_swipe_refresh.setOnRefreshListener(this);
@@ -139,11 +137,10 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
-                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup,url);
+                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup, url);
             }
         });
     }
-
 
 
     private void callAddFavorite() {

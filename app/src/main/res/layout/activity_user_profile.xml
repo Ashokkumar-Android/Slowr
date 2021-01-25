@@ -17,7 +17,7 @@
             android:id="@+id/layout_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
+            android:visibility="visible"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -128,17 +128,16 @@
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/vp_banner"
+
+
+            <com.slowr.app.components.carouselview.CarouselView
+                android:id="@+id/rc_banner"
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
-                android:minHeight="150dp"
                 android:layout_marginTop="@dimen/size_five"
                 android:layout_marginBottom="@dimen/size_five"
                 android:background="@color/color_white"
-                android:visibility="visible"/>
-
-
+                app:carouselMode="snap" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_ad_list"
                 android:layout_width="match_parent"

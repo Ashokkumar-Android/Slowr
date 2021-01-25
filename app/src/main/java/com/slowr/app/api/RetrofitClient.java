@@ -32,9 +32,11 @@ public class RetrofitClient {
             .addInterceptor(new LogJsonInterceptor())
             .cache(null)
             .addInterceptor(new ConnectivityInterceptor())
-            .readTimeout(180, TimeUnit.SECONDS)
-            .connectTimeout(180, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
+            .connectTimeout(120, TimeUnit.SECONDS)
             .build();
+
+
     static Gson gson = new GsonBuilder()
             .setLenient()
             .create();
@@ -42,7 +44,7 @@ public class RetrofitClient {
     public static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL_PRODUCTION)
+                    .baseUrl(BASE_URL)
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();

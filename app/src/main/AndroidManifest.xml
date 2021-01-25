@@ -214,7 +214,8 @@
             android:value="9952b4224ffea1b363591a8a4e77b91fdeb18259" /> <!-- Add your Payment API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_xhQLKhh7mxkA2D" />
+            android:value="rzp_test_hh28PqAbniWxep" />
     </application>
-
+<!--    Live  KeyId    : rzp_live_xhQLKhh7mxkA2D-->
+<!--    Test KeyId    : rzp_test_hh28PqAbniWxep-->
 </manifest>

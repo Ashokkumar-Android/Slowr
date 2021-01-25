@@ -383,8 +383,8 @@ public class Function {
             shareTitle = ctx.getString(R.string.txt_hire_temp);
         }
         DynamicLink.SocialMetaTagParameters.Builder builder = new DynamicLink.SocialMetaTagParameters.Builder();
-        builder.setTitle(shareTitle);
-        builder.setDescription(adTitle);
+        builder.setTitle("www.slowr.com");
+        builder.setDescription("Rent Anything Hire Anybody \"Temporarily\"");
         builder.setImageUrl(Uri.parse(imgUrl));
 
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()

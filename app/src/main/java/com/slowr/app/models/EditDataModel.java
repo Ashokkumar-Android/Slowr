@@ -21,6 +21,9 @@ public class EditDataModel {
     @SerializedName("product_types")
     private ArrayList<SubCategoryChildModel> productType;
 
+    @SerializedName("product_type_suggestions")
+    private ArrayList<SubCategoryItemModel> productTypeSuggestion;
+
     @SerializedName("cities")
     private ArrayList<CityItemModel> cityList;
 
@@ -180,5 +183,13 @@ public class EditDataModel {
 
     public void setCommunicationModel(CommunicationModel communicationModel) {
         this.communicationModel = communicationModel;
+    }
+
+    public ArrayList<SubCategoryItemModel> getProductTypeSuggestion() {
+        return productTypeSuggestion;
+    }
+
+    public void setProductTypeSuggestion(ArrayList<SubCategoryItemModel> productTypeSuggestion) {
+        this.productTypeSuggestion = productTypeSuggestion;
     }
 }

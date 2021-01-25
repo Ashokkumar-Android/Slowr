@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -238,16 +238,15 @@
                     android:layout_height="1dp"
                     android:visibility="gone" />
 
-                <Button
+                <com.slowr.app.components.GlowButton
                     android:id="@+id/btn_fancy_prosper_id"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_orenge"
                     android:fontFamily="@font/nunito_regular"
                     android:text="@string/fancy_prosper_id"
                     android:textAllCaps="false"
+                    android:padding="@dimen/size_twenty"
                     android:textColor="@color/color_white"
                     android:textSize="@dimen/size_sixteen" />
 

@@ -34,6 +34,7 @@ import com.slowr.app.R;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.components.GlowButton;
 import com.slowr.app.components.otpview.OnOtpCompletionListener;
 import com.slowr.app.components.otpview.OtpView;
 import com.slowr.app.models.DefaultResponse;
@@ -70,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     LinearLayout img_back;
     Button btn_edit;
     Button btn_update_profile;
-    Button btn_fancy_prosper_id;
+    GlowButton btn_fancy_prosper_id;
     Button btn_profile_verification;
     ImageView img_profile_pic;
     TextInputLayout til_email;

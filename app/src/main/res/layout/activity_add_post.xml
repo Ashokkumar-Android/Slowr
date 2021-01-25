@@ -492,6 +492,7 @@
                 android:maxLength="200"
                 android:minHeight="80dp"
                 android:padding="@dimen/size_ten"
+                android:hint="@string/des_products"
                 android:textSize="@dimen/size_fifteen" />
 
             <TextView

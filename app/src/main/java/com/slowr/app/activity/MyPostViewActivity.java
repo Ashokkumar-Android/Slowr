@@ -122,6 +122,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String chatId = "";
     String NotificationId = "";
     String catGroup = "";
+    String adParentId = "";
     boolean isUnverified = false;
 
     boolean isPageChange = false;
@@ -324,7 +325,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             if (AdType.equals("1")) {
                 defu = R.drawable.ic_no_image;
             } else {
-                defu = R.drawable.ic_need_product;
+                if (adParentId.equals("1")) {
+                    defu = R.drawable.ic_need_space;
+                } else if (adParentId.equals("1306")) {
+                    defu = R.drawable.ic_need_pet;
+                } else {
+                    defu = R.drawable.ic_need_product;
+                }
             }
             Glide.with(this)
                     .load(url)
@@ -371,6 +378,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
                             chatId = dr.getEditDataModel().getChatId();
                             catGroup = dr.getEditDataModel().getCatGroup();
+                            adParentId = dr.getEditDataModel().getAdDetailsModel().getParentId();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), MyPostViewActivity.this);
                             AdType = editAdDetailsModel.getAdType();
                             txt_ad_title.setText(editAdDetailsModel.getAdTitle().trim());

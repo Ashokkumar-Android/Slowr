@@ -34,6 +34,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
         TextView txt_banner_price;
         TextView txt_banner_like;
         LinearLayout layout_root;
+        LinearLayout layout_click;
         ImageView img_default_banner;
 
         public MyViewHolder(View view) {
@@ -46,8 +47,9 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
             txt_banner_like = view.findViewById(R.id.txt_banner_like);
             layout_root = view.findViewById(R.id.layout_root);
             img_default_banner = view.findViewById(R.id.img_default_banner);
+            layout_click = view.findViewById(R.id.layout_click);
 
-            layout_root.setOnClickListener(this);
+            layout_click.setOnClickListener(this);
 
         }
 
@@ -110,7 +112,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
                         .into(holder.img_default_banner);
 
             }
-            holder.layout_root.setOnClickListener(new View.OnClickListener() {
+            holder.layout_click.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     callback.itemClick(bannerItemModel);

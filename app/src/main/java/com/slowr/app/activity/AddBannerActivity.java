@@ -37,7 +37,9 @@ import com.bumptech.glide.Glide;
 import com.gioco.image.cropper.CropImage;
 import com.google.gson.JsonArray;
 import com.razorpay.Checkout;
+import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultListener;
+import com.razorpay.PaymentResultWithDataListener;
 import com.slowr.app.R;
 import com.slowr.app.adapter.CityMultiSelectAdapter;
 import com.slowr.app.adapter.ViewColorAdapter;
@@ -79,7 +81,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
-public class AddBannerActivity extends AppCompatActivity implements View.OnClickListener, PaymentResultListener {
+public class AddBannerActivity extends AppCompatActivity implements View.OnClickListener, PaymentResultWithDataListener {
 
     EditText edt_banner_title;
     EditText edt_description;
@@ -151,6 +153,8 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     String cityName = "";
 
     String paymentId = "";
+    String orderId = "";
+    String paymentSignature = "";
     boolean changeDeductedAmount = false;
     boolean changeChip = false;
 
@@ -613,13 +617,40 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             }
 //        String totalDays = getCountOfDays(adStartDate, adEndDate);
             if (Type.equals("1")) {
-                startPayment();
+
+                addBannerCall();
             } else {
                 addBannerCall();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void updatePayment() {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+
+        params.put("razorpay_payment_id", paymentId);
+        params.put("razorpay_order_id", orderId);
+        params.put("razorpay_signature", paymentSignature);
+
+        Log.i("params", params.toString());
+
+
+        if (_fun.isInternetAvailable(AddBannerActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+        } else {
+            _fun.ShowNoInternetPopup(AddBannerActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                }
+            });
         }
     }
 
@@ -648,8 +679,8 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 
             if (_fun.isInternetAvailable(AddBannerActivity.this)) {
                 if (Type.equals("1")) {
-                    RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                    RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors,  promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddBannerActivity.this, getOrderIdResponse, true));
                 } else {
                     RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                             .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
@@ -659,8 +690,8 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void isInternet() {
                         if (Type.equals("1")) {
-                            RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors, transactionId, promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
+                            RetrofitClient.getClient().create(Api.class).AddBanner(bannerImage, _bannerId, bTitle, fromDate, toDate, bDescription, _cityId, bAmount, bDays, bColors,  promotionType, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                    .enqueue(new RetrofitCallBack(AddBannerActivity.this, getOrderIdResponse, true));
                         } else {
                             RetrofitClient.getClient().create(Api.class).UpdateBanner(bannerImage, bTitle, _bannerId, bDescription, bColors, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                                     .enqueue(new RetrofitCallBack(AddBannerActivity.this, addBannerResponse, true));
@@ -685,11 +716,12 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         try {
             JSONObject options = new JSONObject();
             options.put("name", getString(R.string.app_name));
-            options.put("description", "Ad promotion");
+            options.put("description", "Banner Promotions");
             //You can omit the image option to fetch the image from dashboard
-            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
+//            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
             options.put("currency", "INR");
             options.put("amount", String.valueOf(tAmount));
+            options.put("order_id", orderId);
 
             JSONObject preFill = new JSONObject();
             JSONObject themeStyle = new JSONObject();
@@ -773,7 +805,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             mYear = c.get(Calendar.YEAR);
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog dpd = new DatePickerDialog(AddBannerActivity.this,R.style.datepicker,
+            DatePickerDialog dpd = new DatePickerDialog(AddBannerActivity.this, R.style.datepicker,
                     new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year,
@@ -1053,10 +1085,38 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             DefaultResponse dr = response.body();
             try {
                 if (dr.isStatus()) {
+
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
 
                     ShowPopupSuccess(dr.getMessage());
+                } else {
+                    Function.CustomMessage(AddBannerActivity.this, dr.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+    retrofit2.Callback<DefaultResponse> getOrderIdResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+
+                    orderId = dr.getOrderId();
+                    startPayment();
                 } else {
                     Function.CustomMessage(AddBannerActivity.this, dr.getMessage());
                 }
@@ -1203,21 +1263,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    @Override
-    public void onPaymentSuccess(String razorpayPaymentID) {
-        paymentId = razorpayPaymentID;
-        addBannerCall();
-    }
 
-    @Override
-    public void onPaymentError(int code, String response) {
-        try {
-
-            Log.e("Payment:", code + " " + response);
-        } catch (Exception e) {
-            Log.e("TAG", "Exception in onPaymentError", e);
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1255,4 +1301,22 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     }
 
 
+    @Override
+    public void onPaymentSuccess(String s, PaymentData paymentData) {
+        paymentId = paymentData.getPaymentId();
+        paymentSignature = paymentData.getSignature();
+        orderId = paymentData.getOrderId();
+        updatePayment();
+    }
+
+    @Override
+    public void onPaymentError(int code, String response, PaymentData paymentData) {
+        try {
+
+            Log.e("Payment:", code + " " + response);
+        } catch (Exception e) {
+            Log.e("TAG", "Exception in onPaymentError", e);
+        }
+
+    }
 }

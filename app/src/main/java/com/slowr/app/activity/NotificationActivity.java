@@ -241,7 +241,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                     if (notificationList.size() == 0) {
                         layout_no_result.setVisibility(View.VISIBLE);
                         rc_notification.setVisibility(View.GONE);
-                    } else {
+                    } else  {
                         layout_no_result.setVisibility(View.GONE);
                         rc_notification.setVisibility(View.VISIBLE);
                     }

@@ -15,6 +15,9 @@ public class DefaultResponse {
     @SerializedName("action")
     private String action;
 
+    @SerializedName("order_id")
+    private String orderId;
+
     public boolean isStatus() {
         return status;
     }
@@ -45,5 +48,13 @@ public class DefaultResponse {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 }

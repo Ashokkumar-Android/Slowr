@@ -84,25 +84,38 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
             holder.txt_to_date.setText(" :  " + model.getBannerToDate().trim());
             if (model.getBannerStatus().equals("0")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_created));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
                 holder.btn_edit.setVisibility(View.VISIBLE);
             } else if (model.getBannerStatus().equals("1")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_active));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
                 holder.btn_edit.setVisibility(View.VISIBLE);
+            } else if (model.getBannerStatus().equals("2")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_edited));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
+                holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
+                holder.btn_edit.setVisibility(View.VISIBLE);
+
             } else if (model.getBannerStatus().equals("3")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_expired));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_renew));
                 holder.btn_edit.setVisibility(View.VISIBLE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
             } else if (model.getBannerStatus().equals("9")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_renew));
                 holder.btn_edit.setVisibility(View.GONE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
             } else {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
                 holder.btn_edit.setVisibility(View.VISIBLE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

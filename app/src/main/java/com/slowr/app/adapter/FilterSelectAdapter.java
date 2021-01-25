@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -11,13 +13,16 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
+import com.slowr.app.models.AreaItemModel;
 import com.slowr.app.models.SortByModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapter.MyViewHolder> {
+public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapter.MyViewHolder> implements Filterable {
 
     private List<SortByModel> categoryListFilter;
+    private List<SortByModel> categoryList;
     //    Callback callback;
     Context ctx;
 
@@ -63,7 +68,7 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
     }
 
     public FilterSelectAdapter(List<SortByModel> _categoryList, Context ctx) {
-//        this.categoryList = _categoryList;
+        this.categoryList = _categoryList;
         this.categoryListFilter = _categoryList;
         this.ctx = ctx;
     }
@@ -110,5 +115,38 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
 //
 //
 //    }
+@Override
+public Filter getFilter() {
+    return new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            String charString = charSequence.toString();
+            if (charString.isEmpty()) {
+                categoryListFilter = categoryList;
+            } else {
+                List<SortByModel> filteredList = new ArrayList<>();
+                for (SortByModel row : categoryList) {
 
+                    // name match condition. this might differ depending on your requirement
+                    // here we are looking for name or phone number match
+                    if (row.getSortValue().toLowerCase().startsWith(charString.toLowerCase())) {
+                        filteredList.add(row);
+                    }
+                }
+
+                categoryListFilter = filteredList;
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = categoryListFilter;
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            categoryListFilter = (ArrayList<SortByModel>) filterResults.values;
+            notifyDataSetChanged();
+        }
+    };
+}
 }

@@ -50,7 +50,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 
-public class PostViewActivity extends BaseActivity implements View.OnClickListener, OnLikeListener {
+public class PostViewActivity extends BaseActivity implements View.OnClickListener, OnLikeListener, BaseActivity.CallBackCity {
 
     TextView txt_ad_title;
     TextView txt_price;
@@ -100,6 +100,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String adTitle = "";
     String catGroup = "";
     String adShareUrl = "";
+    String adParentId = "";
 
     View rootView = null;
     String imageStringArray = "";
@@ -108,6 +109,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     private Function _fun = new Function();
 
     String AdType = "";
+    BaseActivity homeActivity;
+    CallBackCity callBackCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +122,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void doDeclaration() {
+        homeActivity = new BaseActivity();
+        homeActivity.callBackCity = callBackCity;
         catId = getIntent().getStringExtra("CatId");
         adId = getIntent().getStringExtra("AdId");
         if (getIntent().hasExtra("PageFrom")) {
@@ -243,7 +248,13 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             if (AdType.equals("1")) {
                 defu = R.drawable.ic_no_image;
             } else {
-                defu = R.drawable.ic_need_product;
+                if (adParentId.equals("1")) {
+                    defu = R.drawable.ic_need_space;
+                } else if (adParentId.equals("1306")) {
+                    defu = R.drawable.ic_need_pet;
+                } else {
+                    defu = R.drawable.ic_need_product;
+                }
             }
             Glide.with(this)
                     .load(url)
@@ -253,7 +264,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         } else {
             if (AdType.equals("1")) {
                 defu = R.drawable.ic_service_big;
-            }else {
+            } else {
                 defu = R.drawable.ic_need_service;
             }
             Glide.with(this)
@@ -290,6 +301,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
 
                             catGroup = dr.getEditDataModel().getCatGroup();
+                            adParentId = dr.getEditDataModel().getAdDetailsModel().getParentId();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), PostViewActivity.this);
                             chatId = dr.getEditDataModel().getChatId();
                             AdType = editAdDetailsModel.getAdType();
@@ -776,5 +788,10 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         if (result) {
             Function.CallNow(PostViewActivity.this, userPhone);
         }
+    }
+
+    @Override
+    public void callCityChange() {
+        PageFrom = "2";
     }
 }

@@ -34,7 +34,7 @@
                 android:paddingTop="@dimen/size_five"
                 android:paddingRight="@dimen/size_fifteen"
                 android:paddingBottom="@dimen/size_five"
-                android:text="₹ 600/day"
+                android:text=""
                 android:textColor="@color/color_white"
                 android:textSize="@dimen/size_ten" />
             <LinearLayout
@@ -44,7 +44,7 @@
                 android:gravity="right"
                 android:layout_marginTop="@dimen/size_five"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/img_top_page_mark"
@@ -78,7 +78,7 @@
             android:fontFamily="@font/nunito_regular"
             android:gravity="center"
             android:maxLines="2"
-            android:minHeight="30dp"
+            android:minHeight="40dp"
             android:text=""
             android:textColor="@color/color_black"
             android:textSize="@dimen/size_twelve" />

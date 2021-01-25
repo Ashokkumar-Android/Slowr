@@ -242,7 +242,7 @@
                     android:id="@+id/txt_description"
                     style="@style/ad_view_title"
                     android:text=""
-                    android:textSize="@dimen/size_sixteen" />
+                    android:textSize="@dimen/size_fourteen" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -382,7 +382,7 @@
                         android:layout_gravity="right|bottom"
                         android:text="@string/txt_view_profile"
                         android:textColor="@color/txt_orange"
-                        android:textSize="@dimen/size_twelve"
+                        android:textSize="@dimen/size_fourteen"
                         android:layout_marginTop="@dimen/size_five"
                         android:visibility="visible" />
                 </LinearLayout>

@@ -21,15 +21,16 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.slowr.app.R;
 import com.slowr.app.adapter.BannerAdapter;
 import com.slowr.app.adapter.HomeAdListAdapter;
+import com.slowr.app.adapter.HomeBannerAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.components.carouselview.CarouselView;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.DefaultResponse;
@@ -40,8 +41,7 @@ import com.slowr.app.utils.Sessions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 
@@ -56,7 +56,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     TextView txt_verified;
     ImageView img_unverified_user;
     ImageView img_user_profile;
-    ViewPager vp_banner;
+    CarouselView rc_banner;
     ArrayList<BannerItemModel> bannerList = new ArrayList<>();
 
     BannerAdapter bannerAdapter;
@@ -78,6 +78,10 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private static int currentPage = 0;
     private static int NUM_PAGES = 0;
 
+    HomeBannerAdapter homeBannerAdapter;
+
+    boolean isBannerStarted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,14 +101,19 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         img_user_profile = findViewById(R.id.img_user_profile);
         txt_verified = findViewById(R.id.txt_verified);
         layout_root = findViewById(R.id.layout_root);
-        vp_banner = findViewById(R.id.vp_banner);
+        rc_banner = findViewById(R.id.rc_banner);
         txt_page_title.setText("Profile");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(linearLayoutManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, UserProfileActivity.this);
+        homeAdListAdapter = new HomeAdListAdapter(adList, UserProfileActivity.this, false);
         rc_ad_list.setAdapter(homeAdListAdapter);
+
+
+        homeBannerAdapter = new HomeBannerAdapter(bannerList, UserProfileActivity.this);
+        rc_banner.setAdapter(homeBannerAdapter);
+
         if (_fun.isInternetAvailable(UserProfileActivity.this)) {
             getAdList();
         } else {
@@ -127,58 +136,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         txt_verified.setOnClickListener(this);
         txt_prosperId_post.setOnClickListener(this);
         txt_phone.setOnClickListener(this);
-        setBanner();
+
     }
 
-    private void setBanner() {
-
-        bannerAdapter = new BannerAdapter(UserProfileActivity.this, bannerList);
-        vp_banner.setAdapter(bannerAdapter);
-        // Auto start of viewpager
-        final Handler handler = new Handler();
-        final Runnable Update = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
-                }
-                vp_banner.setCurrentItem(currentPage++, true);
-            }
-        };
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(Update);
-            }
-        }, 1000, 2000);
-        vp_banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        bannerAdapter.setCallBack(new BannerAdapter.CallBack() {
-            @Override
-            public void onItemClick(int pos) {
-//                String userProsperId = bannerList.get(pos).getProsperId();
-//                if (userProsperId != null) {
-//                    Intent i = new Intent(UserProfileActivity.this, UserProfileActivity.class);
-//                    i.putExtra("prosperId", userProsperId);
-//                    startActivity(i);
-//                }
-            }
-        });
-    }
 
     private void getAdList() {
         RetrofitClient.getClient().create(Api.class).getUserAdDetails(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
@@ -186,6 +146,12 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void callBackFunction() {
+        homeBannerAdapter.setCallback(new HomeBannerAdapter.Callback() {
+            @Override
+            public void itemClick(BannerItemModel model) {
+
+            }
+        });
         homeAdListAdapter.setCallback(new HomeAdListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
@@ -326,13 +292,16 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     bannerList.clear();
                     if (dr.getBannerList() != null) {
                         bannerList.addAll(dr.getBannerList());
-                        NUM_PAGES = bannerList.size();
-                        currentPage = 0;
-                        bannerAdapter.notifyDataSetChanged();
+                        homeBannerAdapter.notifyDataSetChanged();
+
+                        if (!isBannerStarted && bannerList.size() != 0) {
+                            isBannerStarted = true;
+                            rc_banner.start(3, TimeUnit.SECONDS);
+                        }
                         if (bannerList.size() == 0) {
-                            vp_banner.setVisibility(View.GONE);
+                            rc_banner.setVisibility(View.GONE);
                         } else {
-                            vp_banner.setVisibility(View.VISIBLE);
+                            rc_banner.setVisibility(View.VISIBLE);
                         }
                     }
                 } else {

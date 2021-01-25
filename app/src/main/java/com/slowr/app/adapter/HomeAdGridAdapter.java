@@ -1,6 +1,7 @@
 package com.slowr.app.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.slowr.app.R;
+import com.slowr.app.activity.UserProfileActivity;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
@@ -33,6 +35,7 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
         public TextView txt_price;
         public TextView txt_location;
         public TextView txt_like_count;
+        public TextView txt_service_count;
         public LinearLayout layout_root;
         public ImageView img_ad;
         public LikeButton img_favorite;
@@ -54,9 +57,12 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
             img_top_page_mark = view.findViewById(R.id.img_top_page_mark);
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
             img_share = view.findViewById(R.id.img_share);
+            txt_service_count = view.findViewById(R.id.txt_service_count);
+
             layout_root.setOnClickListener(this);
 //            img_favorite.setOnClickListener(this);
             img_share.setOnClickListener(this);
+            txt_service_count.setOnClickListener(this);
             img_favorite.setOnLikeListener(this);
         }
 
@@ -77,6 +83,11 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                     break;
                 case R.id.img_share:
                     callback.onShareClick(getAdapterPosition());
+                    break;
+                case R.id.txt_service_count:
+                    Intent i = new Intent(ctx, UserProfileActivity.class);
+                    i.putExtra("prosperId", categoryList.get(getAdapterPosition()).getProsperId());
+                    ctx.startActivity(i);
                     break;
 
             }
@@ -203,7 +214,13 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                 if (movie.getAdType().equals("1")) {
                     defu = R.drawable.ic_no_image;
                 } else {
-                    defu = R.drawable.ic_need_product;
+                    if (movie.getAdParentId() != null && movie.getAdParentId().equals("1")) {
+                        defu = R.drawable.ic_need_space;
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
+                        defu = R.drawable.ic_need_pet;
+                    } else {
+                        defu = R.drawable.ic_need_product;
+                    }
                 }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())
@@ -222,6 +239,16 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                         .error(defu)
                         .placeholder(defu)
                         .into(holder.img_ad);
+            }
+            if (movie.getAdType().equals("1") && movie.getCatGroup().equals("2") && movie.getServiceAdCount() > 1) {
+                holder.txt_service_count.setVisibility(View.VISIBLE);
+                if (movie.getServiceAdCount() - 1 == 1) {
+                    holder.txt_service_count.setText("+ " + (movie.getServiceAdCount() - 1) + " Service");
+                } else {
+                    holder.txt_service_count.setText("+ " + (movie.getServiceAdCount() - 1) + " Services");
+                }
+            } else {
+                holder.txt_service_count.setVisibility(View.INVISIBLE);
             }
 //        if (!movie.getUserId().equals(Sessions.getSession(Constant.UserId, ctx))) {
 //            holder.img_favorite.setEnabled(true);

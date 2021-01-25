@@ -13,6 +13,9 @@ public class SubCategoryChildModel {
     @SerializedName("slug")
     private String childSlug;
 
+    @SerializedName("parent")
+    private String parentId;
+
     public String getChildCategoryId() {
         return childCategoryId;
     }
@@ -35,5 +38,13 @@ public class SubCategoryChildModel {
 
     public void setChildSlug(String childSlug) {
         this.childSlug = childSlug;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

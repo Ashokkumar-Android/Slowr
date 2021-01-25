@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.Html;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -82,13 +86,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 
-public class HomeActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, BaseActivity.CallBackCity {
     ViewPager vp_banner;
     NestedScrollView layout_home;
     LinearLayout layout_search_list;
@@ -146,14 +148,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     HashMap<String, Object> params = new HashMap<String, Object>();
 
-    BaseActivity homeActivity;
+
     View rootView = null;
 
     GridLayoutManager gridManager;
     LinearLayoutManager listManager;
     boolean doubleBackToExitPressedOnce = false;
     int serachView = 0;
-    private PopupWindow spinnerPopup, filterPopup;
+    private PopupWindow spinnerPopup, filterPopup, demoPopup;
     SortByAdapter sortByAdapter;
     FilterOptionAdapter filterOptionAdapter;
     FilterSelectAdapter filterSelectAdapter;
@@ -167,15 +169,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     boolean isLoading = false;
-    boolean isEnd = false;
+    boolean isRefresh = false;
 
     boolean isBannerStarted = false;
+    boolean isViewBack = false;
 
     FusedLocationProviderClient fusedLocationProviderClient;
     Location currentLocation;
     private static final int REQUEST_CODE = 101;
-    String cityName;
-
+    String cityName = "";
+    BaseActivity homeActivity;
+    CallBackCity callBackCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +198,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             Log.i("IsRegister", "Called");
         }
         homeActivity = new BaseActivity();
+        homeActivity.callBackCity = callBackCity;
         rc_product_list = findViewById(R.id.rc_product_list);
         rc_service_list = findViewById(R.id.rc_service_list);
         rc_ad_list = findViewById(R.id.rc_ad_list);
@@ -233,7 +238,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         listManager = new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(listManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, HomeActivity.this);
+        homeAdListAdapter = new HomeAdListAdapter(adList, HomeActivity.this, true);
         homeAdGridAdapter = new HomeAdGridAdapter(adList, HomeActivity.this);
         rc_ad_list.setAdapter(homeAdListAdapter);
 
@@ -249,13 +254,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         filterSelectAdapter = new FilterSelectAdapter(filterSelectList, getApplicationContext());
         searchSuggistionAdapter = new SearchSuggistionAdapter(searchSuggestionList, getApplicationContext());
 
-//        LinearLayoutManager linearLayoutManager5 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
-//        rc_banner.setLayoutManager(linearLayoutManager5);
-//        rc_banner.setItemAnimator(new DefaultItemAnimator());
+
         homeBannerAdapter = new HomeBannerAdapter(bannerList, HomeActivity.this);
         rc_banner.setAdapter(homeBannerAdapter);
-//        SnapHelper snapHelper = new PagerSnapHelper();
-//        snapHelper.attachToRecyclerView(rc_banner);
 
 
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
@@ -305,6 +306,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(HomeActivity.this);
 
         saveUserDetails();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                ShowPopupProsper();
+//            }
+//        }, 200);
     }
 
     private void saveUserDetails() {
@@ -312,51 +319,57 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void GetLocationDetails() {
-        Log.i("User Location", "Step1");
-        if (_fun.checkPermissionLocation(HomeActivity.this)) {
+        try {
 
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    Log.i("User Location", "Step2");
-                    if (location != null) {
-                        currentLocation = location;
-                        Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.getDefault());
-                        List<Address> addresses = null;
-                        try {
-                            addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+
+            Log.i("User Location", "Step1");
+            if (_fun.checkPermissionLocation(HomeActivity.this)) {
+
+                fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        Log.i("User Location", "Step2");
+                        if (location != null) {
+                            currentLocation = location;
+                            Geocoder geocoder = new Geocoder(HomeActivity.this, Locale.getDefault());
+                            List<Address> addresses = null;
+                            try {
+                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            cityName = addresses.get(0).getLocality();
+                            String stateName = addresses.get(0).getAdminArea();
+                            String countryName = addresses.get(0).getCountryName();
+
+                        } else {
+                            Log.i("User Location", "Step4");
                         }
-                        cityName = addresses.get(0).getLocality();
-                        String stateName = addresses.get(0).getAdminArea();
-                        String countryName = addresses.get(0).getCountryName();
+                        if (!params.isEmpty()) {
+                            params.clear();
+                        }
 
-                    } else {
-                        Log.i("User Location", "Step4");
+                        String deviceDet = "{" + getHardwareAndSoftwareInfo() + "}";
+                        params.put("city", cityName);
+                        if (currentLocation != null) {
+                            params.put("longitude", String.valueOf(currentLocation.getLongitude()));
+                            params.put("latitude", String.valueOf(currentLocation.getLatitude()));
+                        } else {
+                            params.put("longitude", "");
+                            params.put("latitude", "");
+                        }
+                        params.put("device_details", deviceDet);
+                        if (isRegister) {
+                            params.put("action", "1");
+                        }
+                        Log.i("Params", params.toString());
+                        RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
                     }
-                    if (!params.isEmpty()) {
-                        params.clear();
-                    }
-
-                    String deviceDet = "{" + getHardwareAndSoftwareInfo() + "}";
-                    params.put("city", cityName);
-                    if (currentLocation != null) {
-                        params.put("longitude", String.valueOf(currentLocation.getLongitude()));
-                        params.put("latitude", String.valueOf(currentLocation.getLatitude()));
-                    } else {
-                        params.put("longitude", "");
-                        params.put("latitude", "");
-                    }
-                    params.put("device_details", deviceDet);
-                    if (isRegister) {
-                        params.put("action", "1");
-                    }
-                    Log.i("Params", params.toString());
-                    RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
-                }
-            });
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -408,13 +421,25 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
 
     private void getHomeBannerDetails(boolean isLoad) {
+        layout_no_ad_city.setVisibility(View.GONE);
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
+
+        if (_fun.isInternetAvailable(HomeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
+        } else {
+            _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
+                }
+            });
+        }
     }
 
     private void getHomeAdsList(boolean isLoad) {
@@ -424,14 +449,37 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
         params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
         Log.i("Params", params.toString());
-        RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+
+        if (_fun.isInternetAvailable(HomeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+        } else {
+            _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+                }
+            });
+        }
+
     }
 
     private void getHomeDetails(boolean isLoad) {
 
-        RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+
+        if (_fun.isInternetAvailable(HomeActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+        } else {
+            _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+                }
+            });
+        }
     }
 
     private void CallBackFunction() {
@@ -443,6 +491,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
                     i.putExtra("prosperId", userProsperId);
                     startActivity(i);
+                } else {
+                    ShowPopupDefauldBanner();
                 }
             }
         });
@@ -563,6 +613,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 productType = homeAdList.get(pos).getProductType();
                 currentPageNo = 1;
                 catId = "";
+                sortById = "";
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
 
                     getAdList(true);
@@ -633,6 +684,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         });
+
     }
 
 
@@ -669,55 +721,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    private void setBanner() {
-
-        bannerAdapter = new BannerAdapter(HomeActivity.this, bannerList);
-        vp_banner.setAdapter(bannerAdapter);
-        // Auto start of viewpager
-        final Handler handler = new Handler();
-        final Runnable Update = new Runnable() {
-            public void run() {
-                if (currentPage == NUM_PAGES) {
-                    currentPage = 0;
-                }
-                vp_banner.setCurrentItem(currentPage++, true);
-            }
-        };
-        Timer swipeTimer = new Timer();
-        swipeTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(Update);
-            }
-        }, 1000, 2000);
-        vp_banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-        bannerAdapter.setCallBack(new BannerAdapter.CallBack() {
-            @Override
-            public void onItemClick(int pos) {
-                String userProsperId = bannerList.get(pos).getProsperId();
-                if (userProsperId != null) {
-                    Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
-                    i.putExtra("prosperId", userProsperId);
-                    startActivity(i);
-                }
-            }
-        });
-    }
 
     private void Pageination() {
 
@@ -830,8 +833,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     layout_home.setVisibility(View.GONE);
                     bannerList.clear();
                     bannerList.addAll(dr.getBannerList());
-                    NUM_PAGES = bannerList.size();
-                    currentPage = 0;
+
                     homeBannerAdapter.notifyDataSetChanged();
 
                     if (!isBannerStarted) {
@@ -941,7 +943,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     homeCustomListAdapter.notifyDataSetChanged();
 
 
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1000,9 +1001,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     } else {
                         homeAdListAdapter.notifyDataSetChanged();
                     }
-                    if (currentPageNo == 1 && adList.size() != 0) {
+                    if (currentPageNo == 1 && adList.size() != 0 && !isViewBack) {
+
                         rc_ad_list.smoothScrollToPosition(0);
 
+                    }
+                    if (isViewBack) {
+                        isViewBack = false;
                     }
                     layout_search_list.setVisibility(View.VISIBLE);
                     layout_home.setVisibility(View.GONE);
@@ -1150,6 +1155,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isCategory = false;
                 edt_search.setText("");
                 Constant.ParentId = "";
+                if (isRefresh) {
+                    layout_no_ad_city.setVisibility(View.GONE);
+                    isRefresh = false;
+                    if (_fun.isInternetAvailable(HomeActivity.this)) {
+                        getHomeBannerDetails(false);
+                    } else {
+
+                        _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                getHomeBannerDetails(false);
+                            }
+                        });
+
+
+                    }
+                }
                 break;
             case R.id.img_list:
                 if (isGrid) {
@@ -1225,6 +1247,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isCategory = false;
                 edt_search.setText("");
                 Constant.ParentId = "";
+                if (isRefresh) {
+                    layout_no_ad_city.setVisibility(View.GONE);
+                    isRefresh = false;
+                    if (_fun.isInternetAvailable(HomeActivity.this)) {
+                        getHomeBannerDetails(false);
+                    } else {
+
+                        _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                            @Override
+                            public void isInternet() {
+                                getHomeBannerDetails(false);
+                            }
+                        });
+
+
+                    }
+                }
             } else {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
@@ -1321,7 +1360,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             public void itemClick(int pos) {
                 filterSelectList.clear();
                 filterSelectList.addAll(filterList.get(pos).getFilterValue());
-                ShowPopupFilter(pos, txt_page_action, txt_clear);
+                ShowPopupFilter(pos, txt_page_action, txt_clear, filterList.get(pos).isSearch());
             }
         });
         txt_page_action.setOnClickListener(new View.OnClickListener() {
@@ -1391,7 +1430,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    public void ShowPopupFilter(final int pos, final TextView _txt_page_action, final TextView _txt_clear) {
+    public void ShowPopupFilter(final int pos, final TextView _txt_page_action, final TextView _txt_clear, boolean isSearch) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_fillter_popup, null);
         filterPopup = new PopupWindow(view,
@@ -1403,6 +1442,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         LinearLayout img_popup_back = view.findViewById(R.id.img_back);
         TextView txt_popup_title = view.findViewById(R.id.txt_page_title);
         TextView txt_page_action = view.findViewById(R.id.txt_page_action);
+        EditText edt_search_suggestion = view.findViewById(R.id.edt_search_suggestion);
 
         RecyclerView rc_filter = view.findViewById(R.id.rc_filter);
         txt_page_action.setText(getString(R.string.txt_done));
@@ -1413,8 +1453,27 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         rc_filter.setAdapter(filterSelectAdapter);
         txt_page_action.setVisibility(View.VISIBLE);
         txt_popup_title.setText(getString(R.string.txt_filter));
+        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterSelectAdapter.getFilter().filter(edt_search_suggestion.getText().toString());
+            }
+        });
+        if (isSearch) {
+            edt_search_suggestion.setVisibility(View.VISIBLE);
+        } else {
+            edt_search_suggestion.setVisibility(View.GONE);
+        }
         img_popup_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1427,6 +1486,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         txt_page_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Function.hideSoftKeyboard(HomeActivity.this, v);
                 String selVal = "";
                 filterList.get(pos).getFilterValue().clear();
                 filterList.get(pos).getFilterValue().addAll(filterSelectList);
@@ -1456,6 +1516,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 if (filterPopup.isShowing()) {
                     filterPopup.dismiss();
                 }
+                filterSelectAdapter.getFilter().filter("");
+
             }
         });
 
@@ -1486,12 +1548,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 .placeholder(R.drawable.ic_congrts)
                 .into(img_cong_gif);
         txt_prosperId_popup.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
-//        String contentOne = "<font color=#000000>Type </font> <font color=#FF7400>Slowr.com/" + Sessions.getSession(Constant.ProsperId, getApplicationContext()) + "</font><font color=#000000> on url. </font> ";
-//        txt_content_one.setText(Html.fromHtml(contentOne));
+        String contentOne = "<font color=#000000>Your Prosper ID is your website!<br><br>Pass this Prosper ID to your client circle.<br><br>We will show them only your page!!</font>";
+        txt_content_one.setText(Html.fromHtml(contentOne));
 //
-//        String contentTwo = "<font color=#000000>This website will become\nyours </font> <font color=#0F4C81>exclusively!</font>";
-//        contentTwo = contentTwo.replace("\n", "<br>");
-//        txt_content_two.setText(Html.fromHtml(contentTwo));
+        String contentTwo = "<font color=#F2672E><u>(eg: www.slowr.com/" + Sessions.getSession(Constant.ProsperId, getApplicationContext()) + ")</u></font>";
+        contentTwo = contentTwo.replace("\n", "<br>");
+        txt_content_two.setText(Html.fromHtml(contentTwo));
 //
 //        String contentThree = "<font color=#000000>Showcase only </font> <font color=#2B9109>Your offerings</font><font color=#000000> to\nCustomers!!</font> ";
 //        contentThree = contentThree.replace("\n", "<br>");
@@ -1508,8 +1570,67 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 spinnerPopup.dismiss();
             }
         });
-
+        txt_content_two.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopupProfileDemo();
+            }
+        });
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    public void ShowPopupProfileDemo() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_profile_demo, null);
+        demoPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        demoPopup.setOutsideTouchable(true);
+        demoPopup.setFocusable(true);
+        demoPopup.update();
+        TextView txt_prosperId_demo = view.findViewById(R.id.txt_prosperId_demo);
+        TextView txt_name_demo = view.findViewById(R.id.txt_name_demo);
+        TextView txt_phone_dmo = view.findViewById(R.id.txt_phone_dmo);
+        TextView txt_email_dmo = view.findViewById(R.id.txt_email_dmo);
+        TextView txt_page_title = view.findViewById(R.id.txt_page_title);
+        Button btn_ok = view.findViewById(R.id.btn_ok);
+        LinearLayout img_back = view.findViewById(R.id.img_back);
+        txt_page_title.setText("Demo Profile View");
+        txt_prosperId_demo.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+        if (Sessions.getSession(Constant.UserName, getApplicationContext()).equals("")) {
+            txt_name_demo.setText(getString(R.string.txt_demo_name));
+        } else {
+            txt_name_demo.setText(Sessions.getSession(Constant.UserName, getApplicationContext()));
+        }
+        if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
+            txt_phone_dmo.setText(getString(R.string.txt_demo_phone));
+        } else {
+            txt_phone_dmo.setText(Sessions.getSession(Constant.UserPhone, getApplicationContext()));
+        }
+
+        if (Sessions.getSession(Constant.UserEmail, getApplicationContext()).equals("")) {
+            txt_email_dmo.setText(getString(R.string.txt_demo_email));
+        } else {
+            txt_email_dmo.setText(Sessions.getSession(Constant.UserEmail, getApplicationContext()));
+        }
+
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                demoPopup.dismiss();
+                spinnerPopup.dismiss();
+            }
+        });
+
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                demoPopup.dismiss();
+                spinnerPopup.dismiss();
+            }
+        });
+
+        demoPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
     @Override
@@ -1525,6 +1646,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         if (resultCode == RESULT_OK) {
             if (requestCode == EDIT_AD_VIEW) {
                 currentPageNo = 1;
+                isViewBack = true;
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
                     getAdList(true);
                 } else {
@@ -1544,6 +1666,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         if (isCategory) {
             currentPageNo = 1;
+
             if (_fun.isInternetAvailable(HomeActivity.this)) {
                 getAdList(false);
             } else {
@@ -1619,6 +1742,48 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
+    public void ShowPopupDefauldBanner() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_post_success, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+
+        TextView popup_content = view.findViewById(R.id.txt_content_one);
+        TextView txt_skip = view.findViewById(R.id.txt_skip);
+        Button txt_done = view.findViewById(R.id.btn_ok);
+        String contentOne = "<font color=#000000>Go to  </font> <font color=#FF7400>My Banners" + "</font><font color=#000000> and create your own Banner to place it here.<br><br>Banners can be displayed to any chosen Cities!</font> ";
+        popup_content.setText(Html.fromHtml(contentOne));
+//        popup_content.setText(getString(R.string.txt_banner_popup_content));
+
+        txt_done.setText(getString(R.string.txt_banner));
+        txt_skip.setVisibility(View.VISIBLE);
+        txt_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+
+        txt_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent b = new Intent(HomeActivity.this, BannerActivity.class);
+                    startActivity(b);
+                } else {
+                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                }
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1635,6 +1800,44 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
         if (result) {
             GetLocationDetails();
+        }
+    }
+
+
+    @Override
+    public void callCityChange() {
+        layout_swipe_refresh.setRefreshing(true);
+        if (isCategory) {
+            isRefresh = true;
+            currentPageNo = 1;
+            isFilterClear = false;
+            sortByList.clear();
+            filterList.clear();
+            sortById = "";
+            if (_fun.isInternetAvailable(HomeActivity.this)) {
+                getAdList(false);
+            } else {
+                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        getAdList(false);
+                    }
+                });
+            }
+        } else {
+            if (_fun.isInternetAvailable(HomeActivity.this)) {
+                getHomeBannerDetails(false);
+            } else {
+
+                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        getHomeBannerDetails(false);
+                    }
+                });
+
+
+            }
         }
     }
 }

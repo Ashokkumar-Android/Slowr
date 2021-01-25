@@ -53,6 +53,7 @@ import retrofit2.Call;
 
 public class BaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+
     LinearLayout layout_login;
     LinearLayout layout_prosper;
     LinearLayout layout_location;
@@ -75,7 +76,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     TextView txt_total_count;
     LinearLayout layout_menu_header;
     ImageView img_slowr_logo;
-//    SearchCallBack searchCallBack;
 
 
     CityListAdapter cityListAdapter;
@@ -104,7 +104,9 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
     TextView txtChatUnread;
     TextView txtNotificationUnread;
 
+
     public static BaseActivity instance;
+    CallBackCity callBackCity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,7 +171,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         txtChatUnread = viewChat.findViewById(R.id.txt_unread_count);
         txtNotificationUnread = viewNotification.findViewById(R.id.txt_unread_count);
 
-
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             layout_login.setVisibility(View.GONE);
             layout_prosper.setVisibility(View.VISIBLE);
@@ -209,7 +210,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuChat.setVisible(false);
             menuBanner.setVisible(false);
         }
-
+        callBackCity = (CallBackCity) this;
     }
 
     private void ClickFunction() {
@@ -367,6 +368,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         cityListAdapter.setCallback(new CityListAdapter.Callback() {
             @Override
             public void itemClick(CityItemModel model) {
+
                 cityId = model.getCityId();
                 txt_location.setText(model.getCityName());
                 Sessions.saveSession(Constant.CityId, cityId, getApplicationContext());
@@ -375,9 +377,11 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 isLocationVisible = false;
                 edt_list_search.setText("");
                 Function.hideSoftKeyboard(BaseActivity.this, edt_list_search);
-                Intent h = new Intent(BaseActivity.this, HomeActivity.class);
-                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(h);
+
+                callBackCity.callCityChange();
+//                Intent h = new Intent(BaseActivity.this, HomeActivity.class);
+//                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(h);
                 Constant.ParentId = "";
             }
         });
@@ -725,11 +729,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
-//    public void setSearchCallBack(SearchCallBack searchCallBack) {
-//        this.searchCallBack = searchCallBack;
-//    }
-//
-//    interface SearchCallBack {
-//        void onSearchCall(String searchText);
-//    }
+
+    public interface CallBackCity {
+        void callCityChange();
+    }
 }

@@ -153,7 +153,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     .setContentTitle(msg_title)
                                     .setContentText(msg_text)
                                     .setAutoCancel(true)
-                                    .setSound(defaultSoundUri)
                                     .setContentIntent(pendingIntent);
                 } else {
                     notificationBuilder =
@@ -168,7 +167,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     .setContentTitle(msg_title)
                                     .setContentText(msg_text)
                                     .setAutoCancel(true)
-                                    .setSound(defaultSoundUri)
                                     .setContentIntent(pendingIntent);
                 }
                 NotificationManager notificationManager =

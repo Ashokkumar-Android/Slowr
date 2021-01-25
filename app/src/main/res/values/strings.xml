@@ -142,6 +142,13 @@
     <string name="enter_rental_fee">Enter Rental Fee</string>
     <string name="enter_hiring_fee">Enter Hiring Fee</string>
     <string name="image_one_must">At least one image is mandatory. Please upload one to get more enquiries</string>
+    <string name="image_one_must_service">Please upload an image to get more enquiries</string>
+
+    <string name="des_products">A few lines about your product and its quality will get you more business reach.</string>
+    <string name="des_service">Write in detail about your unique skills to reach more clients.</string>
+
+    <string name="des_products_req">A few lines about your requirement will fetch you the opt product of your choice.</string>
+    <string name="des_service_req">Write a few lines about the skill set you expect from the professional &amp; hire the best.</string>
 
 
     <string-array name="price_array">
@@ -415,6 +422,10 @@
     <string name="txt_no_ad_banner">To hoist new Banner, you should have atleast one Ad</string>
     <string name="txt_no_ad_content">Click below to post your first Ad</string>
 
+    <string name="txt_banner_popup_content">Check "My Banners" in your menu and create your own Banner to place it here.\nBanners can be displayed to any chosen Cities</string>
+    <string name="txt_demo_name">Name Middle Last</string>
+    <string name="txt_demo_email">youremail@mail.com</string>
+    <string name="txt_demo_phone">+91 01234 56789</string>
 
     <string name="serial">SERIAL: </string>
     <string name="model">MODEL: </string>
