@@ -28,8 +28,8 @@
                 android:id="@+id/img_cong_gif"
                 android:layout_width="match_parent"
                 android:layout_height="225dp"
-                android:src="@drawable/ic_congrts"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_congrts" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -73,26 +73,49 @@
                     android:layout_marginTop="@dimen/size_ten"
                     android:fontFamily="@font/nunito_regular"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:text="@string/txt_welcome_content"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_fifteen" />
 
-
-                <Button
-                    android:id="@+id/btn_ok"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_margin="@dimen/size_ten"
-                    android:background="@drawable/bg_orenge"
-                    android:fontFamily="@font/nunito_regular"
-                    android:gravity="center"
-                    android:paddingLeft="@dimen/size_twenty"
-                    android:paddingRight="@dimen/size_twenty"
-                    android:text="@string/txt_continue"
-                    android:textAllCaps="false"
-                    android:elevation="0dp"
-                    android:textColor="@color/color_white"
-                    android:textSize="@dimen/size_thirteen" />
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btn_demo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_margin="@dimen/size_ten"
+                        android:background="@drawable/bg_orenge"
+                        android:elevation="0dp"
+                        android:fontFamily="@font/nunito_regular"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/size_twenty"
+                        android:paddingRight="@dimen/size_twenty"
+                        android:text="@string/txt_check_demo"
+                        android:textAllCaps="false"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_thirteen" />
+
+                    <Button
+                        android:id="@+id/btn_ok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_margin="@dimen/size_ten"
+                        android:background="@drawable/bg_request_otp"
+                        android:elevation="0dp"
+                        android:fontFamily="@font/nunito_regular"
+                        android:gravity="center"
+                        android:paddingLeft="@dimen/size_twenty"
+                        android:paddingRight="@dimen/size_twenty"
+                        android:text="@string/txt_continue"
+                        android:textAllCaps="false"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/size_thirteen" />
+
+                </LinearLayout>
 
 
             </LinearLayout>

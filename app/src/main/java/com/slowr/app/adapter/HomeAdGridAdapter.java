@@ -22,6 +22,7 @@ import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.MyViewHolder> {
@@ -186,7 +187,9 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                         holder.txt_price.setText(ctx.getString(R.string.custom_hire));
                     }
                 } else {
-                    holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
+                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+                    String formatPrice = formatter.format(Integer.valueOf(price));
+                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
                 }
             } else {
                 if (movie.getCatGroup().equals("1")) {
@@ -218,6 +221,8 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                         defu = R.drawable.ic_need_space;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
                         defu = R.drawable.ic_need_pet;
+                    }else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
+                        defu = R.drawable.ic_need_book;
                     } else {
                         defu = R.drawable.ic_need_product;
                     }
@@ -243,9 +248,9 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
             if (movie.getAdType().equals("1") && movie.getCatGroup().equals("2") && movie.getServiceAdCount() > 1) {
                 holder.txt_service_count.setVisibility(View.VISIBLE);
                 if (movie.getServiceAdCount() - 1 == 1) {
-                    holder.txt_service_count.setText("+ " + (movie.getServiceAdCount() - 1) + " Service");
+                    holder.txt_service_count.setText("+" + (movie.getServiceAdCount() - 1) + " Service");
                 } else {
-                    holder.txt_service_count.setText("+ " + (movie.getServiceAdCount() - 1) + " Services");
+                    holder.txt_service_count.setText("+" + (movie.getServiceAdCount() - 1) + " Services");
                 }
             } else {
                 holder.txt_service_count.setVisibility(View.INVISIBLE);

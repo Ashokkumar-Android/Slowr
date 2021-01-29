@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdapter.MyViewHolder> {
@@ -92,7 +93,9 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                     }
 
                 } else {
-                    holder.txt_price.setText("₹ " + price + " / " + movie.getAdDuration());
+                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+                    String formatPrice = formatter.format(Integer.valueOf(price));
+                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
                 }
             } else {
                 if (movie.getAdDuration().equals("Custom")) {
@@ -127,13 +130,15 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                         defu = R.drawable.ic_need_space;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
                         defu = R.drawable.ic_need_pet;
-                    } else {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
+                        defu = R.drawable.ic_need_book;
+                    }else {
                         defu = R.drawable.ic_need_product;
                     }
                 }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())
-                        .error(defu)
+                         .error(defu)
                         .placeholder(defu)
                         .into(holder.img_ad);
             } else {

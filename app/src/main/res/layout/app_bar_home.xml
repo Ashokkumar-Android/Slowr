@@ -61,7 +61,7 @@
                     <ImageView
                         android:id="@+id/img_slowr_logo"
                         android:layout_width="100dp"
-                        android:layout_height="31dp"
+                        android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:src="@drawable/ic_slowr" />
 

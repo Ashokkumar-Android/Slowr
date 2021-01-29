@@ -32,6 +32,7 @@ import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import retrofit2.Call;
 
@@ -316,7 +317,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                             adList.add(tempAdList.get(i));
                         }
                     }
-
+                    Collections.reverse(adList);
                     adListAdapter.notifyDataSetChanged();
                 }
                 break;

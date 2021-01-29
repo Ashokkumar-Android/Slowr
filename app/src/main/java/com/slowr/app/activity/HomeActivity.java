@@ -1542,6 +1542,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         ImageView img_cong_gif = view.findViewById(R.id.img_cong_gif);
         CardView layoutRoot = view.findViewById(R.id.layout_prosper_root);
         Button btn_ok = view.findViewById(R.id.btn_ok);
+        Button btn_demo = view.findViewById(R.id.btn_demo);
 
         Glide.with(HomeActivity.this)
                 .load(R.drawable.ic_congrts)
@@ -1570,7 +1571,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 spinnerPopup.dismiss();
             }
         });
-        txt_content_two.setOnClickListener(new View.OnClickListener() {
+        btn_demo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShowPopupProfileDemo();
@@ -1619,6 +1620,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             public void onClick(View v) {
                 demoPopup.dismiss();
                 spinnerPopup.dismiss();
+                isRegister = false;
             }
         });
 
@@ -1627,6 +1629,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             public void onClick(View v) {
                 demoPopup.dismiss();
                 spinnerPopup.dismiss();
+                isRegister = false;
             }
         });
 

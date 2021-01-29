@@ -119,8 +119,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center|left"
                 android:orientation="vertical"
-                android:paddingRight="@dimen/size_ten"
-                android:paddingBottom="@dimen/size_ten">
+                android:paddingRight="@dimen/size_ten">
 
                 <TextView
                     android:id="@+id/txt_ad_title"
@@ -175,7 +174,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
+                        android:layout_weight="0.8"
                         android:gravity="center|left"
                         android:orientation="horizontal">
 
@@ -197,7 +196,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
+                        android:layout_weight="0.2"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:visibility="visible">
@@ -208,17 +207,28 @@
                             android:layout_height="24dp"
                             android:layout_marginRight="@dimen/size_ten"
                             android:src="@drawable/ic_share" />
-
-                        <TextView
-                            android:id="@+id/txt_service_count"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/nunito_regular"
-                            android:textColor="@color/txt_orange"
-                            android:layout_gravity="right|center"
-                            android:visibility="invisible"
-                            android:gravity="right"
-                            android:textSize="@dimen/size_fourteen" />
+                            android:gravity="right">
+                            <TextView
+                                android:id="@+id/txt_service_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_regular"
+                                android:textColor="@color/txt_orange"
+                                android:background="@drawable/bg_orenge_border"
+                                android:layout_gravity="right|center"
+                                android:visibility="invisible"
+                                android:paddingRight="@dimen/size_five"
+                                android:paddingLeft="@dimen/size_five"
+                                android:paddingBottom="3dp"
+                                android:paddingTop="3dp"
+                                android:gravity="center"
+                                android:text="+3 service"
+                                android:textSize="@dimen/size_twelve" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -239,6 +249,7 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
 
             </LinearLayout>
         </LinearLayout>

@@ -46,6 +46,7 @@ import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -252,6 +253,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     defu = R.drawable.ic_need_space;
                 } else if (adParentId.equals("1306")) {
                     defu = R.drawable.ic_need_pet;
+                } else if (adParentId.equals("5")) {
+                    defu = R.drawable.ic_need_book;
                 } else {
                     defu = R.drawable.ic_need_product;
                 }
@@ -339,7 +342,9 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                         txt_price.setText(getString(R.string.custom_hire));
                                     }
                                 } else {
-                                    txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
+                                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+                                    String formatPrice = formatter.format(Integer.valueOf(price));
+                                    txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
                                 }
 
                             } else {

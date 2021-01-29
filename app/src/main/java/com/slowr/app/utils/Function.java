@@ -376,12 +376,7 @@ public class Function {
         ViewDialog viewDialog;
         viewDialog = new ViewDialog(ctx);
         viewDialog.showDialog();
-        String shareTitle = "";
-        if (catGroup.equals("1")) {
-            shareTitle = ctx.getString(R.string.txt_rent_temp);
-        } else {
-            shareTitle = ctx.getString(R.string.txt_hire_temp);
-        }
+
         DynamicLink.SocialMetaTagParameters.Builder builder = new DynamicLink.SocialMetaTagParameters.Builder();
         builder.setTitle("www.slowr.com");
         builder.setDescription("Rent Anything Hire Anybody \"Temporarily\"");

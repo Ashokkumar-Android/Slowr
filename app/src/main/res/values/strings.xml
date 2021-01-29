@@ -427,6 +427,8 @@
     <string name="txt_demo_email">youremail@mail.com</string>
     <string name="txt_demo_phone">+91 01234 56789</string>
 
+    <string name="txt_check_demo">Check Demo</string>
+
     <string name="serial">SERIAL: </string>
     <string name="model">MODEL: </string>
     <string name="id">ID: </string>
