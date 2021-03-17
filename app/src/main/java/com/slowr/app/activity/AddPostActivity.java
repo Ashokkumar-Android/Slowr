@@ -248,6 +248,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         } else if (AdType == 0) {
             if (getIntent().hasExtra("ParId")) {
                 parentId = getIntent().getStringExtra("ParId");
+                Log.i("ParentID", parentId);
             } else {
                 parentId = "";
             }
@@ -480,7 +481,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true));
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true, false));
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -489,7 +490,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void isInternet() {
                             RetrofitClient.getClient().create(Api.class).getAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true));
+                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true, false));
                         }
                     });
                 }
@@ -805,7 +806,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void itemClick(int pos) {
                 txt_rental_duration_content.setText(rentalDurationList.get(pos));
-                setRentalDuration(pos);
+                setRentalDuration(rentalDurationList.get(pos));
                 ListVisible(false);
                 isCity = false;
             }
@@ -857,32 +858,38 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void setRentalDuration(int pos) {
-        rentalDurationPos = pos;
-        rentalDuration = rentalDurationList.get(pos);
-        if (pos == 0) {
+    private void setRentalDuration(String pos) {
+        rentalDuration = pos;
+        if (pos.equals("Per Hour")) {
             rentalDurationTitle = getString(R.string.txt_hourly);
             if (AdType != 2) {
                 layout_input_price.setVisibility(View.VISIBLE);
                 view_rental_fee.setVisibility(View.VISIBLE);
             }
             isPriceVisible = true;
-        } else if (pos == 1) {
+        } else if (pos.equals("Per Day")) {
             rentalDurationTitle = getString(R.string.txt_daily);
             if (AdType != 2) {
                 layout_input_price.setVisibility(View.VISIBLE);
                 view_rental_fee.setVisibility(View.VISIBLE);
             }
             isPriceVisible = true;
-        } else if (pos == 2) {
+        } else if (pos.equals("Per Week")) {
 //            layout_input_price.setVisibility(View.INVISIBLE);
             if (AdType != 2) {
-                layout_input_price.setVisibility(View.GONE);
-                view_rental_fee.setVisibility(View.GONE);
+                layout_input_price.setVisibility(View.VISIBLE);
+                view_rental_fee.setVisibility(View.VISIBLE);
             }
-            isPriceVisible = false;
-            edt_price.setText("");
-            rentalDurationTitle = rentalDurationList.get(pos);
+            isPriceVisible = true;
+//            edt_price.setText("");
+            rentalDurationTitle = getString(R.string.txt_weekly);
+        } else if (pos.equals("Per Month")) {
+            rentalDurationTitle = getString(R.string.txt_monthly);
+            if (AdType != 2) {
+                layout_input_price.setVisibility(View.VISIBLE);
+                view_rental_fee.setVisibility(View.VISIBLE);
+            }
+            isPriceVisible = true;
         }
         AdTitleCreation();
 
@@ -956,7 +963,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 rc_service.setVisibility(View.GONE);
 
                 ListVisible(false);
-
+                RentalDurationList(categoryList.get(pos).getRentalDuration());
                 isSubCat = false;
 
                 productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
@@ -975,7 +982,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getCategory()
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true));
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true, false));
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -984,7 +991,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void isInternet() {
                             RetrofitClient.getClient().create(Api.class).getCategory()
-                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true));
+                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true, false));
                         }
                     });
                 }
@@ -1015,14 +1022,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
 //                    categoryExpandAdapter = new CategoryExpandAdapter(getApplicationContext(), categoryList);
                     rc_service.setAdapter(categoryListAdapter);
-                    if (AdType != 1) {
-                        rentalDurationList.clear();
-                        rentalDurationList.addAll(categoryModel.getCategoryServiceModel().getRentalDurationList());
-                        rentalDuration = rentalDurationList.get(0);
-                        setRentalDuration(0);
-                        txt_rental_duration_content.setText(rentalDurationList.get(0));
-                        rentalDurationAdapter.notifyDataSetChanged();
-                    }
+
 
 //                    spinnerAdapter.notifyDataSetChanged();
 
@@ -1045,14 +1045,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                 subCategoryList.clear();
                                 subCategoryList.addAll(tempCategoryList.get(i).getSubCategoryList());
                                 if (AdType != 1) {
+                                    RentalDurationList(tempCategoryList.get(i).getRentalDuration());
                                     isPostView = true;
                                     ClearFileds();
                                     layout_selection_button.setVisibility(View.GONE);
                                     rc_category.setVisibility(View.VISIBLE);
                                     rc_service.setVisibility(View.GONE);
                                     ListVisible(false);
-                                    ClearFileds();
                                     isSubCat = false;
+
                                 }
                                 productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
                                 txt_product_type_content.setThreshold(1);
@@ -1066,7 +1067,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             for (int i = 0; i < tempServiceList.size(); i++) {
                                 if (tempServiceList.get(i).getId().equals(parentId)) {
                                     tabNo = 2;
-                                    postImageListAdapter.ChangeSize(0);
+                                    postImageListAdapter.ChangeSize(4);
                                     postImageListAdapter.notifyDataSetChanged();
                                     txt_product_type_title.setText(tempServiceList.get(i).getCategoryTitle() + " *");
                                     txt_product_type_content.setHint("Enter " + tempServiceList.get(i).getCategoryTitle());
@@ -1074,8 +1075,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                     txt_rental_duration_title.setText(getString(R.string.txt_hiring_pattern));
                                     txt_rental_fee_title.setText(getString(R.string.txt_hiring_fee));
                                     txt_image_content.setText(getString(R.string.txt_upload_image_service));
+                                    txt_parent_title.setText(tempServiceList.get(i).getName());
                                     edt_price.setHint(getString(R.string.txt_input_price_service));
-                                    txt_product_type_content.setHint(getString(R.string.select_profession));
                                     if (isRequirement) {
                                         edt_description.setHint(getString(R.string.des_service_req));
                                     } else {
@@ -1088,7 +1089,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                         layout_image_upload.setVisibility(View.VISIBLE);
 
                                     if (AdType != 1) {
-
+                                        RentalDurationList(tempServiceList.get(i).getRentalDuration());
                                         isPostView = true;
                                         ClearFileds();
                                         layout_selection_button.setVisibility(View.GONE);
@@ -1097,8 +1098,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                         rc_service.setVisibility(View.GONE);
 
                                         ListVisible(false);
-                                        ClearFileds();
                                         isSubCat = false;
+
                                     }
 
                                     productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
@@ -1127,6 +1128,18 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
+    public void RentalDurationList(String _list) {
+        rentalDurationList.clear();
+        String[] strArray = _list.split(",");
+        attributeValueList.clear();
+        for (int i = 0; i < strArray.length; i++) {
+            rentalDurationList.add(strArray[i]);
+        }
+        rentalDuration = rentalDurationList.get(0);
+        setRentalDuration(rentalDurationList.get(0));
+        txt_rental_duration_content.setText(rentalDurationList.get(0));
+        rentalDurationAdapter.notifyDataSetChanged();
+    }
 
     private void SubCategoryCallBack() {
 
@@ -1385,7 +1398,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 Function.hideSoftKeyboard(AddPostActivity.this, v);
                 if (tabNo != 2) {
                     tabNo = 2;
-                    postImageListAdapter.ChangeSize(0);
+                    postImageListAdapter.ChangeSize(4);
                     postImageListAdapter.notifyDataSetChanged();
                     btn_product.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_left));
                     btn_service.setBackground(getResources().getDrawable(R.drawable.bg_right_orenge));
@@ -1452,6 +1465,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     otp_view.setText("");
                 } else {
                     Intent i = new Intent(AddPostActivity.this, ReportUsActivity.class);
+                    i.putExtra("PageFrom", "1");
                     startActivity(i);
                 }
                 break;
@@ -1530,7 +1544,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, verifyOTP, true));
+                .enqueue(new RetrofitCallBack(AddPostActivity.this, verifyOTP, true, false));
 
     }
 
@@ -1547,13 +1561,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
             RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, emailPhoneValidate, true));
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, emailPhoneValidate, true, false));
         } else {
             _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, emailPhoneValidate, true));
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, emailPhoneValidate, true, false));
                 }
             });
         }
@@ -1628,7 +1642,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             if (tabNo == 1) {
                 Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
             } else {
-                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must_service));
+                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
             }
             return;
         }
@@ -1720,7 +1734,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, reSendOTP, true));
+                .enqueue(new RetrofitCallBack(AddPostActivity.this, reSendOTP, true, false));
     }
 
     private void savePostDetails() {
@@ -1776,7 +1790,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
             RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
                     _adAreaId, _adStatus, _adNegos, attId, attVal, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
             Log.i("Form called", "True");
 
 
@@ -1869,23 +1883,23 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             super.onPostExecute(params);
             if (AdType == 0) {
                 RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
 
             } else if (AdType == 1) {
                 params.put("ads_id", adId);
 
 
                 RetrofitClient.getClient().create(Api.class).updatePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
 
             } else if (AdType == 2) {
                 if (EditType.equals("2")) {
                     params.put("ads_id", adId);
                     RetrofitClient.getClient().create(Api.class).updateRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
                 } else {
                     RetrofitClient.getClient().create(Api.class).saveRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false));
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
 
                 }
             }
@@ -2004,14 +2018,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("Params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).getAttributes(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, attributeValue, true));
+                .enqueue(new RetrofitCallBack(AddPostActivity.this, attributeValue, true, false));
     }
 
     public void GetCity() {
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getCity()
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, cityValue, false));
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, cityValue, false, false));
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -2020,7 +2034,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void isInternet() {
                             RetrofitClient.getClient().create(Api.class).getCity()
-                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, cityValue, false));
+                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, cityValue, false, false));
                         }
                     });
                 }
@@ -2031,7 +2045,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     public void GetArea(String cityId, boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getArea(cityId)
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, areaValue, isLoad));
+                .enqueue(new RetrofitCallBack(AddPostActivity.this, areaValue, isLoad, false));
     }
 
     retrofit2.Callback<AttributeModel> attributeValue = new retrofit2.Callback<AttributeModel>() {
@@ -2285,7 +2299,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             }
                         } else {
                             tabNo = 2;
-                            postImageListAdapter.ChangeSize(0);
+                            postImageListAdapter.ChangeSize(4);
                             postImageListAdapter.notifyDataSetChanged();
 //                            txt_product_type_title.setText(getString(R.string.txt_profession));
                             txt_rental_duration_title.setText(getString(R.string.txt_hiring_pattern));
@@ -2356,18 +2370,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             attributeListAdapter.SetEditable(true);
                         }
                         attributeListAdapter.notifyDataSetChanged();
-
-                        rentalDurationList.clear();
-                        rentalDurationList.addAll(dr.getEditDataModel().getRentalDurationList());
-//                        spinnerAdapter.notifyDataSetChanged();
+                        RentalDurationList(dr.getEditDataModel().getRentalDuration());
                         rentalDurationAdapter.notifyDataSetChanged();
-
 
                         for (int i = 0; i < rentalDurationList.size(); i++) {
                             if (editAdDetailsModel.getRentalDuration().equals(rentalDurationList.get(i))) {
                                 rentalDuration = rentalDurationList.get(i);
                                 txt_rental_duration_content.setText(rentalDurationList.get(i));
-                                setRentalDuration(i);
+                                setRentalDuration(rentalDurationList.get(i));
                                 rentalDurationAdapter.setPosValues(i);
                                 break;
                             }
@@ -2620,7 +2630,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         params.put("message_type", "4");
         Log.i("params", params.toString());
         RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, sendOTP, true));
+                .enqueue(new RetrofitCallBack(AddPostActivity.this, sendOTP, true, false));
 
     }
 
@@ -2774,7 +2784,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
         cb_tc.setChecked(false);
         rentalDuration = rentalDurationList.get(0);
-        setRentalDuration(0);
+        setRentalDuration(rentalDurationList.get(0));
         txt_rental_duration_content.setText(rentalDurationList.get(0));
         setCityDefault();
     }
@@ -2796,11 +2806,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void onClick(View v) {
 
                 spinnerPopup.dismiss();
-//                if (isRequirement) {
-                Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
-                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(h);
-//                }
+                if (EditType.equals("")) {
+                    Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
+                    h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(h);
+                }
                 finish();
             }
         });

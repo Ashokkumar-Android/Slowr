@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class CityModel {
     @SerializedName("status")
-   private boolean status;
+    private boolean status;
 
     @SerializedName("cities")
     private ArrayList<CityItemModel> cityList;

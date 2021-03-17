@@ -126,6 +126,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 } else if (notificationList.get(pos).getNotificationType().equals("4")) {
                     Intent not = new Intent(NotificationActivity.this, TransactionActivity.class);
                     startActivity(not);
+                } else if (notificationList.get(pos).getNotificationType().equals("5")) {
+                    Intent not = new Intent(NotificationActivity.this, BannerActivity.class);
+                    startActivity(not);
                 }
 //                if (isRead.equals("0")) {
 //                    ReadNotification(noteId);
@@ -148,7 +151,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
     private void getNotificationList(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getNotificationList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(NotificationActivity.this, adListResponse, isLoad));
+                .enqueue(new RetrofitCallBack(NotificationActivity.this, adListResponse, isLoad, false));
 
     }
 
@@ -174,7 +177,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
             isDeleteRefresh = true;
             RetrofitClient.getClient().create(Api.class).deleteNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true));
+                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true, false));
 
         } else {
             isDeleteRefresh = true;
@@ -182,7 +185,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).deleteNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true));
+                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, true, false));
                 }
             });
         }
@@ -198,13 +201,13 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
             RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
+                    .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false, false));
         } else {
             _fun.ShowNoInternetPopup(NotificationActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false));
+                            .enqueue(new RetrofitCallBack(NotificationActivity.this, noteReadResponse, false, false));
                 }
             });
         }
@@ -241,7 +244,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                     if (notificationList.size() == 0) {
                         layout_no_result.setVisibility(View.VISIBLE);
                         rc_notification.setVisibility(View.GONE);
-                    } else  {
+                    } else {
                         layout_no_result.setVisibility(View.GONE);
                         rc_notification.setVisibility(View.VISIBLE);
                     }
@@ -337,7 +340,7 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(NotificationActivity.this);
         if (_fun.isInternetAvailable(NotificationActivity.this)) {
             getNotificationList(false);
         } else {

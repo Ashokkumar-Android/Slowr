@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient {
 
@@ -25,6 +26,7 @@ public class RetrofitClient {
 
     //*\.........GST..........\*
     private static final String BASE_URL_GST = "https://commonapi.mastersindia.co/commonapis/";
+    private static final String BASE_URL_GST_TOKEN = "https://commonapi.mastersindia.co/oauth/";
     private static Retrofit retrofit = null;
     private static Retrofit retrofitGST = null;
 
@@ -32,8 +34,8 @@ public class RetrofitClient {
             .addInterceptor(new LogJsonInterceptor())
             .cache(null)
             .addInterceptor(new ConnectivityInterceptor())
-            .readTimeout(120, TimeUnit.SECONDS)
-            .connectTimeout(120, TimeUnit.SECONDS)
+            .readTimeout(180, TimeUnit.SECONDS)
+            .connectTimeout(180, TimeUnit.SECONDS)
             .build();
 
 
@@ -43,8 +45,8 @@ public class RetrofitClient {
 
     public static Retrofit getClient() {
         if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL_PRODUCTION)
+            retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(BASE_URL)
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
@@ -58,7 +60,18 @@ public class RetrofitClient {
             retrofitGST = new Retrofit.Builder()
                     .baseUrl(BASE_URL_GST)
                     .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .build();
+        }
+        return retrofitGST;
+    }
+
+    public static Retrofit getTokenGST() {
+        if (retrofitGST == null) {
+            retrofitGST = new Retrofit.Builder()
+                    .baseUrl(BASE_URL_GST_TOKEN)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }
         return retrofitGST;

@@ -11,13 +11,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,7 +37,7 @@ import com.slowr.app.R;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
-import com.slowr.app.components.GlowButton;
+import com.slowr.app.components.HeartBeatView;
 import com.slowr.app.components.otpview.OnOtpCompletionListener;
 import com.slowr.app.components.otpview.OtpView;
 import com.slowr.app.models.DefaultResponse;
@@ -71,7 +74,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     LinearLayout img_back;
     Button btn_edit;
     Button btn_update_profile;
-    GlowButton btn_fancy_prosper_id;
+    HeartBeatView btn_fancy_prosper_id;
     Button btn_profile_verification;
     ImageView img_profile_pic;
     TextInputLayout til_email;
@@ -100,6 +103,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     OtpView otp_view;
     TextView txt_resend_otp;
     Button btn_verify_otp;
+    Button btn_demo_page;
     int resentCount = 0;
     int PROSPER_ID_CODE = 1299;
 
@@ -108,6 +112,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     String PageFrom = "";
     MultipartBody.Part chatImage = null;
     String NotificationId = "";
+    String adCount = "";
+    boolean isPageChange = false;
+
+    private PopupWindow spinnerPopup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +162,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txt_verified = findViewById(R.id.txt_verified);
         txt_otp_content = findViewById(R.id.txt_otp_content);
         img_remove = findViewById(R.id.img_remove);
+        btn_demo_page = findViewById(R.id.btn_demo_page);
 
         txt_page_title.setText(getString(R.string.txt_profile));
 
@@ -169,8 +178,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txt_verified.setOnClickListener(this);
         txt_user_email_verify.setOnClickListener(this);
         img_remove.setOnClickListener(this);
-        img_profile_pic.setEnabled(false);
-
+        btn_demo_page.setOnClickListener(this);
+        btn_fancy_prosper_id.start();
+        btn_fancy_prosper_id.setDurationBasedOnBPM(30);
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             getUserDetails();
         } else {
@@ -249,13 +259,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false, false));
         } else {
             _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false));
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, noteReadResponse, false, false));
                 }
             });
         }
@@ -263,7 +273,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void getUserDetails() {
         RetrofitClient.getClient().create(Api.class).getProfileDetails(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, profileDetails, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, profileDetails, true, false));
     }
 
     @Override
@@ -292,7 +302,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 btn_edit.setVisibility(View.GONE);
                 layout_edit_profile.setVisibility(View.VISIBLE);
                 layout_profile_details.setVisibility(View.GONE);
-                img_profile_pic.setEnabled(true);
                 isEditView = true;
                 if (txt_user_name.getText().toString().equals(getString(R.string.click_edit_name))) {
                     edt_name.setText("");
@@ -311,27 +320,38 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.img_profile_pic:
-                if (_fun.checkPermission(ProfileActivity.this)) {
-                    MatisseActivity.PAGE_FROM = 2;
-                    Matisse.from(ProfileActivity.this)
-                            .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
+                if (isEditView) {
+                    if (_fun.checkPermission(ProfileActivity.this)) {
+                        MatisseActivity.PAGE_FROM = 2;
+                        Matisse.from(ProfileActivity.this)
+                                .choose(MimeType.of(MimeType.PNG, MimeType.JPEG), true)
 //                            .choose(MimeType.of(MimeType.GIF), false)
 //                            .choose(MimeType.ofAll())
 
-                            .countable(true)
-                            .capture(true)
-                            .theme(R.style.Matisse_Dracula)
-                            .captureStrategy(
-                                    new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
-                            .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
-                            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                            .thumbnailScale(0.85f)
-                            .imageEngine(new GlideEngine())
-                            .maxSelectable(1)
-                            .showSingleMediaType(true)
-                            .forResult(50);
+                                .countable(true)
+                                .capture(true)
+                                .theme(R.style.Matisse_Dracula)
+                                .captureStrategy(
+                                        new CaptureStrategy(true, "com.slowr.app.provider", "Android/data/com.slowr.app/files/Pictures"))
+                                .gridExpectedSize(getResources().getDimensionPixelSize(R.dimen.gride_size))
+                                .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                                .thumbnailScale(0.85f)
+                                .imageEngine(new GlideEngine())
+                                .maxSelectable(1)
+                                .showSingleMediaType(true)
+                                .forResult(50);
 
 
+                    }
+                } else {
+                    if (Sessions.getSession(Constant.UserProfile, getApplicationContext()) != null && !Sessions.getSession(Constant.UserProfile, getApplicationContext()).equals(""))
+                        if (!isPageChange) {
+                            isPageChange = true;
+                            Intent a = new Intent(ProfileActivity.this, ImageViewActivity.class);
+                            a.putExtra("ImgURL", Sessions.getSession(Constant.UserProfile, getApplicationContext()));
+                            a.putExtra("ImgPos", 0);
+                            startActivity(a);
+                        }
                 }
                 break;
             case R.id.txt_change_password:
@@ -387,6 +407,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     otp_view.setText("");
                 } else {
                     Intent p = new Intent(ProfileActivity.this, ReportUsActivity.class);
+                    p.putExtra("PageFrom", "1");
                     startActivity(p);
                 }
                 break;
@@ -430,6 +451,16 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 alertDialog2.show();
 
                 break;
+            case R.id.btn_demo_page:
+
+                if (!adCount.equals("") && !adCount.equals("0")) {
+                    Intent j = new Intent(ProfileActivity.this, UserProfileActivity.class);
+                    j.putExtra("prosperId", Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+                    startActivityForResult(j, PROSPER_ID_CODE);
+                } else {
+                    ShowPopupAppVersion();
+                }
+                break;
         }
     }
 
@@ -437,13 +468,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             RetrofitClient.getClient().create(Api.class).removeProfile(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true));
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true, false));
         } else {
             _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).removeProfile(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true));
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, removeProfileResponse, true, false));
                 }
             });
         }
@@ -539,7 +570,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         params.put("is_email_verified", "0");
         Log.i("Params", params.toString());
         RetrofitClient.getClient().create(Api.class).uploadProfileDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileDetails, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileDetails, true, false));
     }
 
     private void saveProfileImage() {
@@ -558,13 +589,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             RetrofitClient.getClient().create(Api.class).uploadImage(chatImage, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true, false));
         } else {
             _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).uploadImage(chatImage, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true, false));
                 }
             });
         }
@@ -582,7 +613,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, verifyOTP, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, verifyOTP, true, false));
 
     }
 
@@ -596,7 +627,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).OTPVerificationEmail(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, verifyOTP, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, verifyOTP, true, false));
 
     }
 
@@ -604,13 +635,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getEmailVerificationOTP(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTPEmail, true));
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTPEmail, true, false));
         } else {
             _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getEmailVerificationOTP(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTPEmail, true));
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTPEmail, true, false));
                 }
             });
         }
@@ -630,13 +661,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                    .enqueue(new RetrofitCallBack(ProfileActivity.this, emailPhoneValidate, true));
+                    .enqueue(new RetrofitCallBack(ProfileActivity.this, emailPhoneValidate, true, false));
         } else {
             _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                            .enqueue(new RetrofitCallBack(ProfileActivity.this, emailPhoneValidate, true));
+                            .enqueue(new RetrofitCallBack(ProfileActivity.this, emailPhoneValidate, true, false));
                 }
             });
         }
@@ -655,7 +686,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, reSendOTP, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, reSendOTP, true, false));
 
 
     }
@@ -673,6 +704,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     layout_profile_details_edit.setVisibility(View.VISIBLE);
                     btn_edit.setVisibility(View.VISIBLE);
                     txt_prosperId.setText(dr.getUserDetailsModel().getProsperId());
+                    adCount = dr.getUserDetailsModel().getAdCount();
                     if (dr.getUserDetailsModel().getUserName() != null && !dr.getUserDetailsModel().getUserName().equals("")) {
                         txt_user_name.setText(dr.getUserDetailsModel().getUserName());
                     } else {
@@ -887,7 +919,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     Function.CustomMessage(ProfileActivity.this, dr.getMessage());
-                    img_profile_pic.setEnabled(false);
                     layout_edit_profile.setVisibility(View.GONE);
                     layout_profile_details.setVisibility(View.VISIBLE);
                     btn_edit.setVisibility(View.VISIBLE);
@@ -1178,7 +1209,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         params.put("message_type", "4");
         Log.i("params", params.toString());
         RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTP, true));
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, sendOTP, true, false));
 
     }
 
@@ -1237,5 +1268,50 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     .showSingleMediaType(true)
                     .forResult(50);
         }
+    }
+
+    public void ShowPopupAppVersion() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_post_success, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+
+        TextView popup_content = view.findViewById(R.id.txt_content_one);
+        TextView txt_skip = view.findViewById(R.id.txt_skip);
+        Button txt_done = view.findViewById(R.id.btn_ok);
+        popup_content.setText(getString(R.string.view_as_client_content));
+
+        txt_done.setText(getString(R.string.txt_add_post));
+
+        txt_skip.setVisibility(View.VISIBLE);
+        txt_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+
+        txt_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+                Intent p = new Intent(ProfileActivity.this, AddPostActivity.class);
+                p.putExtra("AdType", 0);
+                startActivityForResult(p, PROSPER_ID_CODE);
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    @Override
+    protected void onResume() {
+        isPageChange = false;
+        super.onResume();
     }
 }

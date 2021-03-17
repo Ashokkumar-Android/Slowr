@@ -50,7 +50,7 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
                 "<html>" +
                 "<body>" +
                 "<h2>About Us</h2>" +
-                "<p>World’s first Online Classifieds to Rent or Rent out the Products and Hire or Get Hired.</p>" +
+                "<p>World’s first Online Classifieds to Rent or Rent out the Products and Hire or Get Hired for Services - Temporarily.</p>" +
                 "<h2>Vision</h2>" +
                 "<p>To increase the Revenue of every Indian Household.</p>" +
                 "<h2>Mission</h2>" +

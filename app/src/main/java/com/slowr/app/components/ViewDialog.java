@@ -50,5 +50,8 @@ public class ViewDialog {
     public void hideDialog() {
         dialog.dismiss();
     }
+    public void cancelableDialog(boolean isHide){
+        dialog.setCancelable(isHide);
+    }
 
 }

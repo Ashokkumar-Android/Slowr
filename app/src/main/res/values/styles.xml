@@ -65,7 +65,7 @@
     <style name="txt_title">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/size_sixteen</item>
+        <item name="android:textSize">@dimen/size_fifteen</item>
         <item name="android:textColor">@color/color_white</item>
         <item name="fontFamily">@font/nunito_regular</item>
 

@@ -23,7 +23,7 @@ public class Constant {
     public static final String msg_Somethingwentwrong = "Your internet is not stable, Check your connection";
     public static final String Msg_Something = "Something went wrong please try again!";
     public static final String Content_Type = "application/json";
-    public static final String Authorization = "Bearer 3db611b0ca077ba0b9bef3f76b64fe3bd14be26a";
+    public static final String Authorization = "Bearer a387714f5c3a0a9185ac50830a0a0185dc783637";
     public static final String ClientId = "uaBInTAtsKXNexyIyj";
     public static String ParentId = "";
 

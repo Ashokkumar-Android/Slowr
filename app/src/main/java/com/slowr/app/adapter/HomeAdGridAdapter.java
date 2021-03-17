@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.slowr.app.R;
+import com.slowr.app.activity.LoginActivity;
 import com.slowr.app.activity.UserProfileActivity;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Constant;
@@ -106,7 +107,8 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Function.CustomMessage(ctx, ctx.getString(R.string.txt_please_login));
+                Intent l = new Intent(ctx, LoginActivity.class);
+                ctx.startActivity(l);
                 likeButton.setLiked(false);
             }
         }
@@ -122,7 +124,8 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Function.CustomMessage(ctx, ctx.getString(R.string.txt_please_login));
+                Intent l = new Intent(ctx, LoginActivity.class);
+                ctx.startActivity(l);
                 likeButton.setLiked(false);
             }
         }
@@ -181,34 +184,14 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                 }
 
                 if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                    if (movie.getCatGroup().equals("1")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    }
+                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
                 } else {
                     DecimalFormat formatter = new DecimalFormat("#,###,###");
                     String formatPrice = formatter.format(Integer.valueOf(price));
                     holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
                 }
             } else {
-                if (movie.getCatGroup().equals("1")) {
-                    if (movie.getAdDuration().equals("Custom")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else if (movie.getAdDuration().equals("Per Hour")) {
-                        holder.txt_price.setText(ctx.getString(R.string.hour_rent));
-                    } else if (movie.getAdDuration().equals("Per Day")) {
-                        holder.txt_price.setText(ctx.getString(R.string.day_rent));
-                    }
-                } else {
-                    if (movie.getAdDuration().equals("Custom")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    } else if (movie.getAdDuration().equals("Per Hour")) {
-                        holder.txt_price.setText(ctx.getString(R.string.hour_hire));
-                    } else if (movie.getAdDuration().equals("Per Day")) {
-                        holder.txt_price.setText(ctx.getString(R.string.day_hire));
-                    }
-                }
+                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
 
             }
 
@@ -221,7 +204,7 @@ public class HomeAdGridAdapter extends RecyclerView.Adapter<HomeAdGridAdapter.My
                         defu = R.drawable.ic_need_space;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
                         defu = R.drawable.ic_need_pet;
-                    }else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;
                     } else {
                         defu = R.drawable.ic_need_product;

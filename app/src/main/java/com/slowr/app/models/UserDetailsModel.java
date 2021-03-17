@@ -33,6 +33,9 @@ public class UserDetailsModel {
     @SerializedName("is_verified")
     String isProfileVerified;
 
+    @SerializedName("ads_count")
+    String adCount;
+
     public String getUserId() {
         return userId;
     }
@@ -111,5 +114,13 @@ public class UserDetailsModel {
 
     public void setIsProfileVerified(String isProfileVerified) {
         this.isProfileVerified = isProfileVerified;
+    }
+
+    public String getAdCount() {
+        return adCount;
+    }
+
+    public void setAdCount(String adCount) {
+        this.adCount = adCount;
     }
 }

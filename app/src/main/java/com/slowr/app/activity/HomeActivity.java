@@ -48,7 +48,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonArray;
 import com.slowr.app.R;
-import com.slowr.app.adapter.BannerAdapter;
 import com.slowr.app.adapter.FilterOptionAdapter;
 import com.slowr.app.adapter.FilterSelectAdapter;
 import com.slowr.app.adapter.HomeAdGridAdapter;
@@ -101,12 +100,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     LinearLayout layout_filter;
     LinearLayout layout_requirement_ad;
     LinearLayout layout_list_filter;
-    Button btn_requirement_ad;
+    Button btn_need_req;
     SwipeRefreshLayout layout_swipe_refresh;
     CardView layout_filter_root;
     CardView layout_no_ad_city;
     Button btn_offer;
     Button btn_need;
+    Button btn_offer_req;
+    ImageView img_category_no_ad;
+    TextView txt_category_no_ad;
 
     RecyclerView rc_product_list;
     RecyclerView rc_service_list;
@@ -132,7 +134,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     ArrayList<SuggistionItem> searchSuggestionList = new ArrayList<>();
     ArrayList<BannerItemModel> bannerList = new ArrayList<>();
 
-    BannerAdapter bannerAdapter;
     private static int currentPage = 0;
     private static int NUM_PAGES = 3;
     boolean isCategory = false;
@@ -144,7 +145,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     String sortById = "";
     String catId = "";
     String productType = "";
-    String shareMessage = "";
+    boolean clickRefresh = false;
 
     HashMap<String, Object> params = new HashMap<String, Object>();
 
@@ -181,6 +182,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     BaseActivity homeActivity;
     CallBackCity callBackCity;
 
+    long startTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,7 +214,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         img_back = findViewById(R.id.img_back);
         layout_sort_by = findViewById(R.id.layout_sort_by);
         layout_filter = findViewById(R.id.layout_filter);
-        btn_requirement_ad = findViewById(R.id.btn_requirement_ad);
+        btn_need_req = findViewById(R.id.btn_need_req);
         layout_requirement_ad = findViewById(R.id.layout_requirement_ad);
         layout_list_filter = findViewById(R.id.layout_list_filter);
         layout_swipe_refresh = findViewById(R.id.layout_swipe_refresh);
@@ -220,7 +223,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_no_ad_city = findViewById(R.id.layout_no_ad_city);
         btn_offer = findViewById(R.id.btn_offer);
         btn_need = findViewById(R.id.btn_need);
+        btn_offer_req = findViewById(R.id.btn_offer_req);
         pb_circule = findViewById(R.id.pb_circule);
+        img_category_no_ad = findViewById(R.id.img_category_no_ad);
+        txt_category_no_ad = findViewById(R.id.txt_category_no_ad);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -257,6 +263,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         homeBannerAdapter = new HomeBannerAdapter(bannerList, HomeActivity.this);
         rc_banner.setAdapter(homeBannerAdapter);
+        homeBannerAdapter.hideText(true);
 
 
         layout_swipe_refresh.setColorSchemeColors(getResources().getColor(R.color.txt_orange));
@@ -267,7 +274,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         layout_filter.setOnClickListener(this);
         btn_need.setOnClickListener(this);
         btn_offer.setOnClickListener(this);
-        btn_requirement_ad.setOnClickListener(this);
+        btn_need_req.setOnClickListener(this);
+        btn_offer_req.setOnClickListener(this);
         layout_swipe_refresh.setOnRefreshListener(this);
         CallBackFunction();
 //        getCategory();
@@ -364,7 +372,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         }
                         Log.i("Params", params.toString());
                         RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false));
+                                .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false, false));
                     }
                 });
             }
@@ -401,7 +409,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         Log.i("params", params.toString());
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).appVersionCheck(params)
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false, false));
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -410,7 +418,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         @Override
                         public void isInternet() {
                             RetrofitClient.getClient().create(Api.class).appVersionCheck(params)
-                                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false));
+                                    .enqueue(new RetrofitCallBack(HomeActivity.this, checkApp, false, false));
                         }
                     });
                 }
@@ -430,13 +438,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad, false));
         } else {
             _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getHomeBanners(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad));
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeBannerResponse, isLoad, false));
                 }
             });
         }
@@ -452,13 +460,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad, false));
         } else {
             _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getHomeFlyers(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad));
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeFlyersResponse, isLoad, false));
                 }
             });
         }
@@ -470,13 +478,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         if (_fun.isInternetAvailable(HomeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad, false));
         } else {
             _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getHomeCategory(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad));
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, homeDetailsResponse, isLoad, false));
                 }
             });
         }
@@ -485,15 +493,29 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private void CallBackFunction() {
         homeBannerAdapter.setCallback(new HomeBannerAdapter.Callback() {
             @Override
-            public void itemClick(BannerItemModel model) {
+            public void itemClick(BannerItemModel model, boolean isClick) {
                 String userProsperId = model.getProsperId();
-                if (userProsperId != null) {
-                    Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
-                    i.putExtra("prosperId", userProsperId);
-                    startActivity(i);
+
+                if (isClick) {
+                    isBannerStarted = false;
+                    rc_banner.stop();
+                    startTime = System.currentTimeMillis();
+
                 } else {
-                    ShowPopupDefauldBanner();
+                    isBannerStarted = true;
+                    rc_banner.start(6, TimeUnit.SECONDS);
+                    long difference = System.currentTimeMillis() - startTime;
+                    if (difference < 1000) {
+                        if (userProsperId != null) {
+                            Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
+                            i.putExtra("prosperId", userProsperId);
+                            startActivity(i);
+                        } else {
+                            ShowPopupDefauldBanner();
+                        }
+                    }
                 }
+
             }
         });
         homeAdGridAdapter.setCallback(new HomeAdGridAdapter.Callback() {
@@ -502,6 +524,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String catId = adList.get(pos).getCatId();
                 String adId = adList.get(pos).getAdId();
                 String userId = adList.get(pos).getUserId();
+                clickRefresh = true;
                 changeFragment(catId, adId, userId);
             }
 
@@ -526,7 +549,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                         }
                     } else {
-                        Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                        Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                        startActivity(l);
                     }
 
 
@@ -551,6 +575,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String catId = adList.get(pos).getCatId();
                 String adId = adList.get(pos).getAdId();
                 String userId = adList.get(pos).getUserId();
+                clickRefresh = true;
                 changeFragment(catId, adId, userId);
 
             }
@@ -579,7 +604,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                     }
                 } else {
-                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
 
             }
@@ -601,6 +627,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 String catId = model.getCatId();
                 String adId = model.getAdId();
                 String userId = model.getUserId();
+                clickRefresh = false;
                 changeFragment(catId, adId, userId);
             }
 
@@ -682,6 +709,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         }
                     });
                 }
+
             }
         });
 
@@ -700,10 +728,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false, false));
         } else {
             RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false));
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false, false));
         }
     }
 
@@ -815,7 +843,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         Log.i("Params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).getHomeAds(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad));
+                .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad, false));
     }
 
     retrofit2.Callback<HomeBannerModel> homeBannerResponse = new retrofit2.Callback<HomeBannerModel>() {
@@ -838,7 +866,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (!isBannerStarted) {
                         isBannerStarted = true;
-                        rc_banner.start(3, TimeUnit.SECONDS);
+                        rc_banner.start(6, TimeUnit.SECONDS);
+
                     }
                 }
             } catch (Exception e) {
@@ -1017,6 +1046,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         rc_ad_list.setVisibility(View.GONE);
                         layout_requirement_ad.setVisibility(View.VISIBLE);
                         layout_filter_root.setVisibility(View.VISIBLE);
+                        if (isRefresh) {
+                            img_category_no_ad.setImageResource(R.drawable.ic_noads_city);
+                            txt_category_no_ad.setText(getString(R.string.txt_no_ad_city_content));
+                            layout_filter_root.setVisibility(View.GONE);
+                        } else {
+                            img_category_no_ad.setImageResource(R.drawable.ic_noad);
+                            txt_category_no_ad.setText(getString(R.string.txt_no_ad_category_content));
+                        }
                     } else {
                         rc_ad_list.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.GONE);
@@ -1197,14 +1234,15 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.layout_filter:
                 ShowPopupSortBy(2);
                 break;
-            case R.id.btn_requirement_ad:
+            case R.id.btn_need_req:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
                     Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 2);
                     p.putExtra("ParId", catId);
                     startActivity(p);
                 } else {
-                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
             case R.id.btn_offer:
@@ -1214,7 +1252,19 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     p.putExtra("ParId", "");
                     startActivity(p);
                 } else {
-                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
+                }
+                break;
+            case R.id.btn_offer_req:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", catId);
+                    startActivity(p);
+                } else {
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
             case R.id.btn_need:
@@ -1224,7 +1274,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     p.putExtra("ParId", "");
                     startActivity(p);
                 } else {
-                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
         }
@@ -1596,7 +1647,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         TextView txt_page_title = view.findViewById(R.id.txt_page_title);
         Button btn_ok = view.findViewById(R.id.btn_ok);
         LinearLayout img_back = view.findViewById(R.id.img_back);
-        txt_page_title.setText("Demo Profile View");
+        txt_page_title.setText("Demo Prosper Page");
         txt_prosperId_demo.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
         if (Sessions.getSession(Constant.UserName, getApplicationContext()).equals("")) {
             txt_name_demo.setText(getString(R.string.txt_demo_name));
@@ -1647,7 +1698,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == EDIT_AD_VIEW) {
+            if (requestCode == EDIT_AD_VIEW && clickRefresh) {
                 currentPageNo = 1;
                 isViewBack = true;
                 if (_fun.isInternetAvailable(HomeActivity.this)) {
@@ -1666,7 +1717,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(HomeActivity.this);
         if (isCategory) {
             currentPageNo = 1;
 
@@ -1781,7 +1832,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Intent b = new Intent(HomeActivity.this, BannerActivity.class);
                     startActivity(b);
                 } else {
-                    Function.CustomMessage(HomeActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
             }
         });

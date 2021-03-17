@@ -1,7 +1,9 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -24,7 +26,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
     Callback callback;
     Context ctx;
 
-
+    boolean isVisible = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img_banner;
@@ -33,6 +35,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
         TextView txt_banner_content;
         TextView txt_banner_price;
         TextView txt_banner_like;
+        TextView txt_click_profile;
         LinearLayout layout_root;
         LinearLayout layout_click;
         ImageView img_default_banner;
@@ -48,9 +51,14 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
             layout_root = view.findViewById(R.id.layout_root);
             img_default_banner = view.findViewById(R.id.img_default_banner);
             layout_click = view.findViewById(R.id.layout_click);
+            txt_click_profile = view.findViewById(R.id.txt_click_profile);
 
             layout_click.setOnClickListener(this);
-
+            if (isVisible) {
+                txt_click_profile.setVisibility(View.VISIBLE);
+            } else {
+                txt_click_profile.setVisibility(View.GONE);
+            }
         }
 
         @Override
@@ -85,11 +93,11 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
     @Override
     public void onBindPageViewHolder(MyViewHolder holder, int position) {
         try {
-            BannerItemModel  bannerItemModel = bannerList.get(position);
+            BannerItemModel bannerItemModel = bannerList.get(position);
 
             holder.txt_prosperId.setText(bannerItemModel.getProsperId());
-            holder.txt_banner_content.setText(bannerItemModel.getBannerTitle());
-            holder.txt_banner_price.setText(bannerItemModel.getDescription());
+            holder.txt_banner_content.setText(bannerItemModel.getBannerTitle().trim());
+            holder.txt_banner_price.setText(bannerItemModel.getDescription().trim());
             String[] col = bannerItemModel.getColorCode().split(",");
             Function.GradientBgSet(holder.defult_one, col[0], col[1]);
             if (bannerItemModel.getIsDefault() == 1) {
@@ -112,10 +120,29 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
                         .into(holder.img_default_banner);
 
             }
-            holder.layout_click.setOnClickListener(new View.OnClickListener() {
+//            holder.layout_click.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    callback.itemClick(bannerItemModel);
+//                    Log.i("Click", " click ");
+//                }
+//            });
+            holder.layout_click.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    callback.itemClick(bannerItemModel);
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            System.out.println(" pressed ");
+                            Log.i("Click", " pressed ");
+                            callback.itemClick(bannerItemModel, true);
+                            return true;
+                        case MotionEvent.ACTION_UP:
+                            System.out.println(" released ");
+                            Log.i("Click", " released ");
+                            callback.itemClick(bannerItemModel, false);
+                            return true;
+                    }
+                    return false;
                 }
             });
         } catch (Exception e) {
@@ -153,9 +180,12 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
     }
 
     public interface Callback {
-        void itemClick(BannerItemModel model);
+        void itemClick(BannerItemModel model, boolean isClick);
 
     }
 
+    public void hideText(boolean _isVisible) {
+        isVisible = _isVisible;
+    }
 
 }

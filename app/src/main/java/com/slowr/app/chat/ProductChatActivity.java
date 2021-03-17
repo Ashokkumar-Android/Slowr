@@ -118,13 +118,13 @@ public class ProductChatActivity extends AppCompatActivity implements View.OnCli
 
         if (_fun.isInternetAvailable(ProductChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getProductChat(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad));
+                    .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad,false));
         } else {
             _fun.ShowNoInternetPopup(ProductChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getProductChat(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad));
+                            .enqueue(new RetrofitCallBack(ProductChatActivity.this, productHistoryApi, isLoad,false));
                 }
             });
         }

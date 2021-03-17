@@ -17,26 +17,28 @@
         <Button
             android:id="@+id/btn_edit"
             android:layout_width="wrap_content"
-            android:layout_height="35dp"
+            android:layout_height="30dp"
             android:layout_gravity="center|right"
             android:layout_marginRight="@dimen/size_ten"
             android:background="@drawable/bg_orenge"
             android:fontFamily="@font/nunito_regular"
-            android:paddingLeft="@dimen/size_forty"
-            android:paddingRight="@dimen/size_forty"
+            android:paddingLeft="@dimen/size_fifteen"
+            android:paddingRight="@dimen/size_fifteen"
             android:text="@string/txt_edit"
             android:textAllCaps="false"
             android:textColor="@color/color_white"
-            android:textSize="@dimen/size_sixteen" />
+            android:textSize="@dimen/size_fourteen" />
 
     </FrameLayout>
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/layout_profile_details_edit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -206,6 +208,20 @@
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
+                <Button
+                    android:id="@+id/btn_demo_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:background="@drawable/bg_orenge_border_white"
+                    android:paddingLeft="@dimen/size_ten"
+                    android:paddingRight="@dimen/size_ten"
+                    android:text="@string/txt_view_client"
+                    android:textColor="@color/txt_orange"
+                    android:textAllCaps="false"
+                    android:textSize="@dimen/size_fourteen" />
+
 
             </LinearLayout>
 
@@ -238,7 +254,7 @@
                     android:layout_height="1dp"
                     android:visibility="gone" />
 
-                <com.slowr.app.components.GlowButton
+                <com.slowr.app.components.HeartBeatView
                     android:id="@+id/btn_fancy_prosper_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -246,8 +262,12 @@
                     android:fontFamily="@font/nunito_regular"
                     android:text="@string/fancy_prosper_id"
                     android:textAllCaps="false"
-                    android:padding="@dimen/size_twenty"
+                    android:layout_marginLeft="@dimen/size_twenty_five"
+                    android:layout_marginRight="@dimen/size_twenty_five"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:layout_marginBottom="@dimen/size_twenty"
                     android:textColor="@color/color_white"
+
                     android:textSize="@dimen/size_sixteen" />
 
 
@@ -374,7 +394,7 @@
 
         </LinearLayout>
     </LinearLayout>
-
+</ScrollView>
     <LinearLayout
         android:id="@+id/layout_otp"
         android:layout_width="match_parent"

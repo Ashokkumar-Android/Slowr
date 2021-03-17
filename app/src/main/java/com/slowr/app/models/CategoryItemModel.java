@@ -24,6 +24,9 @@ public class CategoryItemModel {
     @SerializedName("ad_title_label")
     String categoryTitle;
 
+    @SerializedName("rental_duration")
+    String rentalDuration;
+
     @SerializedName("sub_categories")
     private ArrayList<SubCategoryItemModel> subCategoryList;
 
@@ -81,5 +84,13 @@ public class CategoryItemModel {
 
     public void setCatGroup(String catGroup) {
         this.catGroup = catGroup;
+    }
+
+    public String getRentalDuration() {
+        return rentalDuration;
+    }
+
+    public void setRentalDuration(String rentalDuration) {
+        this.rentalDuration = rentalDuration;
     }
 }

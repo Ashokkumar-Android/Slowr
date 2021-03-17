@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.slowr.app.R;
 import com.slowr.app.activity.HomeActivity;
 import com.slowr.app.components.ViewDialog;
 import com.slowr.app.utils.Constant;
@@ -32,7 +33,7 @@ public class RetrofitCallBack<T> implements Callback<T> {
     ViewDialog viewDialog;
     boolean isLoad = false;
 
-    public RetrofitCallBack(Context context, Callback<T> callback, boolean _isLoad) {
+    public RetrofitCallBack(Context context, Callback<T> callback, boolean _isLoad, boolean _isCancel) {
         mContext = context;
         this.mCallback = callback;
         isLoad = _isLoad;
@@ -42,8 +43,12 @@ public class RetrofitCallBack<T> implements Callback<T> {
 //        dialog.setMessage("Please wait....");
 //        dialog.setCancelable(false);
 //        dialog.show();
-        if (isLoad)
+
+        if (isLoad){
             viewDialog.showDialog();
+            viewDialog.cancelableDialog(_isCancel);
+        }
+
     }
 
     @Override
@@ -74,12 +79,15 @@ public class RetrofitCallBack<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        mCallback.onFailure(call, t);
+
         Log.d("Api Response error", t.getMessage());
         if (t instanceof NoConnectivityException) {
 //            Toast.makeText(mContext, "No Internet", Toast.LENGTH_SHORT).show();
-            Function.CustomMessage((Activity) mContext, msg_Somethingwentwrong);
-//            call.clone().enqueue(this);
+//            Function.CustomMessage((Activity) mContext, mContext.getString(R.string.txt_poor_connection));
+            call.clone().enqueue(this);
+            Log.d("NoConnection", t.getMessage());
+        }else {
+            mCallback.onFailure(call, t);
         }
         if (isLoad)
             viewDialog.hideDialog();

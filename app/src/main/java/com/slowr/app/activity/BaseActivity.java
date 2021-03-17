@@ -253,7 +253,8 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                     p.putExtra("ParId", Constant.ParentId);
                     startActivity(p);
                 } else {
-                    Function.CustomMessage(BaseActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(BaseActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
             }
         });
@@ -391,7 +392,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     public void GetCity() {
         RetrofitClient.getClient().create(Api.class).getCity()
-                .enqueue(new RetrofitCallBack(BaseActivity.this, cityValue, false));
+                .enqueue(new RetrofitCallBack(BaseActivity.this, cityValue, false,false));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -420,8 +421,15 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(t);
                 break;
             case R.id.nav_report_us:
-                Intent ru = new Intent(BaseActivity.this, ReportUsActivity.class);
-                startActivity(ru);
+
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent ru = new Intent(BaseActivity.this, ReportUsActivity.class);
+                    ru.putExtra("PageFrom", "1");
+                    startActivity(ru);
+                } else {
+                    Intent l = new Intent(BaseActivity.this, LoginActivity.class);
+                    startActivity(l);
+                }
                 break;
             case R.id.nav_about_us:
                 Intent ab = new Intent(BaseActivity.this, AboutUsActivity.class);
@@ -432,7 +440,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
                         BaseActivity.this);
 
-                alertDialog2.setTitle("Logout");
+                alertDialog2.setTitle("Log out");
 
                 alertDialog2.setMessage(getString(R.string.logout_message));
 
@@ -500,19 +508,19 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
     private void callLogout() {
         RetrofitClient.getClient().create(Api.class).callLogout(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(BaseActivity.this, logoutApi, true));
+                .enqueue(new RetrofitCallBack(BaseActivity.this, logoutApi, true,false));
     }
 
     public void callUnreadCount() {
         if (_fun.isInternetAvailable(BaseActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getNotificationUnreadCount(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false));
+                    .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false,false));
         } else {
             _fun.ShowNoInternetPopup(BaseActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getNotificationUnreadCount(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false));
+                            .enqueue(new RetrofitCallBack(BaseActivity.this, unReadApi, false,false));
                 }
             });
         }

@@ -30,8 +30,8 @@ public class EditDataModel {
     @SerializedName("localities")
     private ArrayList<AreaItemModel> areaList;
 
-    @SerializedName("rentalDurationList")
-    private ArrayList<String> rentalDurationList;
+    @SerializedName("rental_duration")
+    private String rentalDuration;
 
     @SerializedName("photos")
     private ArrayList<String> adImage;
@@ -97,13 +97,7 @@ public class EditDataModel {
         this.areaList = areaList;
     }
 
-    public ArrayList<String> getRentalDurationList() {
-        return rentalDurationList;
-    }
 
-    public void setRentalDurationList(ArrayList<String> rentalDurationList) {
-        this.rentalDurationList = rentalDurationList;
-    }
 
     public AttributeModel getAttributeModel() {
         return attributeModel;
@@ -191,5 +185,13 @@ public class EditDataModel {
 
     public void setProductTypeSuggestion(ArrayList<SubCategoryItemModel> productTypeSuggestion) {
         this.productTypeSuggestion = productTypeSuggestion;
+    }
+
+    public String getRentalDuration() {
+        return rentalDuration;
+    }
+
+    public void setRentalDuration(String rentalDuration) {
+        this.rentalDuration = rentalDuration;
     }
 }

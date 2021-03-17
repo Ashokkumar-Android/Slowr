@@ -93,4 +93,9 @@
         <attr name="glowcornerRadius" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="HeartBeatView">
+        <attr name="scaleFactor" format="float" />
+        <attr name="duration" format="integer" />
+    </declare-styleable>
+
 </resources>

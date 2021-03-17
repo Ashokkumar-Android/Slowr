@@ -45,6 +45,8 @@
     <color name="intro_two">#A8BF54</color>
     <color name="intro_three">#FAB750</color>
 
+    <color name="gst_bg">#F2F2F2</color>
+
     <color name="cong_bg">#f5f5f5</color>
     <color name="rejected_txt">#B5B5B5</color>
     <color name="rejected_fill">#F5F5F5</color>

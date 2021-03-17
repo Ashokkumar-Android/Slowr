@@ -20,6 +20,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.media.ExifInterface;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -31,10 +33,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +62,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
 
 public class Function {
@@ -100,6 +99,10 @@ public class Function {
         return isInt;
     }
 
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 
     public boolean checkPermission(Activity activity) {
         boolean result = false;
@@ -135,6 +138,7 @@ public class Function {
         }
         return result;
     }
+
     public boolean checkPermissionLocation(Activity activity) {
         boolean result = false;
         for (int i = 0; i < Constant.LocationPermissions.length; i++) {
@@ -152,6 +156,7 @@ public class Function {
         }
         return result;
     }
+
     public static final Uri getUriToDrawable(@NonNull Context context,
                                              @AnyRes int drawableId) {
         Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
@@ -263,43 +268,43 @@ public class Function {
     }
 
     public void ShowNoInternetPopup(final Activity ctx, NoInternetCallBack _noInternetCallBack) {
-        try{
+        try {
 
 
-        this.noInternetCallBack = _noInternetCallBack;
-
-        LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
-
-        View view = null;
-        Typeface normaltext = null, boldtext = null;
-        if (inflater != null) {
-            view = inflater.inflate(R.layout.layout_no_internet, null);
-            Button btn_retry;
-            btn_retry = view.findViewById(R.id.btn_try_again);
-            btn_retry.setTypeface(normaltext);
-
-
-            btn_retry.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (isInternetAvailable(ctx)) {
-                        showImagePopup.dismiss();
-                        showImagePopup = null;
-                        noInternetCallBack.isInternet();
-                    } else {
-
-                    }
-                }
-            });
-
-            showImagePopup = new PopupWindow(view,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            showImagePopup.setOutsideTouchable(true);
-            showImagePopup.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        }
-        }catch (Exception e){
+            this.noInternetCallBack = _noInternetCallBack;
+            CustomMessageInternet(ctx, ctx.getString(R.string.txt_no_connection));
+//        LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+//
+//        View view = null;
+//        Typeface normaltext = null, boldtext = null;
+//        if (inflater != null) {
+//            view = inflater.inflate(R.layout.layout_no_internet, null);
+//            Button btn_retry;
+//            btn_retry = view.findViewById(R.id.btn_try_again);
+//            btn_retry.setTypeface(normaltext);
+//
+//
+//            btn_retry.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (isInternetAvailable(ctx)) {
+//                        showImagePopup.dismiss();
+//                        showImagePopup = null;
+//                        noInternetCallBack.isInternet();
+//                    } else {
+//
+//                    }
+//                }
+//            });
+//
+//            showImagePopup = new PopupWindow(view,
+//                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                    LinearLayout.LayoutParams.MATCH_PARENT);
+//            showImagePopup.setOutsideTouchable(true);
+//            showImagePopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+//
+//        }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -319,6 +324,19 @@ public class Function {
         tv.setText(message);
         Toast toast = new Toast(ctx);
         toast.setGravity(Gravity.BOTTOM, 0, 100);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
+    public static void CustomMessageInternet(Activity ctx, String message) {
+        LayoutInflater inflater = ctx.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.layout_custom_toast_internet, ctx.findViewById(R.id.custom_toast_layout));
+        TextView tv = layout.findViewById(R.id.txt_toast_message);
+        tv.setTextSize(20);
+        tv.setText(message);
+        Toast toast = new Toast(ctx);
+        toast.setGravity(Gravity.BOTTOM, 0, 500);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
@@ -427,124 +445,58 @@ public class Function {
 
     }
 
-//    public static String compressImage(String filePath) {
-//
-////        String filePath = getRealPathFromURI(imageUri);
-//        Bitmap scaledBitmap = null;
-//
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//
-////      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
-////      you try the use the bitmap here, you will get null.
-//        options.inJustDecodeBounds = true;
-//        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
-//
-//        int actualHeight = options.outHeight;
-//        int actualWidth = options.outWidth;
-//
-////      max Height and width values of the compressed image is taken as 816x612
-//
-//        float maxHeight = 816.0f;
-//        float maxWidth = 612.0f;
-//        float imgRatio = actualWidth / actualHeight;
-//        float maxRatio = maxWidth / maxHeight;
-//
-////      width and height values are set maintaining the aspect ratio of the image
-//
-//        if (actualHeight > maxHeight || actualWidth > maxWidth) {
-//            if (imgRatio < maxRatio) {
-//                imgRatio = maxHeight / actualHeight;
-//                actualWidth = (int) (imgRatio * actualWidth);
-//                actualHeight = (int) maxHeight;
-//            } else if (imgRatio > maxRatio) {
-//                imgRatio = maxWidth / actualWidth;
-//                actualHeight = (int) (imgRatio * actualHeight);
-//                actualWidth = (int) maxWidth;
-//            } else {
-//                actualHeight = (int) maxHeight;
-//                actualWidth = (int) maxWidth;
-//
-//            }
-//        }
-//
-////      setting inSampleSize value allows to load a scaled down version of the original image
-//
-//        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
-//
-////      inJustDecodeBounds set to false to load the actual bitmap
-//        options.inJustDecodeBounds = false;
-//
-////      this options allow android to claim the bitmap memory if it runs low on memory
-//        options.inPurgeable = true;
-//        options.inInputShareable = true;
-//        options.inTempStorage = new byte[16 * 1024];
-//
-//        try {
-////          load the bitmap from its path
-//            bmp = BitmapFactory.decodeFile(filePath, options);
-//        } catch (OutOfMemoryError exception) {
-//            exception.printStackTrace();
-//
-//        }
-//        try {
-//            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
-//        } catch (OutOfMemoryError exception) {
-//            exception.printStackTrace();
-//        }
-//
-//        float ratioX = actualWidth / (float) options.outWidth;
-//        float ratioY = actualHeight / (float) options.outHeight;
-//        float middleX = actualWidth / 2.0f;
-//        float middleY = actualHeight / 2.0f;
-//
-//        Matrix scaleMatrix = new Matrix();
-//        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
-//
-//        Canvas canvas = new Canvas(scaledBitmap);
-//        canvas.setMatrix(scaleMatrix);
-//        canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
-//
-////      check the rotation of the image and display it properly
-//        ExifInterface exif;
-//        try {
-//            exif = new ExifInterface(filePath);
-//
-//            int orientation = exif.getAttributeInt(
-//                    ExifInterface.TAG_ORIENTATION, 0);
-//            Log.d("EXIF", "Exif: " + orientation);
-//            Matrix matrix = new Matrix();
-//            if (orientation == 6) {
-//                matrix.postRotate(90);
-//                Log.d("EXIF", "Exif: " + orientation);
-//            } else if (orientation == 3) {
-//                matrix.postRotate(180);
-//                Log.d("EXIF", "Exif: " + orientation);
-//            } else if (orientation == 8) {
-//                matrix.postRotate(270);
-//                Log.d("EXIF", "Exif: " + orientation);
-//            }
-//            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
-//                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
-//                    true);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        FileOutputStream out = null;
-//        String filename = getFilename();
-//        try {
-//            out = new FileOutputStream(filename);
-//
-////          write the compressed bitmap at the destination specified by filename.
-//            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return filename;
-//
-//    }
+    public static void ShareProfileLink(Activity ctx, String prosperId, String imgUrl) {
+        ViewDialog viewDialog;
+        viewDialog = new ViewDialog(ctx);
+        viewDialog.showDialog();
+
+        DynamicLink.SocialMetaTagParameters.Builder builder = new DynamicLink.SocialMetaTagParameters.Builder();
+        builder.setTitle("www.slowr.com");
+        builder.setDescription("Rent Anything Hire Anybody \"Temporarily\"");
+        builder.setImageUrl(Uri.parse(imgUrl));
+
+        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setSocialMetaTagParameters(builder.build())
+                .setLink(Uri.parse("https://www.slowr.com/" + prosperId))
+                .setDomainUriPrefix("https://slowrprofile.page.link")
+                // Open links with this app on Android
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                // Open links with com.example.ios on iOS
+                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").build())
+                .buildShortDynamicLink()
+                .addOnCompleteListener(ctx, new OnCompleteListener<ShortDynamicLink>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                        if (task.isSuccessful()) {
+                            viewDialog.hideDialog();
+                            // Short link created
+                            Uri shortLink = task.getResult().getShortLink();
+                            Uri flowchartLink = task.getResult().getPreviewLink();
+                            Log.i("Share Link", String.valueOf(shortLink));
+                            String shareMessage;
+                            try {
+                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                shareIntent.setType("text/plain");
+                                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Slowr");
+
+                                    shareMessage = "\n" + ctx.getString(R.string.txt_profile_share_content) + " " + prosperId + "\n";
+
+                                shareMessage = shareMessage + shortLink;
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+                                ctx.startActivity(Intent.createChooser(shareIntent, "choose one"));
+                            } catch (Exception e) {
+                                //e.toString();
+                            }
+                        } else {
+                            viewDialog.hideDialog();
+                            CustomMessage(ctx, "Oops.Try again...");
+                        }
+                    }
+                });
+
+
+    }
 
     public static String compressImage(String imagePath) {
         Bitmap scaledBitmap = null;
@@ -692,5 +644,45 @@ public class Function {
             e.printStackTrace();
         }
         return versionname;
+    }
+
+
+    public static void RentalDurationText(TextView txtRental, String catGroup, String rentalDuration, Context ctx) {
+        if (catGroup.equals("1")) {
+            if (rentalDuration.equals("Custom")) {
+                txtRental.setText(ctx.getString(R.string.custom_rent));
+            } else if (rentalDuration.equals("Per Hour")) {
+                txtRental.setText(ctx.getString(R.string.hour_rent));
+            } else if (rentalDuration.equals("Per Day")) {
+                txtRental.setText(ctx.getString(R.string.day_rent));
+            } else if (rentalDuration.equals("Per Week")) {
+                txtRental.setText(ctx.getString(R.string.week_rent));
+            } else if (rentalDuration.equals("Per Month")) {
+                txtRental.setText(ctx.getString(R.string.month_rent));
+            }
+        } else {
+            if (rentalDuration.equals("Custom")) {
+                txtRental.setText(ctx.getString(R.string.custom_hire));
+            } else if (rentalDuration.equals("Per Hour")) {
+                txtRental.setText(ctx.getString(R.string.hour_hire));
+            } else if (rentalDuration.equals("Per Day")) {
+                txtRental.setText(ctx.getString(R.string.day_hire));
+            } else if (rentalDuration.equals("Per Week")) {
+                txtRental.setText(ctx.getString(R.string.week_hire));
+            } else if (rentalDuration.equals("Per Month")) {
+                txtRental.setText(ctx.getString(R.string.month_hire));
+            }
+        }
+    }
+
+    public static void CoinTone(Activity ctx){
+        try {
+            Uri defaultSoundUri = Uri.parse("android.resource://" + ctx.getPackageName() + "/" + R.raw.slowr_tone);
+            Ringtone r = RingtoneManager.getRingtone(ctx, defaultSoundUri);
+            r.play();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

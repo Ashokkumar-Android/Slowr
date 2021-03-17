@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.like.LikeButton;
 import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
+import com.slowr.app.utils.Function;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
         LinearLayout layout_promoted;
         LinearLayout layout_location;
         TextView txt_active_status;
+        TextView txt_service_count;
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
         ImageView img_bg_gradient;
@@ -65,15 +67,21 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
             img_bg_gradient = view.findViewById(R.id.img_bg_gradient);
             layout_location = view.findViewById(R.id.layout_location);
+            txt_service_count = view.findViewById(R.id.txt_service_count);
 
             layout_root.setOnClickListener(this);
             img_promote.setOnClickListener(this);
             img_share.setOnClickListener(this);
+            txt_service_count.setOnClickListener(this);
             img_favorite.setVisibility(View.GONE);
             layout_location.setVisibility(View.GONE);
             layout_promote.setVisibility(View.VISIBLE);
             txt_active_status.setVisibility(View.VISIBLE);
             img_bg_gradient.setVisibility(View.VISIBLE);
+            txt_service_count.setVisibility(View.VISIBLE);
+            txt_service_count.setText(ctx.getString(R.string.ad_views));
+            txt_service_count.setBackgroundResource(R.drawable.bg_green_view);
+            txt_service_count.setTextColor(ctx.getResources().getColor(R.color.color_white));
         }
 
         @Override
@@ -88,7 +96,9 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 case R.id.img_share:
                     callback.onShareClick(categoryListFilter.get(getAdapterPosition()));
                     break;
-
+                case R.id.txt_service_count:
+                    callback.onAdViewClick(categoryListFilter.get(getAdapterPosition()));
+                    break;
 
             }
 
@@ -188,35 +198,14 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
 
                 Log.i("Fave", movie.getIsFavorite());
                 if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                    if (movie.getCatGroup().equals("1")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    }
+                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
                 } else {
                     DecimalFormat formatter = new DecimalFormat("#,###,###");
                     String formatPrice = formatter.format(Integer.valueOf(price));
                     holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
                 }
             } else {
-                if (movie.getCatGroup().equals("1")) {
-                    if (movie.getAdDuration().equals("Custom")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else if (movie.getAdDuration().equals("Per Hour")) {
-                        holder.txt_price.setText(ctx.getString(R.string.hour_rent));
-                    } else if (movie.getAdDuration().equals("Per Day")) {
-                        holder.txt_price.setText(ctx.getString(R.string.day_rent));
-                    }
-                } else {
-                    if (movie.getAdDuration().equals("Custom")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    } else if (movie.getAdDuration().equals("Per Hour")) {
-                        holder.txt_price.setText(ctx.getString(R.string.hour_hire));
-                    } else if (movie.getAdDuration().equals("Per Day")) {
-                        holder.txt_price.setText(ctx.getString(R.string.day_hire));
-                    }
-                }
-
+                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
             }
             int defu = R.drawable.ic_no_image;
             if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
@@ -227,9 +216,9 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                         defu = R.drawable.ic_need_space;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
                         defu = R.drawable.ic_need_pet;
-                    }  else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;
-                    }else {
+                    } else {
                         defu = R.drawable.ic_need_product;
                     }
                 }
@@ -277,6 +266,8 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
         void onShareClick(AdItemModel model);
 
         void onPromoteClick(AdItemModel model);
+
+        void onAdViewClick(AdItemModel model);
     }
 
     @Override

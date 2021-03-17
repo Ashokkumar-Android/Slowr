@@ -1,5 +1,7 @@
 package com.slowr.app.activity;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -27,14 +28,20 @@ import com.slowr.app.adapter.BannerListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
+import com.slowr.app.models.BannerDetailsModel;
 import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.BannerModel;
+import com.slowr.app.models.CityChipModel;
+import com.slowr.app.models.CityItemModel;
+import com.slowr.app.models.ColorCodeItemModel;
 import com.slowr.app.models.DefaultResponse;
+import com.slowr.app.models.EditBannerModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import retrofit2.Call;
 
@@ -70,6 +77,11 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     boolean isPreview = false;
     boolean isAddBanner = false;
 
+    String PageFrom = "";
+    String NotificationId = "";
+
+    HashMap<String, String> params = new HashMap<String, String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +90,13 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void doDeclaration() {
+        if (getIntent().hasExtra("PageFrom")) {
+            PageFrom = getIntent().getStringExtra("PageFrom");
+            NotificationId = getIntent().getStringExtra("NotificationId");
+            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notifManager.cancelAll();
+            ReadNotification(NotificationId);
+        }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
         rc_banner = findViewById(R.id.rc_banner);
@@ -119,27 +138,11 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
         bannerListAdapter.setCallback(new BannerListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                bannerId = bannerList.get(pos).getBannerId();
-                layout_list.setVisibility(View.GONE);
-                layout_preview.setVisibility(View.VISIBLE);
-                isPreview = true;
-                txt_preview_title.setText(bannerList.get(pos).getBannerTitle());
-                txt_preview_description.setText(bannerList.get(pos).getDescription());
-                txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
-//                layout_banner_bg.setBackgroundColor(Color.parseColor(bannerList.get(pos).getColorCode()));
-                String[] col = bannerList.get(pos).getColorCode().split(",");
-                Function.GradientBgSet(layout_banner_bg, col[0], col[1]);
-                Glide.with(BannerActivity.this)
-                        .load(bannerList.get(pos).getBannerImage())
-                        .placeholder(R.drawable.ic_no_image)
-                        .error(R.drawable.ic_no_image)
-                        .into(img_banner_preview);
-                if (bannerList.get(pos).getBannerStatus().equals("1")) {
-                    btn_edit.setText(getString(R.string.txt_edit));
-                } else if (bannerList.get(pos).getBannerStatus().equals("3")) {
-                    btn_edit.setText(getString(R.string.txt_renew));
-                } else {
-                    btn_edit.setText(getString(R.string.txt_edit));
+                try {
+                    bannerId = bannerList.get(pos).getBannerId();
+                    getBannerDetails(bannerId);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -150,7 +153,24 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
-
+    private void getBannerDetails(String _bannerId) {
+        try {
+            if (_fun.isInternetAvailable(BannerActivity.this)) {
+                RetrofitClient.getClient().create(Api.class).getBannerDetails(_bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(BannerActivity.this, bannerDetailsResponse, true, false));
+            } else {
+                _fun.ShowNoInternetPopup(BannerActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        RetrofitClient.getClient().create(Api.class).getBannerDetails(_bannerId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                .enqueue(new RetrofitCallBack(BannerActivity.this, bannerDetailsResponse, true, false));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void DeleteBanner(String id) {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
                 BannerActivity.this);
@@ -166,7 +186,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                         if (_fun.isInternetAvailable(BannerActivity.this)) {
 
                             RetrofitClient.getClient().create(Api.class).getBannerDelete(id, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                    .enqueue(new RetrofitCallBack(BannerActivity.this, deleteAd, true));
+                                    .enqueue(new RetrofitCallBack(BannerActivity.this, deleteAd, true, false));
 
                         } else {
                             _fun.ShowNoInternetPopup(BannerActivity.this, new Function.NoInternetCallBack() {
@@ -174,7 +194,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                                 public void isInternet() {
 
                                     RetrofitClient.getClient().create(Api.class).getBannerDelete(id, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                            .enqueue(new RetrofitCallBack(BannerActivity.this, deleteAd, true));
+                                            .enqueue(new RetrofitCallBack(BannerActivity.this, deleteAd, true, false));
                                 }
                             });
 
@@ -197,13 +217,34 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
     private void getBannerList(boolean isLoad) {
         if (_fun.isInternetAvailable(BannerActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getBannerList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(BannerActivity.this, bannerListResponse, isLoad));
+                    .enqueue(new RetrofitCallBack(BannerActivity.this, bannerListResponse, isLoad, false));
         } else {
             _fun.ShowNoInternetPopup(BannerActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getBannerList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(BannerActivity.this, bannerListResponse, isLoad));
+                            .enqueue(new RetrofitCallBack(BannerActivity.this, bannerListResponse, isLoad, false));
+                }
+            });
+        }
+    }
+
+    private void ReadNotification(String noteId) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("notification_id", noteId);
+        Log.i("Params", params.toString());
+
+        if (_fun.isInternetAvailable(BannerActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(BannerActivity.this, noteReadResponse, false, false));
+        } else {
+            _fun.ShowNoInternetPopup(BannerActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(BannerActivity.this, noteReadResponse, false, false));
                 }
             });
         }
@@ -299,7 +340,75 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             call.cancel();
         }
     };
+    retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
 
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            DefaultResponse dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+    retrofit2.Callback<EditBannerModel> bannerDetailsResponse = new retrofit2.Callback<EditBannerModel>() {
+        @Override
+        public void onResponse(Call<EditBannerModel> call, retrofit2.Response<EditBannerModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+            EditBannerModel dr = response.body();
+            try {
+                if (dr.isStatus()) {
+                    layout_list.setVisibility(View.GONE);
+                    layout_preview.setVisibility(View.VISIBLE);
+                    isPreview = true;
+                    BannerDetailsModel detailsModel = dr.getEditBannerDataModel().getBannerDetailsModel();
+                    txt_preview_title.setText(detailsModel.getBannerTitle());
+                    txt_preview_description.setText(detailsModel.getDescription());
+                    txt_prosperId.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+//                layout_banner_bg.setBackgroundColor(Color.parseColor(bannerList.get(pos).getColorCode()));
+                    String[] col = detailsModel.getColorCode().split(",");
+                    Function.GradientBgSet(layout_banner_bg, col[0], col[1]);
+                    Glide.with(BannerActivity.this)
+                            .load(dr.getEditBannerDataModel().getBannerImage())
+                            .placeholder(R.drawable.ic_no_image)
+                            .error(R.drawable.ic_no_image)
+                            .into(img_banner_preview);
+                    if (detailsModel.getAdStatus().equals("1")) {
+                        btn_edit.setText(getString(R.string.txt_edit));
+                    } else if (detailsModel.getAdStatus().equals("3")) {
+                        btn_edit.setText(getString(R.string.txt_renew));
+                    } else {
+                        btn_edit.setText(getString(R.string.txt_edit));
+                    }
+                } else {
+                    Function.CustomMessage(BannerActivity.this, dr.getMessage());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -309,6 +418,11 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                     layout_list.setVisibility(View.VISIBLE);
                     layout_preview.setVisibility(View.GONE);
                 } else {
+                    if (PageFrom.equals("2")) {
+                        Intent h = new Intent(BannerActivity.this, HomeActivity.class);
+                        h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(h);
+                    }
                     finish();
                 }
 
@@ -349,6 +463,11 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             layout_list.setVisibility(View.VISIBLE);
             layout_preview.setVisibility(View.GONE);
         } else {
+            if (PageFrom.equals("2")) {
+                Intent h = new Intent(BannerActivity.this, HomeActivity.class);
+                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(h);
+            }
             finish();
             super.onBackPressed();
         }
@@ -372,6 +491,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onRefresh() {
+        Function.CoinTone(BannerActivity.this);
         getBannerList(false);
     }
 }

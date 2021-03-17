@@ -248,6 +248,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     edt_otp.setText("");
                 } else {
                     Intent i = new Intent(SignupActivity.this, ReportUsActivity.class);
+                    i.putExtra("PageFrom", "1");
                     startActivity(i);
                 }
                 break;
@@ -360,13 +361,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true,false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true,false));
                 }
             });
         }
@@ -386,13 +387,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true,false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true,false));
                 }
             });
         }
@@ -412,13 +413,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true,false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true,false));
                 }
             });
         }
@@ -438,13 +439,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true,false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true,false));
                 }
             });
         }
@@ -471,13 +472,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).register(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, register, true));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, register, true,false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).register(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, register, true));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, register, true,false));
                 }
             });
         }

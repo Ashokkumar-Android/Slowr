@@ -37,7 +37,9 @@ import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.ReportResponsModel;
 import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SortByModel;
+import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
+import com.slowr.app.utils.Sessions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +76,8 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     RentalDurationAdapter rentalDurationAdapter;
 
     String reportTypeId = "";
+    String pageFrom = "1";
+    String adId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,12 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void doDeclaration() {
+        if (getIntent().hasExtra("PageFrom")) {
+            pageFrom = getIntent().getStringExtra("PageFrom");
+            if (pageFrom.equals("2")) {
+                adId = getIntent().getStringExtra("AdId");
+            }
+        }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
 //        sp_report_type = findViewById(R.id.sp_report_type);
@@ -134,6 +144,16 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
 
         }
         CallBackFunction();
+        if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+            edt_name.setText(Sessions.getSession(Constant.UserName, getApplicationContext()));
+            edt_email.setText(Sessions.getSession(Constant.UserEmail, getApplicationContext()));
+        }
+
+        if (pageFrom.equals("2")) {
+            btn_continue.setText(getText(R.string.txt_continue));
+        }else {
+            btn_continue.setText(getText(R.string.txt_home_page));
+        }
     }
 
     private void CallBackFunction() {
@@ -183,7 +203,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
 
     private void getReportType() {
         RetrofitClient.getClient().create(Api.class).getReportType()
-                .enqueue(new RetrofitCallBack(ReportUsActivity.this, cityValue, true));
+                .enqueue(new RetrofitCallBack(ReportUsActivity.this, cityValue, true,false));
     }
 
     retrofit2.Callback<ReportTypeModel> cityValue = new retrofit2.Callback<ReportTypeModel>() {
@@ -201,7 +221,16 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
                     }
                     reportTypeList.addAll(dr.getReportTypeList());
                     for (int i = 0; i < reportTypeList.size(); i++) {
-                        reportTypeStringList.add(reportTypeList.get(i).getSortValue());
+                        if (pageFrom.equals("1")) {
+                            if (reportTypeList.get(i).getActionFrom() == null) {
+                                reportTypeStringList.add(reportTypeList.get(i).getSortValue());
+                            }
+                        } else {
+                            if (reportTypeList.get(i).getActionFrom() != null) {
+                                reportTypeStringList.add(reportTypeList.get(i).getSortValue());
+                            }
+                        }
+
                     }
                     if (reportTypeList.size() != 0) {
                         reportTypeId = reportTypeList.get(0).getSortId();
@@ -235,10 +264,14 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_continue:
 //                layout_report_details.setVisibility(View.VISIBLE);
 //                layout_report_success.setVisibility(View.GONE);
-                Intent h = new Intent(ReportUsActivity.this, HomeActivity.class);
-                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(h);
-                finish();
+                if (pageFrom.equals("2")) {
+                    finish();
+                } else {
+                    Intent h = new Intent(ReportUsActivity.this, HomeActivity.class);
+                    h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(h);
+                    finish();
+                }
                 break;
             case R.id.til_edt_type:
                 ShowPopupProsper();
@@ -316,10 +349,11 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
         params.put("email", edt_email.getText().toString());
         params.put("mobile_no", "");
         params.put("type", reportTypeId);
+        params.put("ads_id", adId);
         params.put("description", edt_description.getText().toString());
         Log.i("params", params.toString());
-        RetrofitClient.getClient().create(Api.class).saveReport(params)
-                .enqueue(new RetrofitCallBack(ReportUsActivity.this, saveReportApi, true));
+        RetrofitClient.getClient().create(Api.class).saveReport(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(ReportUsActivity.this, saveReportApi, true,false));
     }
 
     retrofit2.Callback<ReportResponsModel> saveReportApi = new retrofit2.Callback<ReportResponsModel>() {

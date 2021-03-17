@@ -23,9 +23,11 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,11 +35,14 @@ import com.razorpay.Checkout;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
 import com.slowr.app.R;
+import com.slowr.app.adapter.GSTListAdapter;
 import com.slowr.app.adapter.ProsperIdAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.DefaultResponse;
+import com.slowr.app.models.GSTListItemModel;
+import com.slowr.app.models.GSTLitsModel;
 import com.slowr.app.models.PromotePriceModel;
 import com.slowr.app.models.ProsperIdItemModel;
 import com.slowr.app.models.ProsperIdModel;
@@ -55,6 +60,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public class UpgradeActivity extends AppCompatActivity implements View.OnClickListener, PaymentResultWithDataListener {
@@ -110,6 +116,19 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     private PopupWindow spinnerPopup;
 
     String prosperAmount = "0";
+
+    TextView txt_company_name;
+    TextView txt_company_address;
+    EditText edt_gst_no_bill;
+    LinearLayout layout_address;
+    GSTListAdapter gstListAdapter;
+    ArrayList<GSTListItemModel> gstNoList = new ArrayList<>();
+
+    String gstId = "0";
+    String gstNo = "";
+    String gstName = "";
+    String gstAddress = "";
+    GridLayoutManager gridManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -439,13 +458,13 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).searchProsperId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, prosperIdListAPI, true));
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, prosperIdListAPI, true, false));
         } else {
             _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).searchProsperId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, prosperIdListAPI, true));
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, prosperIdListAPI, true, false));
                 }
             });
 
@@ -455,7 +474,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
     private void getPrice() {
         RetrofitClient.getClient().create(Api.class).getPromotionPrice(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(UpgradeActivity.this, priceResponse, true));
+                .enqueue(new RetrofitCallBack(UpgradeActivity.this, priceResponse, true, false));
     }
 
     @Override
@@ -723,13 +742,13 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).checkPromotionValid(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true));
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true, false));
         } else {
             _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).checkPromotionValid(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true));
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, validatePromotionApi, true, false));
                 }
             });
         }
@@ -751,13 +770,13 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true));
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true, false));
         } else {
             _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).savePromotion(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true));
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, savePromotionApi, true, false));
                 }
             });
         }
@@ -823,6 +842,10 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         params.put("type", promotionType);
         params.put("transaction_id", paymentId);
         params.put("total_amount", totalAmount);
+        params.put("name", gstName);
+        params.put("gst_no", gstNo);
+        params.put("address", gstAddress);
+        params.put("gst_id", gstId);
         if (!promotionType.equals("1")) {
 
             params.put("start_date", adStartDate);
@@ -838,13 +861,13 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getOrderId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true));
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true, false));
         } else {
             _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getOrderId(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true));
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, getOrderIdApi, true, false));
                 }
             });
         }
@@ -1083,18 +1106,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 spinnerPopup.dismiss();
-                if (_fun.isInternetAvailable(UpgradeActivity.this)) {
-//                    startPayment(amount);
-                    getOrderId();
-                } else {
-                    _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-//                            startPayment(amount);
-                            getOrderId();
-                        }
-                    });
-                }
+                ShowPopupGST();
+
             }
         });
 
@@ -1155,6 +1168,284 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             Log.e("Payment:", code + " " + response);
         } catch (Exception e) {
             Log.e(TAG, "Exception in onPaymentError", e);
+        }
+    }
+
+
+    public void ShowPopupGST() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_gst_bill, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        LinearLayout layout_input_gst = view.findViewById(R.id.layout_input_gst);
+        LinearLayout layout_message = view.findViewById(R.id.layout_message);
+        layout_address = view.findViewById(R.id.layout_address);
+        txt_company_name = view.findViewById(R.id.txt_company_name);
+        txt_company_address = view.findViewById(R.id.txt_company_address);
+        edt_gst_no_bill = view.findViewById(R.id.edt_gst_no_bill);
+        Button btn_yes = view.findViewById(R.id.btn_yes);
+        Button btn_no = view.findViewById(R.id.btn_no);
+        Button btn_input_back = view.findViewById(R.id.btn_input_back);
+        Button btn_input_continue = view.findViewById(R.id.btn_input_continue);
+        RecyclerView rc_gst_no = view.findViewById(R.id.rc_gst_no);
+        gstListAdapter = new GSTListAdapter(gstNoList, UpgradeActivity.this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UpgradeActivity.this, RecyclerView.VERTICAL, false);
+        gridManager = new GridLayoutManager(UpgradeActivity.this, 2);
+        rc_gst_no.setItemAnimator(new DefaultItemAnimator());
+        rc_gst_no.setLayoutManager(linearLayoutManager);
+        rc_gst_no.setAdapter(gstListAdapter);
+        gstListAdapter.setCallback(new GSTListAdapter.Callback() {
+            @Override
+            public void itemClick(int pos) {
+                edt_gst_no_bill.setText(gstNoList.get(pos).getGstNo());
+                gstId = gstNoList.get(pos).getGstId();
+                gstNo = gstNoList.get(pos).getGstNo();
+                gstAddress = gstNoList.get(pos).getCompanyAddress();
+                gstName = gstNoList.get(pos).getCompanyName();
+                layout_address.setVisibility(View.VISIBLE);
+                txt_company_name.setText(gstName);
+                txt_company_address.setText(gstAddress);
+            }
+        });
+        btn_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+                getOrderId();
+            }
+        });
+        btn_input_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_input_gst.setVisibility(View.GONE);
+                layout_address.setVisibility(View.GONE);
+                layout_message.setVisibility(View.VISIBLE);
+                txt_company_name.setText("");
+                txt_company_address.setText("");
+                edt_gst_no_bill.setText("");
+            }
+        });
+        btn_input_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Function.hideSoftKeyboard(UpgradeActivity.this, v);
+                if (!txt_company_name.getText().toString().equals("") && gstNo.equals(edt_gst_no_bill.getText().toString())) {
+                    gstName = txt_company_name.getText().toString();
+                    gstAddress = txt_company_address.getText().toString();
+                    getOrderId();
+                    spinnerPopup.dismiss();
+                } else {
+                    boolean isSelect = false;
+                    for (int i = 0; i < gstNoList.size(); i++) {
+                        if (gstNoList.get(i).getGstNo().toLowerCase().equals(edt_gst_no_bill.getText().toString().toLowerCase())) {
+                            gstId = gstNoList.get(i).getGstId();
+                            gstNo = gstNoList.get(i).getGstNo();
+                            gstAddress = gstNoList.get(i).getCompanyAddress();
+                            gstName = gstNoList.get(i).getCompanyName();
+                            layout_address.setVisibility(View.VISIBLE);
+                            txt_company_name.setText(gstName);
+                            txt_company_address.setText(gstAddress);
+                            isSelect = true;
+                            break;
+                        }
+                    }
+                    if (!isSelect)
+                        doValidationGST(edt_gst_no_bill.getText().toString());
+                }
+
+            }
+        });
+
+        btn_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout_input_gst.setVisibility(View.VISIBLE);
+                layout_message.setVisibility(View.GONE);
+                getGSTNOList();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void doValidationGST(String _gstNo) {
+
+        if (_gstNo.length() == 0) {
+            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+        }
+        gstNo = _gstNo;
+        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+            verifyGSTNO(_gstNo);
+        } else {
+            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    verifyGSTNO(_gstNo);
+                }
+            });
+
+
+        }
+    }
+
+    private void getGSTNOList() {
+        RetrofitClient.getClient().create(Api.class).gstNoList(Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(UpgradeActivity.this, gstNoListResponse, true, false));
+    }
+
+    private void verifyGSTNO(String gstNo) {
+        RetrofitClient.getClientGST().create(Api.class).verifyGST(gstNo, Constant.Authorization, Constant.Content_Type, Constant.ClientId)
+                .enqueue(new RetrofitCallBack(UpgradeActivity.this, gstResponse, true, false));
+    }
+
+    retrofit2.Callback<String> gstResponse = new retrofit2.Callback<String>() {
+        @Override
+        public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());
+
+            try {
+
+                JSONObject json = new JSONObject(response.body());
+                Object value = json.get("error");
+                if (value instanceof Boolean) {
+                    if (!json.getBoolean("error")) {
+
+                        JSONObject json_data = json.getJSONObject("data");
+                        if (json_data.getString("tradeNam").equals("")) {
+                            txt_company_name.setText(json_data.getString("lgnm"));
+                        }else {
+                            txt_company_name.setText(json_data.getString("tradeNam"));
+                        }
+                        JSONObject json_data_pre = json_data.getJSONObject("pradr");
+                        JSONObject json_data_address = json_data_pre.getJSONObject("addr");
+                        String address = json_data_address.getString("bno") + "," +
+                                json_data_address.getString("flno") + "," +
+                                json_data_address.getString("bnm") + "," +
+                                json_data_address.getString("st") + "," +
+                                json_data_address.getString("dst") + "," +
+                                json_data_address.getString("stcd") + " " +
+                                json_data_address.getString("pncd");
+                        txt_company_address.setText(address);
+                        layout_address.setVisibility(View.VISIBLE);
+                        gstId = "0";
+                    } else {
+//                    Function.CustomMessage(AddBannerActivity.this, "Enter a valid GST No");
+                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
+                        txt_company_name.setText("");
+                        txt_company_address.setText("");
+                        layout_address.setVisibility(View.GONE);
+                        gstNo = "";
+
+                    }
+                } else {
+                    if (value.equals("invalid_grant")) {
+                        updateToken();
+                    }
+
+                    txt_company_name.setText("");
+                    txt_company_address.setText("");
+                    layout_address.setVisibility(View.GONE);
+                    gstNo = "";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    retrofit2.Callback<GSTLitsModel> gstNoListResponse = new retrofit2.Callback<GSTLitsModel>() {
+        @Override
+        public void onResponse(Call<GSTLitsModel> call, retrofit2.Response<GSTLitsModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());
+
+            try {
+                GSTLitsModel dr = response.body();
+                if (dr.isStatus()) {
+                    gstNoList.clear();
+                    for (int i = 0; i < dr.getGstList().size(); i++) {
+                        if (!dr.getGstList().get(i).getGstNo().equals("")) {
+                            gstNoList.add(dr.getGstList().get(i));
+                        }
+                    }
+
+                    gstListAdapter.notifyDataSetChanged();
+                } else {
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    retrofit2.Callback<ResponseBody> gstTokenResponse = new retrofit2.Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());
+
+            try {
+                if (response.isSuccessful()) {
+                    doValidationGST(edt_gst_no_bill.getText().toString());
+                } else {
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    public void updateToken() {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+
+        params.put("username", "mayukh@torbit.in");
+        params.put("password", "Torbit@123");
+        params.put("client_id", "uaBInTAtsKXNexyIyj");
+        params.put("client_secret", "ygyoPiaL0fUvdkJbQ4yYw9eT");
+        params.put("grant_type", "password");
+
+        Log.i("params", params.toString());
+
+
+        if (_fun.isInternetAvailable(UpgradeActivity.this)) {
+            RetrofitClient.getTokenGST().create(Api.class).getToken(params)
+                    .enqueue(new RetrofitCallBack(UpgradeActivity.this, gstTokenResponse, true, false));
+        } else {
+            _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getToken(params)
+                            .enqueue(new RetrofitCallBack(UpgradeActivity.this, gstTokenResponse, true, false));
+                }
+            });
         }
     }
 }

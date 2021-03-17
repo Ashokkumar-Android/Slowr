@@ -106,38 +106,5 @@ public class InvoiceAdapter extends RecyclerView.Adapter<InvoiceAdapter.MyViewHo
         notifyDataSetChanged();
     }
 
-//    @Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence charSequence) {
-//                String charString = charSequence.toString();
-//                if (charString.isEmpty()) {
-//                    categoryListFilter = categoryList;
-//                } else {
-//                    List<CityItemModel> filteredList = new ArrayList<>();
-//                    for (CityItemModel row : categoryList) {
-//
-//                        // name match condition. this might differ depending on your requirement
-//                        // here we are looking for name or phone number match
-//                        if (row.getCityName().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteredList.add(row);
-//                        }
-//                    }
-//
-//                    categoryListFilter = filteredList;
-//                }
-//
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = categoryListFilter;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-//                categoryListFilter = (ArrayList<CityItemModel>) filterResults.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
+
 }

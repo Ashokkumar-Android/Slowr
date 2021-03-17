@@ -95,6 +95,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     TextView txt_alert_footer;
     FrameLayout layout_fav;
     CardView layout_image_tile;
+    TextView txt_report_ad;
 
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
     HashMap<String, Object> params = new HashMap<String, Object>();
@@ -190,6 +191,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_alert_footer = findViewById(R.id.txt_alert_footer);
         layout_fav = findViewById(R.id.layout_fav);
         layout_image_tile = findViewById(R.id.layout_image_tile);
+        txt_report_ad = findViewById(R.id.txt_report_ad);
         txt_page_title.setText(getString(R.string.nav_dash_board));
 
 
@@ -215,6 +217,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         btn_call_now.setOnClickListener(this);
         txt_prosperId.setOnClickListener(this);
         btn_chat_now.setOnClickListener(this);
+        txt_report_ad.setOnClickListener(this);
         CallBackFunction();
         if (!catId.equals(""))
             CallApi();
@@ -287,13 +290,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         Log.i("Params", params.toString());
         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
             RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false,false));
         } else {
             _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false));
+                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false,false));
                 }
             });
         }
@@ -361,7 +364,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     private void GetAdDetails() {
         Log.i("CATAD", catId + " , " + adId);
         RetrofitClient.getClient().create(Api.class).getHomeAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adDetails, true));
+                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adDetails, true,false));
 
     }
 
@@ -415,11 +418,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
 //                            txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
                                 if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    if (catGroup.equals("1")) {
-                                        txt_price.setText(getString(R.string.custom_rent));
-                                    } else {
-                                        txt_price.setText(getString(R.string.custom_hire));
-                                    }
+
+                                    Function.RentalDurationText(txt_price, catGroup,editAdDetailsModel.getRentalDuration(), getApplicationContext());
 //                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
                                 } else {
                                     DecimalFormat formatter = new DecimalFormat("#,###,###");
@@ -427,23 +427,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                     txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
                                 }
                             } else {
-                                if (catGroup.equals("1")) {
-                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                        txt_price.setText(getString(R.string.custom_rent));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
-                                        txt_price.setText(getString(R.string.hour_rent));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
-                                        txt_price.setText(getString(R.string.day_rent));
-                                    }
-                                } else {
-                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                        txt_price.setText(getString(R.string.custom_hire));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
-                                        txt_price.setText(getString(R.string.hour_hire));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
-                                        txt_price.setText(getString(R.string.day_hire));
-                                    }
-                                }
+                                Function.RentalDurationText(txt_price, catGroup,editAdDetailsModel.getRentalDuration(), getApplicationContext());
                             }
                             txt_description.setText(editAdDetailsModel.getDescription());
                             userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
@@ -575,6 +559,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 layout_action_button.setVisibility(View.GONE);
                                 layout_fav.setVisibility(View.VISIBLE);
                                 layout_chat_call.setVisibility(View.VISIBLE);
+                            }else {
+                                txt_report_ad.setVisibility(View.GONE);
                             }
                             if (dr.getEditDataModel().getCommunicationModel() != null) {
                                 if (dr.getEditDataModel().getCommunicationModel().getComments() != null) {
@@ -660,7 +646,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                         Function.CustomMessage(MyPostViewActivity.this, getString(R.string.ad_not_active));
                     }
                 } else {
-                    Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
 
                 break;
@@ -697,10 +684,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
                                     if (AdType.equals("1")) {
                                         RetrofitClient.getClient().create(Api.class).deletePost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true));
+                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
                                     } else {
                                         RetrofitClient.getClient().create(Api.class).deleteRequirementPost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true));
+                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
                                     }
                                 } else {
                                     _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
@@ -708,10 +695,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                         public void isInternet() {
                                             if (AdType.equals("1")) {
                                                 RetrofitClient.getClient().create(Api.class).deletePost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true));
+                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
                                             } else {
                                                 RetrofitClient.getClient().create(Api.class).deleteRequirementPost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true));
+                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
                                             }
                                         }
                                     });
@@ -807,7 +794,19 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     c.putExtra("UnVerified", isUnverified);
                     startActivity(c);
                 } else {
-                    Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
+                }
+                break;
+            case R.id.txt_report_ad:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent ru = new Intent(MyPostViewActivity.this, ReportUsActivity.class);
+                    ru.putExtra("PageFrom", "2");
+                    ru.putExtra("AdId", adId);
+                    startActivity(ru);
+                } else {
+                    Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
         }
@@ -866,10 +865,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true,false));
         } else {
             RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true,false));
         }
     }
 
@@ -908,7 +907,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addLike(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addLike, true));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addLike, true,false));
         } else {
 //            RetrofitClient.getClient().create(Api.class).deleteLike(catId, adId, "Bearer " + Sessions.getSession(Constant.UserToken, getApplicationContext()))
 //                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true));
@@ -1125,7 +1124,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 callAddFavorite();
             }
         } else {
-            Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+            Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+            startActivity(l);
             likeButton.setLiked(false);
         }
     }
@@ -1140,7 +1140,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 callAddFavorite();
             }
         } else {
-            Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_please_login));
+            Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+            startActivity(l);
             likeButton.setLiked(false);
         }
     }
@@ -1194,13 +1195,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
                         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
                             RetrofitClient.getClient().create(Api.class).changeAdStatus(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true));
+                                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true,false));
                         } else {
                             _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
                                 @Override
                                 public void isInternet() {
                                     RetrofitClient.getClient().create(Api.class).changeAdStatus(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true));
+                                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true,false));
                                 }
                             });
 

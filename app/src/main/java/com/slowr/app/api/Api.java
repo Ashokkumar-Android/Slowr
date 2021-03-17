@@ -16,7 +16,7 @@ import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
 import com.slowr.app.models.EditBannerModel;
-import com.slowr.app.models.GSTModel;
+import com.slowr.app.models.GSTLitsModel;
 import com.slowr.app.models.HomeBannerModel;
 import com.slowr.app.models.HomeDetailsModel;
 import com.slowr.app.models.HomeFilterAdModel;
@@ -35,7 +35,6 @@ import com.slowr.app.models.ReportResponsModel;
 import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SearchSuggistonModel;
 
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -127,7 +126,7 @@ public interface Api {
     Call<DefaultResponse> updatePostForm(@Part List<MultipartBody.Part> file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @Part("attributeValue[]") List<RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
 
     @POST("report-us")
-    Call<ReportResponsModel> saveReport(@Body Object params);
+    Call<ReportResponsModel> saveReport(@Body Object params, @Header("Authorization") String contentRange);
 
     @GET("ads/listing")
     Call<AdModel> getPost(@Header("Authorization") String contentRange);
@@ -232,7 +231,7 @@ public interface Api {
     Call<InvoiceModel> getInvoice(@Header("Authorization") String contentRange);
 
     @GET("searchgstin")
-    Call<GSTModel> verifyGST(@Query("gstin") String gstNo, @Header("Authorization") String authorization, @Header("Content-Type") String contentRange, @Header("client_id") String clientId);
+    Call<String> verifyGST(@Query("gstin") String gstNo, @Header("Authorization") String authorization, @Header("Content-Type") String contentRange, @Header("client_id") String clientId);
 
     @GET("recent-search")
     Call<SearchSuggistonModel> getRecentSearch(@Header("Authorization") String contentRange);
@@ -314,7 +313,7 @@ public interface Api {
 
     @Multipart
     @POST("razorpay-order")
-    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("start_date") RequestBody fromDate, @Part("end_date") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("type") RequestBody promotionType, @Header("Authorization") String contentRange);
+    Call<DefaultResponse> AddBanner(@Part MultipartBody.Part file, @Part("ads_id") RequestBody bannerId, @Part("title") RequestBody bannerTitle, @Part("start_date") RequestBody fromDate, @Part("end_date") RequestBody toDate, @Part("description") RequestBody bannerDecs, @Part("city_id") RequestBody cityIds, @Part("total_amount") RequestBody totalAmount, @Part("total_days") RequestBody totalDays, @Part("colour_code") RequestBody colorCode, @Part("type") RequestBody promotionType, @Part("name") RequestBody gstName, @Part("gst_no") RequestBody gstNo, @Part("address") RequestBody gstAddress, @Part("gst_id") RequestBody gstId, @Header("Authorization") String contentRange);
 
 //    @Multipart
 //    @POST("promotion")
@@ -332,4 +331,10 @@ public interface Api {
 
     @POST("geo-location")
     Call<DefaultResponse> deviceDetails(@Body Object params,@Header("Authorization") String contentRange);
+
+    @GET("all-gst")
+    Call<GSTLitsModel> gstNoList(@Header("Authorization") String contentRange);
+
+    @POST("access_token")
+    Call<ResponseBody> getToken(@Body Object params);
 }

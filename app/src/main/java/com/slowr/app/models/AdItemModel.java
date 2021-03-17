@@ -70,6 +70,12 @@ public class AdItemModel {
     @SerializedName("parent_id")
     private String adParentId;
 
+    @SerializedName("user_viewed_count")
+    private String userViewCount;
+
+    @SerializedName("prosper_page_view_count")
+    private String prosperPageViewCount;
+
     boolean isProgress = false;
 
     public String getAdId() {
@@ -254,5 +260,21 @@ public class AdItemModel {
 
     public void setAdParentId(String adParentId) {
         this.adParentId = adParentId;
+    }
+
+    public String getUserViewCount() {
+        return userViewCount;
+    }
+
+    public void setUserViewCount(String userViewCount) {
+        this.userViewCount = userViewCount;
+    }
+
+    public String getProsperPageViewCount() {
+        return prosperPageViewCount;
+    }
+
+    public void setProsperPageViewCount(String prosperPageViewCount) {
+        this.prosperPageViewCount = prosperPageViewCount;
     }
 }

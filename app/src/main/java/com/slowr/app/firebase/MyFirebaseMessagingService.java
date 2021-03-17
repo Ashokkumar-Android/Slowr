@@ -18,6 +18,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.slowr.app.R;
+import com.slowr.app.activity.BannerActivity;
 import com.slowr.app.activity.BaseActivity;
 import com.slowr.app.activity.MyPostViewActivity;
 import com.slowr.app.activity.ProfileActivity;
@@ -118,6 +119,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             break;
                         case "4":
                             notificationIntent = new Intent(getApplicationContext(), TransactionActivity.class);
+                            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            notificationIntent.putExtra("PageFrom", "2");
+                            notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
+                            break;
+                        case "5":
+                            notificationIntent = new Intent(getApplicationContext(), BannerActivity.class);
                             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             notificationIntent.putExtra("PageFrom", "2");
                             notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));

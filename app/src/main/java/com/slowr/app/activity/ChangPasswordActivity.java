@@ -147,7 +147,7 @@ public class ChangPasswordActivity extends AppCompatActivity implements View.OnC
 
 
         RetrofitClient.getClient().create(Api.class).changePassword(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ChangPasswordActivity.this, changePasswordApi, true));
+                .enqueue(new RetrofitCallBack(ChangPasswordActivity.this, changePasswordApi, true,false));
     }
 
     retrofit2.Callback<DefaultResponse> changePasswordApi = new retrofit2.Callback<DefaultResponse>() {

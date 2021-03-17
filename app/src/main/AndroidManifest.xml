@@ -57,7 +57,20 @@
         <activity
             android:name="com.slowr.app.activity.UserProfileActivity"
             android:screenOrientation="portrait">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="slowrprofile.page.link"
+                    android:scheme="http" />
+                <data
+                    android:host="slowrprofile.page.link"
+                    android:scheme="https" />
+
+            </intent-filter>
         </activity>
         <activity
             android:name="com.slowr.app.activity.SplashActivity"
@@ -71,7 +84,7 @@
         <activity
             android:name="com.slowr.app.activity.UpgradeActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing" />
+            android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity
             android:name="com.slowr.app.activity.ReportUsActivity"
             android:screenOrientation="portrait"
@@ -214,7 +227,7 @@
             android:value="9952b4224ffea1b363591a8a4e77b91fdeb18259" /> <!-- Add your Payment API key here -->
         <meta-data
             android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_xhQLKhh7mxkA2D" />
+            android:value="rzp_test_hh28PqAbniWxep" />
     </application>
 <!--    Live  KeyId    : rzp_live_xhQLKhh7mxkA2D-->
 <!--    Test KeyId    : rzp_test_hh28PqAbniWxep-->

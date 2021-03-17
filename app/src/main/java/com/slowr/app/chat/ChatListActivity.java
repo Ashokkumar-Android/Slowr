@@ -103,13 +103,13 @@ public class ChatListActivity extends AppCompatActivity implements View.OnClickL
     private void getChatList(boolean isLoad) {
         if (_fun.isInternetAvailable(ChatListActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getChatList(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad));
+                    .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad,false));
         } else {
             _fun.ShowNoInternetPopup(ChatListActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getChatList(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad));
+                            .enqueue(new RetrofitCallBack(ChatListActivity.this, productHistoryApi, isLoad,false));
                 }
             });
         }

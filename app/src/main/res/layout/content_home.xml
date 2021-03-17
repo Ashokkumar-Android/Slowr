@@ -134,9 +134,9 @@
                         android:visibility="visible">
 
                         <ImageView
-                            android:layout_width="90dp"
+                            android:layout_width="150dp"
                             android:layout_height="90dp"
-                            android:src="@drawable/ic_noad" />
+                            android:src="@drawable/ic_noads_city" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -326,51 +326,84 @@
                     android:padding="@dimen/size_ten"
                     android:visibility="visible">
 
-                    <ImageView
-                        android:layout_width="90dp"
-                        android:layout_height="90dp"
-                        android:src="@drawable/ic_noad" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_margin="@dimen/size_ten"
+                        android:visibility="visible"
+                        app:cardBackgroundColor="@color/color_white"
+                        app:cardCornerRadius="@dimen/size_ten">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/nunito_regular"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:gravity="center"
-                            android:text="@string/requirement_ad_content"
-                            android:textColor="@color/color_black"
-                            android:textSize="@dimen/size_eighteen" />
+                            android:orientation="vertical"
+                            android:padding="@dimen/size_ten"
+                            android:visibility="visible">
 
-                        <Button
-                            android:id="@+id/btn_requirement_ad"
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/size_five"
-                            android:background="@drawable/bg_orenge"
-                            android:fontFamily="@font/nunito_regular"
-                            android:paddingLeft="@dimen/size_twenty"
-                            android:paddingRight="@dimen/size_twenty"
-                            android:text="@string/requirement_ad"
-                            android:textAllCaps="false"
-                            android:textColor="@color/color_white"
-                            android:textSize="@dimen/size_sixteen" />
+                            <ImageView
+                                android:id="@+id/img_category_no_ad"
+                                android:layout_width="90dp"
+                                android:layout_height="90dp"
+                                android:src="@drawable/ic_noad" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/size_five"
-                            android:fontFamily="@font/nunito_regular"
-                            android:gravity="center"
-                            android:text="@string/requirement_ad_notify"
-                            android:textColor="@color/color_black"
-                            android:textSize="@dimen/size_eighteen" />
+                            <TextView
+                                android:id="@+id/txt_category_no_ad"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/size_five"
+                                android:fontFamily="@font/nunito_regular"
+                                android:gravity="center"
+                                android:text="@string/txt_no_ad_category_content"
+                                android:textColor="@color/color_black"
+                                android:textSize="@dimen/size_eighteen" />
 
-                    </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/size_ten"
+                                android:orientation="horizontal">
+
+
+                                <Button
+                                    android:id="@+id/btn_offer_req"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="35dp"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="@dimen/size_five"
+                                    android:background="@drawable/bg_orenge"
+                                    android:fontFamily="@font/nunito_regular"
+                                    android:paddingLeft="@dimen/size_twenty"
+                                    android:paddingRight="@dimen/size_twenty"
+                                    android:text="@string/txt_i_offer"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="@dimen/size_sixteen" />
+
+                                <View
+                                    android:layout_width="@dimen/size_ten"
+                                    android:layout_height="1dp" />
+
+                                <Button
+                                    android:id="@+id/btn_need_req"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="35dp"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="@dimen/size_five"
+                                    android:background="@drawable/bg_orenge"
+                                    android:fontFamily="@font/nunito_regular"
+                                    android:paddingLeft="@dimen/size_twenty"
+                                    android:paddingRight="@dimen/size_twenty"
+                                    android:text="@string/txt_i_need"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="@dimen/size_sixteen" />
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
                 </LinearLayout>
 
 

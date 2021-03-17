@@ -118,13 +118,13 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
             RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+                    .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false,false));
         } else {
             _fun.ShowNoInternetPopup(TransactionActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false));
+                            .enqueue(new RetrofitCallBack(TransactionActivity.this, noteReadResponse, false,false));
                 }
             });
         }
@@ -142,7 +142,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
     private void getInvoice(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getInvoice(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(TransactionActivity.this, adListResponse, isLoad));
+                .enqueue(new RetrofitCallBack(TransactionActivity.this, adListResponse, isLoad,false));
 
     }
 
@@ -316,7 +316,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
         RetrofitClient.getClient().create(Api.class).sendInvoice(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
 
-                .enqueue(new RetrofitCallBack(TransactionActivity.this, changePasswordApi, true));
+                .enqueue(new RetrofitCallBack(TransactionActivity.this, changePasswordApi, true,false));
     }
 
     retrofit2.Callback<DefaultResponse> changePasswordApi = new retrofit2.Callback<DefaultResponse>() {
@@ -350,7 +350,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(TransactionActivity.this);
         if (_fun.isInternetAvailable(TransactionActivity.this)) {
             getInvoice(false);
         } else {

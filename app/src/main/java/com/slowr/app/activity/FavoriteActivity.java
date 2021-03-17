@@ -155,10 +155,10 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true,false));
         } else {
             RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true,false));
         }
     }
 
@@ -184,7 +184,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
     private void getFavList(boolean isLoad) {
         RetrofitClient.getClient().create(Api.class).getFavorites(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(FavoriteActivity.this, adListResponse, isLoad));
+                .enqueue(new RetrofitCallBack(FavoriteActivity.this, adListResponse, isLoad,false));
 
     }
 
@@ -349,7 +349,7 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(FavoriteActivity.this);
         if (_fun.isInternetAvailable(FavoriteActivity.this)) {
             getFavList(false);
         } else {

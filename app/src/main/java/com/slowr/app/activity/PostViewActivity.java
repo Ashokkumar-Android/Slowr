@@ -80,6 +80,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     ImageView txt_premium_mark;
     LinearLayout layout_root;
     CardView layout_image_tile;
+    TextView txt_report_ad;
 
     ArrayList<AdItemModel> relatedAdList = new ArrayList<>();
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
@@ -157,6 +158,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         btn_call_now = findViewById(R.id.btn_call_now);
         txt_guid_line = findViewById(R.id.txt_guid_line);
         layout_image_tile = findViewById(R.id.layout_image_tile);
+        txt_report_ad = findViewById(R.id.txt_report_ad);
 
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_related_ad_list.setLayoutManager(linearLayoutManager3);
@@ -179,6 +181,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         txt_prosperId_post.setOnClickListener(this);
         txt_view_profile.setOnClickListener(this);
         btn_chat_now.setOnClickListener(this);
+        txt_report_ad.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(PostViewActivity.this)) {
             GetAdDetails();
@@ -283,7 +286,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     private void GetAdDetails() {
         Log.i("CATAD", catId + " , " + adId);
         RetrofitClient.getClient().create(Api.class).getHomeAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(PostViewActivity.this, adDetails, true));
+                .enqueue(new RetrofitCallBack(PostViewActivity.this, adDetails, true, false));
 
     }
 
@@ -336,11 +339,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 }
 
                                 if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    if (catGroup.equals("1")) {
-                                        txt_price.setText(getString(R.string.custom_rent));
-                                    } else {
-                                        txt_price.setText(getString(R.string.custom_hire));
-                                    }
+                                    Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
                                 } else {
                                     DecimalFormat formatter = new DecimalFormat("#,###,###");
                                     String formatPrice = formatter.format(Integer.valueOf(price));
@@ -348,23 +347,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                                 }
 
                             } else {
-                                if (catGroup.equals("1")) {
-                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                        txt_price.setText(getString(R.string.custom_rent));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
-                                        txt_price.setText(getString(R.string.hour_rent));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
-                                        txt_price.setText(getString(R.string.day_rent));
-                                    }
-                                } else {
-                                    if (editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                        txt_price.setText(getString(R.string.custom_hire));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Hour")) {
-                                        txt_price.setText(getString(R.string.hour_hire));
-                                    } else if (editAdDetailsModel.getRentalDuration().equals("Per Day")) {
-                                        txt_price.setText(getString(R.string.day_hire));
-                                    }
-                                }
+                                Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
                             }
 
                             txt_description.setText(editAdDetailsModel.getDescription());
@@ -517,7 +500,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                         });
                     }
                 } else {
-                    Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
             case R.id.layout_like:
@@ -533,7 +517,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                         });
                     }
                 } else {
-                    Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
 
                 break;
@@ -587,7 +572,19 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     c.putExtra("UnVerified", unVerified);
                     startActivity(c);
                 } else {
-                    Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
+                }
+                break;
+            case R.id.txt_report_ad:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent ru = new Intent(PostViewActivity.this, ReportUsActivity.class);
+                    ru.putExtra("PageFrom", "2");
+                    ru.putExtra("AdId", adId);
+                    startActivity(ru);
+                } else {
+                    Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
         }
@@ -603,10 +600,10 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true, false));
         } else {
             RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true));
+                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true, false));
         }
     }
 
@@ -621,7 +618,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addLike(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true));
+                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true, false));
         } else {
             Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_already_liked));
 //            RetrofitClient.getClient().create(Api.class).deleteLike(catId, adId, "Bearer " + Sessions.getSession(Constant.UserToken, getApplicationContext()))
@@ -757,7 +754,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 callAddFavorite();
             }
         } else {
-            Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+            Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+            startActivity(l);
             likeButton.setLiked(false);
         }
     }
@@ -772,7 +770,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 callAddFavorite();
             }
         } else {
-            Function.CustomMessage(PostViewActivity.this, getString(R.string.txt_please_login));
+            Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+            startActivity(l);
             likeButton.setLiked(false);
         }
     }

@@ -6,10 +6,13 @@ import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -64,6 +67,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
     int MY_POST_VIEW_CODE = 1299;
     boolean isChanges = false;
     private Function _fun = new Function();
+    private PopupWindow spinnerPopup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +184,11 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 p.putExtra("AdTitle", adTitle);
                 startActivityForResult(p, MY_POST_VIEW_CODE);
             }
+
+            @Override
+            public void onAdViewClick(AdItemModel model) {
+                ShowPopupViewCount(model);
+            }
         });
     }
 
@@ -189,7 +198,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
         RetrofitClient.getClient().create(Api.class).getPost(Sessions.getSession(Constant.UserToken, getApplicationContext()))
 
-                .enqueue(new RetrofitCallBack(DashBoardActivity.this, adListResponse, isLoader));
+                .enqueue(new RetrofitCallBack(DashBoardActivity.this, adListResponse, isLoader, false));
     }
 
     retrofit2.Callback<AdModel> adListResponse = new retrofit2.Callback<AdModel>() {
@@ -332,6 +341,8 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                     }
 
                     adListAdapter.notifyDataSetChanged();
+                } else if (inActiveCount == 0) {
+                    Function.CustomMessage(DashBoardActivity.this, getString(R.string.txt_inactive_no_content));
                 }
                 break;
 
@@ -377,7 +388,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(DashBoardActivity.this);
         if (_fun.isInternetAvailable(DashBoardActivity.this)) {
             getAdList(false);
         } else {
@@ -388,5 +399,38 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 }
             });
         }
+    }
+
+
+    public void ShowPopupViewCount(AdItemModel model) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_ads_view, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        LinearLayout layout_ad_view = view.findViewById(R.id.layout_ad_view);
+        LinearLayout layout_no_count = view.findViewById(R.id.layout_no_count);
+        TextView txt_ad_view_count = view.findViewById(R.id.txt_ad_view_count);
+        TextView txt_page_view_count = view.findViewById(R.id.txt_page_view_count);
+        txt_ad_view_count.setText(model.getUserViewCount());
+        txt_page_view_count.setText(model.getProsperPageViewCount());
+        if(model.getAdStatus().equals("0")||model.getAdStatus().equals("9")){
+            layout_ad_view.setVisibility(View.GONE);
+            layout_no_count.setVisibility(View.VISIBLE);
+        }else {
+            layout_ad_view.setVisibility(View.VISIBLE);
+            layout_no_count.setVisibility(View.GONE);
+        }
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

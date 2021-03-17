@@ -67,11 +67,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayout layout_requirement_ad;
     LinearLayout layout_list_filter;
     LinearLayout layout_search_list;
-    Button btn_requirement_ad;
+    Button btn_need_req;
     TextView txt_page_title;
     EditText edt_search_suggestion;
     SwipeRefreshLayout layout_swipe_refresh;
     ImageView img_search;
+    Button btn_add_post_header;
+    Button btn_offer_req;
 
     RecyclerView rc_ad_list;
     RecyclerView rc_filter;
@@ -133,7 +135,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         img_back = findViewById(R.id.img_back);
         layout_sort_by = findViewById(R.id.layout_sort_by);
         layout_filter = findViewById(R.id.layout_filter);
-        btn_requirement_ad = findViewById(R.id.btn_requirement_ad);
+        btn_need_req = findViewById(R.id.btn_need_req);
         layout_requirement_ad = findViewById(R.id.layout_requirement_ad);
         layout_list_filter = findViewById(R.id.layout_list_filter);
         layout_search_list = findViewById(R.id.layout_search_list);
@@ -141,6 +143,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         rc_filter = findViewById(R.id.rc_filter);
         edt_search_suggestion = findViewById(R.id.edt_search_suggestion);
         img_search = findViewById(R.id.img_search);
+        btn_add_post_header = findViewById(R.id.btn_add_post_header);
+        btn_offer_req = findViewById(R.id.btn_offer_req);
 
 
         txt_page_title.setText(getString(R.string.txt_search));
@@ -149,7 +153,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         listManager = new LinearLayoutManager(SearchActivity.this, RecyclerView.VERTICAL, false);
         rc_ad_list.setLayoutManager(listManager);
         rc_ad_list.setItemAnimator(new DefaultItemAnimator());
-        homeAdListAdapter = new HomeAdListAdapter(adList, SearchActivity.this,true);
+        homeAdListAdapter = new HomeAdListAdapter(adList, SearchActivity.this, true);
         homeAdGridAdapter = new HomeAdGridAdapter(adList, SearchActivity.this);
         rc_ad_list.setAdapter(homeAdListAdapter);
 
@@ -169,8 +173,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         img_grid.setOnClickListener(this);
         layout_sort_by.setOnClickListener(this);
         layout_filter.setOnClickListener(this);
-        btn_requirement_ad.setOnClickListener(this);
+        btn_need_req.setOnClickListener(this);
         img_search.setOnClickListener(this);
+        btn_add_post_header.setOnClickListener(this);
+        btn_offer_req.setOnClickListener(this);
 
         if (_fun.isInternetAvailable(SearchActivity.this)) {
             getRecentSearch();
@@ -423,7 +429,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         adList.get(pos).setProgress(true);
                         callAddFavorite();
                     } else {
-                        Function.CustomMessage(SearchActivity.this, getString(R.string.txt_please_login));
+                        Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                        startActivity(l);
                     }
 
                 }
@@ -460,7 +467,8 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         adList.get(pos).setProgress(true);
                         callAddFavorite();
                     } else {
-                        Function.CustomMessage(SearchActivity.this, getString(R.string.txt_please_login));
+                        Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                        startActivity(l);
                     }
 
                 }
@@ -495,10 +503,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                 params.put("category_id", catId);
                 Log.i("Params", params.toString());
                 RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true));
+                        .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true,false));
             } else {
                 RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true));
+                        .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true,false));
             }
         } else {
             _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
@@ -512,10 +520,10 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         params.put("category_id", catId);
                         Log.i("Params", params.toString());
                         RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true));
+                                .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true,false));
                     } else {
                         RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true));
+                                .enqueue(new RetrofitCallBack(SearchActivity.this, addFavorite, true,false));
                     }
                 }
             });
@@ -569,13 +577,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SearchActivity.this)) {
             RetrofitClient.getClient().create(Api.class).getHomeAds(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(SearchActivity.this, adListResponse, isLoad));
+                    .enqueue(new RetrofitCallBack(SearchActivity.this, adListResponse, isLoad,true));
         } else {
             _fun.ShowNoInternetPopup(SearchActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).getHomeAds(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(SearchActivity.this, adListResponse, isLoad));
+                            .enqueue(new RetrofitCallBack(SearchActivity.this, adListResponse, isLoad,true));
                 }
             });
         }
@@ -587,12 +595,12 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         public void onResponse(Call<HomeFilterAdModel> call, retrofit2.Response<HomeFilterAdModel> response) {
 
             Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
-
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
             HomeFilterAdModel dr = response.body();
             try {
-                if (layout_swipe_refresh.isRefreshing()) {
-                    layout_swipe_refresh.setRefreshing(false);
-                }
+
                 if (dr.isStatus()) {
 
 //                    Log.i("ImagePathUrl", dr.getUrlPath());
@@ -740,14 +748,15 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.layout_filter:
                 ShowPopupSortBy(2);
                 break;
-            case R.id.btn_requirement_ad:
+            case R.id.btn_need_req:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
                     Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 2);
                     p.putExtra("ParId", "");
                     startActivity(p);
                 } else {
-                    Function.CustomMessage(SearchActivity.this, getString(R.string.txt_please_login));
+                    Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
             case R.id.img_search:
@@ -765,6 +774,27 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     txt_page_title.setText(searchSugeistionValue);
                     currentPageNo = 1;
                     getAdList(true);
+                }
+                break;
+            case R.id.btn_add_post_header:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent a = new Intent(SearchActivity.this, AddPostActivity.class);
+                    a.putExtra("AdType", 0);
+                    startActivity(a);
+                } else {
+                    Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                    startActivity(l);
+                }
+                break;
+            case R.id.btn_offer_req:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                } else {
+                    Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                    startActivity(l);
                 }
                 break;
         }
@@ -902,7 +932,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         LinearLayout img_popup_back = view.findViewById(R.id.img_back);
         TextView txt_popup_title = view.findViewById(R.id.txt_page_title);
         TextView txt_page_action = view.findViewById(R.id.txt_page_action);
-
+        EditText edt_search_suggestion = view.findViewById(R.id.edt_search_suggestion);
         RecyclerView rc_filter = view.findViewById(R.id.rc_filter);
         txt_page_action.setText(getString(R.string.txt_done));
 
@@ -912,8 +942,27 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         rc_filter.setAdapter(filterSelectAdapter);
         txt_page_action.setVisibility(View.VISIBLE);
         txt_popup_title.setText(getString(R.string.txt_filter));
+        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterSelectAdapter.getFilter().filter(edt_search_suggestion.getText().toString());
+            }
+        });
+        if (filterList.get(pos).isSearch()) {
+            edt_search_suggestion.setVisibility(View.VISIBLE);
+        } else {
+            edt_search_suggestion.setVisibility(View.GONE);
+        }
         img_popup_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -957,14 +1006,14 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         params.put("term", searchVal);
         Log.i("Params", params.toString());
         RetrofitClient.getClient().create(Api.class).getSearchSuggestion(params)
-                .enqueue(new RetrofitCallBack(SearchActivity.this, searchResult, false));
+                .enqueue(new RetrofitCallBack(SearchActivity.this, searchResult, false,true));
 
     }
 
     private void getRecentSearch() {
 
         RetrofitClient.getClient().create(Api.class).getRecentSearch(Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(SearchActivity.this, searchResult, false));
+                .enqueue(new RetrofitCallBack(SearchActivity.this, searchResult, false,true));
     }
 
     retrofit2.Callback<SearchSuggistonModel> searchResult = new retrofit2.Callback<SearchSuggistonModel>() {
@@ -972,7 +1021,9 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
         public void onResponse(Call<SearchSuggistonModel> call, retrofit2.Response<SearchSuggistonModel> response) {
 
             Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
-
+            if (layout_swipe_refresh.isRefreshing()) {
+                layout_swipe_refresh.setRefreshing(false);
+            }
             SearchSuggistonModel dr = response.body();
             try {
                 if (dr.isStatus()) {
@@ -1011,7 +1062,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onRefresh() {
-
+        Function.CoinTone(SearchActivity.this);
         if (isCategory) {
             currentPageNo = 1;
             getAdList(false);

@@ -17,7 +17,6 @@ import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.DefaultResponse;
-import com.slowr.app.models.GSTModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
@@ -147,59 +146,59 @@ public class VerificationActivity extends AppCompatActivity implements View.OnCl
             } else {
                 til_gst_no.setErrorEnabled(false);
             }
-            if (_fun.isInternetAvailable(VerificationActivity.this)) {
-                verifyGSTNO(gstNo);
-            } else {
-                _fun.ShowNoInternetPopup(VerificationActivity.this, new Function.NoInternetCallBack() {
-                    @Override
-                    public void isInternet() {
-                        verifyGSTNO(gstNo);
-                    }
-                });
-            }
+//            if (_fun.isInternetAvailable(VerificationActivity.this)) {
+//                verifyGSTNO(gstNo);
+//            } else {
+//                _fun.ShowNoInternetPopup(VerificationActivity.this, new Function.NoInternetCallBack() {
+//                    @Override
+//                    public void isInternet() {
+//                        verifyGSTNO(gstNo);
+//                    }
+//                });
+//            }
 
         }
     }
 
-    private void verifyGSTNO(String gstNo) {
-        RetrofitClient.getClientGST().create(Api.class).verifyGST(gstNo, Constant.Authorization, Constant.Content_Type, Constant.ClientId)
-                .enqueue(new RetrofitCallBack(VerificationActivity.this, gstResponse, true));
-    }
+//    private void verifyGSTNO(String gstNo) {
+//        RetrofitClient.getClientGST().create(Api.class).verifyGST(gstNo, Constant.Authorization, Constant.Content_Type, Constant.ClientId)
+//                .enqueue(new RetrofitCallBack(VerificationActivity.this, gstResponse, true,false));
+//    }
 
-    retrofit2.Callback<GSTModel> gstResponse = new retrofit2.Callback<GSTModel>() {
-        @Override
-        public void onResponse(Call<GSTModel> call, retrofit2.Response<GSTModel> response) {
-
-            Log.d("Response", response.isSuccessful() + " : " + response.raw());
-
-            try {
-                GSTModel dr = response.body();
-                if (dr.isError()) {
-                    Function.CustomMessage(VerificationActivity.this,"GST Verification failed");
-                } else {
-
-                    if (_fun.isInternetAvailable(VerificationActivity.this)) {
-                        saveVerification();
-                    } else {
-                        _fun.ShowNoInternetPopup(VerificationActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                saveVerification();
-                            }
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void onFailure(Call call, Throwable t) {
-            Log.d("TAG", t.getMessage());
-            call.cancel();
-        }
-    };
+//    retrofit2.Callback<GSTModel> gstResponse = new retrofit2.Callback<GSTModel>() {
+//        @Override
+//        public void onResponse(Call<GSTModel> call, retrofit2.Response<GSTModel> response) {
+//
+//            Log.d("Response", response.isSuccessful() + " : " + response.raw());
+//
+//            try {
+//                GSTModel dr = response.body();
+//                if (dr.isError()) {
+//                    Function.CustomMessage(VerificationActivity.this,"GST Verification failed");
+//                } else {
+//
+//                    if (_fun.isInternetAvailable(VerificationActivity.this)) {
+//                        saveVerification();
+//                    } else {
+//                        _fun.ShowNoInternetPopup(VerificationActivity.this, new Function.NoInternetCallBack() {
+//                            @Override
+//                            public void isInternet() {
+//                                saveVerification();
+//                            }
+//                        });
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        @Override
+//        public void onFailure(Call call, Throwable t) {
+//            Log.d("TAG", t.getMessage());
+//            call.cancel();
+//        }
+//    };
 
 
     private void saveVerification() {
@@ -216,7 +215,7 @@ public class VerificationActivity extends AppCompatActivity implements View.OnCl
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).GSTVerificationSave(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(VerificationActivity.this, sumbitVerification, true));
+                .enqueue(new RetrofitCallBack(VerificationActivity.this, sumbitVerification, true,false));
 
     }
 

@@ -213,7 +213,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("params", params.toString());
 
         RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad));
+                .enqueue(new RetrofitCallBack(ChatActivity.this, chatMessageHistoryApi, isLoad,false));
 
 //        if (_fun.isInternetAvailable(ChatActivity.this)) {
 //            RetrofitClient.getClient().create(Api.class).chatMessageHistory(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
@@ -322,13 +322,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (_fun.isInternetAvailable(ChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).chatSendMessage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true));
+                    .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true,false));
         } else {
             _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).chatSendMessage(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true));
+                            .enqueue(new RetrofitCallBack(ChatActivity.this, sendMessageApi, true,false));
                 }
             });
         }
@@ -347,13 +347,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (_fun.isInternetAvailable(ChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).clearChat(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatActivity.this, clearMessageApi, false));
+                    .enqueue(new RetrofitCallBack(ChatActivity.this, clearMessageApi, false,false));
         } else {
             _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).clearChat(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatActivity.this, clearMessageApi, false));
+                            .enqueue(new RetrofitCallBack(ChatActivity.this, clearMessageApi, false,false));
                 }
             });
         }
@@ -628,13 +628,13 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         if (_fun.isInternetAvailable(ChatActivity.this)) {
             RetrofitClient.getClient().create(Api.class).uploadChatImage(chatImage, rbAdId, rbCatId, rbRenterId, rbMessageId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(ChatActivity.this, uploadImageApi, true));
+                    .enqueue(new RetrofitCallBack(ChatActivity.this, uploadImageApi, true,false));
         } else {
             _fun.ShowNoInternetPopup(ChatActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).uploadChatImage(chatImage, rbAdId, rbCatId, rbRenterId, rbMessageId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(ChatActivity.this, uploadImageApi, true));
+                            .enqueue(new RetrofitCallBack(ChatActivity.this, uploadImageApi, true,false));
                 }
             });
         }
@@ -661,6 +661,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.menu_report:
                 Intent ru = new Intent(ChatActivity.this, ReportUsActivity.class);
+                ru.putExtra("PageFrom", "1");
                 startActivity(ru);
                 break;
         }

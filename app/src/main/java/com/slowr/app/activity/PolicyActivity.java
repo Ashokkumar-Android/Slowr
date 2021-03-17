@@ -80,13 +80,13 @@ public class PolicyActivity extends AppCompatActivity implements View.OnClickLis
 
     private void getTC() {
         RetrofitClient.getClient().create(Api.class).getTC()
-                .enqueue(new RetrofitCallBack(PolicyActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(PolicyActivity.this, adListResponse, true,false));
 
     }
 
     private void getPolicy() {
         RetrofitClient.getClient().create(Api.class).getPrivacy()
-                .enqueue(new RetrofitCallBack(PolicyActivity.this, adListResponse, true));
+                .enqueue(new RetrofitCallBack(PolicyActivity.this, adListResponse, true,false));
 
     }
 

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/txt_gray_trans"
+    android:gravity="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/size_ten"
+        app:cardBackgroundColor="@color/color_white"
+        app:cardCornerRadius="@dimen/size_ten">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/layout_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/size_five"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:fontFamily="@font/nunito_regular"
+                        android:gravity="center"
+                        android:text="@string/txt_want_gst_bill"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_sixteen" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_twenty"
+                        android:layout_marginBottom="@dimen/size_ten"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_yes"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginRight="@dimen/size_twenty"
+                            android:background="@drawable/bg_orenge"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/size_twenty"
+                            android:paddingRight="@dimen/size_twenty"
+                            android:text="@string/txt_yes"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/size_thirteen" />
+
+                        <Button
+                            android:id="@+id/btn_no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="@dimen/size_twenty"
+                            android:background="@drawable/bg_blue"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/size_twenty"
+                            android:paddingRight="@dimen/size_twenty"
+                            android:text="@string/txt_no"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/size_thirteen" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_input_gst"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/size_five"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/size_five"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/attribute_title"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/txt_enter_gst" />
+
+
+                        <EditText
+                            android:id="@+id/edt_gst_no_bill"
+                            style="@style/attribute_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:imeOptions="actionDone"
+                            android:inputType="textCapSentences|textImeMultiLine"
+                            android:text="" />
+
+
+                        <View style="@style/attribute_line" />
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rc_gst_no"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_ten" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layout_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/size_ten"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txt_product_type_title"
+                                style="@style/attribute_title"
+                                android:fontFamily="@font/nunito_regular"
+                                android:text="@string/txt_company_name" />
+
+
+                            <TextView
+                                android:id="@+id/txt_company_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/nunito_regular" />
+
+
+                            <View style="@style/attribute_line" />
+                        </LinearLayout>
+
+                        <TextView
+                            style="@style/txt_create_post"
+                            android:layout_marginLeft="@dimen/size_ten"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:layout_marginRight="@dimen/size_ten"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/txt_company_address" />
+
+                        <TextView
+                            android:id="@+id/txt_company_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/size_ten"
+                            android:layout_marginTop="@dimen/size_five"
+                            android:layout_marginRight="@dimen/size_ten"
+                            android:background="@drawable/bg_description"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="top"
+                            android:minHeight="60dp"
+                            android:padding="@dimen/size_ten"
+                            android:textSize="@dimen/size_fifteen" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_ten"
+                        android:layout_marginBottom="@dimen/size_ten"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:id="@+id/btn_input_back"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginRight="@dimen/size_twenty"
+                            android:background="@drawable/bg_blue"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/size_twenty"
+                            android:paddingRight="@dimen/size_twenty"
+                            android:text="@string/txt_back"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/size_thirteen" />
+
+                        <Button
+                            android:id="@+id/btn_input_continue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="@dimen/size_twenty"
+                            android:background="@drawable/bg_orenge"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/size_twenty"
+                            android:paddingRight="@dimen/size_twenty"
+                            android:text="@string/txt_continue"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/size_thirteen" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

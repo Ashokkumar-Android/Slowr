@@ -8,6 +8,9 @@ public class SortByModel {
     @SerializedName("value")
     private String sortValue;
 
+    @SerializedName("action_from")
+    private String actionFrom;
+
     boolean isSelect = false;
 
     public String getSortId() {
@@ -32,6 +35,14 @@ public class SortByModel {
 
     public void setSelect(boolean select) {
         isSelect = select;
+    }
+
+    public String getActionFrom() {
+        return actionFrom;
+    }
+
+    public void setActionFrom(String actionFrom) {
+        this.actionFrom = actionFrom;
     }
 
     public SortByModel(String sortId, String sortValue, boolean isSelect) {
