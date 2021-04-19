@@ -1,6 +1,7 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
+import com.slowr.app.utils.Function;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -75,39 +77,29 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
             AdItemModel movie = categoryList.get(position);
 
             holder.txt_ad_title.setText(movie.getAdTitle().trim());
-            if (movie.getAdFee() != null) {
-                holder.txt_price.setVisibility(View.VISIBLE);
-                String price = "";
-                if (movie.getAdFee().contains(".")) {
-                    String[] tempPrice = movie.getAdFee().split("\\.");
-                    price = tempPrice[0];
-                } else {
-                    price = movie.getAdFee();
-                }
 
-                if (price.equals("0") || movie.getAdDuration().equals("Custom")) {
-                    if (movie.getCatGroup().equals("1")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    }
-
-                } else {
-                    DecimalFormat formatter = new DecimalFormat("#,###,###");
-                    String formatPrice = formatter.format(Integer.valueOf(price));
-                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
-                }
-            } else {
-                if (movie.getAdDuration().equals("Custom")) {
-                    if (movie.getCatGroup().equals("1")) {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_rent));
-                    } else {
-                        holder.txt_price.setText(ctx.getString(R.string.custom_hire));
-                    }
-                } else {
-                    holder.txt_price.setVisibility(View.GONE);
-                }
-            }
+            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+//            if (movie.getAdFee() != null) {
+//                holder.txt_price.setVisibility(View.VISIBLE);
+//                String price = "";
+//                if (movie.getAdFee().contains(".")) {
+//                    String[] tempPrice = movie.getAdFee().split("\\.");
+//                    price = tempPrice[0];
+//                } else {
+//                    price = movie.getAdFee();
+//                }
+//
+//                Log.i("Fave", movie.getIsFavorite());
+//                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+//                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//                } else {
+//                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                    String formatPrice = formatter.format(Integer.valueOf(price));
+//                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
+//                }
+//            } else {
+//                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//            }
             if (movie.getAdPromotion().equals("1")) {
                 holder.layout_promoted.setVisibility(View.VISIBLE);
                 holder.txt_premium_mark.setVisibility(View.GONE);
@@ -128,7 +120,7 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                 } else {
                     if (movie.getAdParentId() != null && movie.getAdParentId().equals("1")) {
                         defu = R.drawable.ic_need_space;
-                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("34")) {
                         defu = R.drawable.ic_need_pet;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;

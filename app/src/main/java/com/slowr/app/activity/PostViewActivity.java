@@ -2,6 +2,7 @@ package com.slowr.app.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
@@ -21,6 +22,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -81,6 +83,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     LinearLayout layout_root;
     CardView layout_image_tile;
     TextView txt_report_ad;
+    Button btn_view_contact;
 
     ArrayList<AdItemModel> relatedAdList = new ArrayList<>();
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
@@ -91,6 +94,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     String adId = "";
     String userProUrl = "";
     String userPhone = "";
+    String userEmail = "";
+    String userName = "";
     String userId = "";
     String isFavorite = "0";
     String isLike = "0";
@@ -109,6 +114,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     int imgSelectPos = 0;
     boolean isPageChange = false;
     private Function _fun = new Function();
+    int LOGIN_VIEW = 1299;
 
     String AdType = "";
     BaseActivity homeActivity;
@@ -126,7 +132,6 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     private void doDeclaration() {
         homeActivity = new BaseActivity();
         homeActivity.callBackCity = callBackCity;
-        catId = getIntent().getStringExtra("CatId");
         adId = getIntent().getStringExtra("AdId");
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
@@ -159,6 +164,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         txt_guid_line = findViewById(R.id.txt_guid_line);
         layout_image_tile = findViewById(R.id.layout_image_tile);
         txt_report_ad = findViewById(R.id.txt_report_ad);
+        btn_view_contact = findViewById(R.id.btn_view_contact);
 
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_related_ad_list.setLayoutManager(linearLayoutManager3);
@@ -182,6 +188,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         txt_view_profile.setOnClickListener(this);
         btn_chat_now.setOnClickListener(this);
         txt_report_ad.setOnClickListener(this);
+        btn_view_contact.setOnClickListener(this);
         CallBackFunction();
         if (_fun.isInternetAvailable(PostViewActivity.this)) {
             GetAdDetails();
@@ -222,24 +229,21 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         popularAdListAdapter.setCallback(new PopularAdListAdapter.Callback() {
             @Override
             public void itemClick(AdItemModel model) {
-                String catId = model.getCatId();
-                String adId = model.getAdId();
+                String adId = model.getAdSlug();
                 String userId = model.getUserId();
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
             }
         });
     }
 
-    void changeFragment(String catId, String adId, String _userId) {
+    void changeFragment(String adId, String _userId) {
 
         if (_userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
             Intent p = new Intent(PostViewActivity.this, MyPostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivity(p);
         } else {
             Intent p = new Intent(PostViewActivity.this, PostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivity(p);
         }
@@ -254,7 +258,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             } else {
                 if (adParentId.equals("1")) {
                     defu = R.drawable.ic_need_space;
-                } else if (adParentId.equals("1306")) {
+                } else if (adParentId.equals("34")) {
                     defu = R.drawable.ic_need_pet;
                 } else if (adParentId.equals("5")) {
                     defu = R.drawable.ic_need_book;
@@ -284,8 +288,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     }
 
     private void GetAdDetails() {
-        Log.i("CATAD", catId + " , " + adId);
-        RetrofitClient.getClient().create(Api.class).getHomeAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+        Log.i("CATAD", adId);
+        RetrofitClient.getClient().create(Api.class).getHomeAdDetails(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(PostViewActivity.this, adDetails, true, false));
 
     }
@@ -306,7 +310,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
 
-                            catGroup = dr.getEditDataModel().getCatGroup();
+                            catGroup = editAdDetailsModel.getCatGroup();
                             adParentId = dr.getEditDataModel().getAdDetailsModel().getParentId();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), PostViewActivity.this);
                             chatId = dr.getEditDataModel().getChatId();
@@ -328,29 +332,34 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             } else {
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.txt_orange));
                             }
-                            if (editAdDetailsModel.getRentalFee() != null) {
-                                txt_price.setVisibility(View.VISIBLE);
-                                String price = "";
-                                if (editAdDetailsModel.getRentalFee().contains(".")) {
-                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
-                                    price = tempPrice[0];
-                                } else {
-                                    price = editAdDetailsModel.getRentalFee();
-                                }
+                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(),editAdDetailsModel.getRentalDuration(),txt_price,catGroup,getApplicationContext());
+//                            if (editAdDetailsModel.getRentalFee() != null) {
+//                                txt_price.setVisibility(View.VISIBLE);
+//                                String price = "";
+//                                if (editAdDetailsModel.getRentalFee().contains(".")) {
+//                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
+//                                    price = tempPrice[0];
+//                                } else {
+//                                    price = editAdDetailsModel.getRentalFee();
+//                                }
+//
+//                                if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
+//                                    Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
+//                                } else {
+//                                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                                    String formatPrice = formatter.format(Integer.valueOf(price));
+//                                    txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
+//                                }
+//
+//                            } else {
+//                                Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
+//                            }
 
-                                if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-                                    Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
-                                } else {
-                                    DecimalFormat formatter = new DecimalFormat("#,###,###");
-                                    String formatPrice = formatter.format(Integer.valueOf(price));
-                                    txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
-                                }
-
+                            if (editAdDetailsModel.getDescription() != null && !editAdDetailsModel.getDescription().equals("")) {
+                                txt_description.setText(editAdDetailsModel.getDescription());
                             } else {
-                                Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
+                                txt_description.setText(getString(R.string.no_description));
                             }
-
-                            txt_description.setText(editAdDetailsModel.getDescription());
                             userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
                             Log.i("ProsperId", userProsperId);
                             txt_prosperId_post.setText(userProsperId);
@@ -371,9 +380,11 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 //                            if (editAdDetailsModel.getIsMobileVisible().equals("1")) {
 //                                txt_phone.setVisibility(View.GONE);
 //                            } else {
-                            txt_phone.setVisibility(View.VISIBLE);
+                            txt_phone.setVisibility(View.GONE);
                             txt_phone.setText(dr.getEditDataModel().getUserDetailsModel().getUserPhone());
                             userPhone = dr.getEditDataModel().getUserDetailsModel().getUserPhone();
+                            userEmail = dr.getEditDataModel().getUserDetailsModel().getUserEmail();
+                            userName = dr.getEditDataModel().getUserDetailsModel().getUserName();
                             if (userPhone.equals("")) {
                                 btn_call_now.setVisibility(View.GONE);
                             }
@@ -484,7 +495,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
-                Function.ShareLink(PostViewActivity.this, catId, adId, adTitle, catGroup, adShareUrl);
+                Function.ShareLink(PostViewActivity.this, adId, adTitle, catGroup, adShareUrl);
                 break;
             case R.id.img_favorite:
                 if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
@@ -501,7 +512,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     }
                 } else {
                     Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
             case R.id.layout_like:
@@ -518,7 +529,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     }
                 } else {
                     Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
 
                 break;
@@ -558,6 +569,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             case R.id.txt_view_profile:
                 Intent i = new Intent(PostViewActivity.this, UserProfileActivity.class);
                 i.putExtra("prosperId", userProsperId);
+                i.putExtra("PageFrom", "1");
                 startActivity(i);
                 break;
             case R.id.btn_chat_now:
@@ -573,7 +585,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     startActivity(c);
                 } else {
                     Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
             case R.id.txt_report_ad:
@@ -584,10 +596,85 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                     startActivity(ru);
                 } else {
                     Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
+                }
+                break;
+            case R.id.btn_view_contact:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    ShowPopupContact();
+                    ViewContact("1");
+                } else {
+                    Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
         }
+    }
+
+    public void ShowPopupContact() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_contact_view, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        TextView txt_phone = view.findViewById(R.id.txt_phone);
+        TextView txt_email = view.findViewById(R.id.txt_email);
+        TextView txt_name = view.findViewById(R.id.txt_name);
+        TextView txt_whats_app = view.findViewById(R.id.txt_whats_app);
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        txt_phone.setText(userPhone);
+        txt_whats_app.setText(userPhone);
+        txt_email.setText(userEmail);
+        txt_name.setText(userName);
+        if (userPhone != null && !userPhone.equals("")) {
+            txt_phone.setVisibility(View.VISIBLE);
+            txt_whats_app.setVisibility(View.VISIBLE);
+        } else {
+            txt_phone.setVisibility(View.GONE);
+            txt_whats_app.setVisibility(View.GONE);
+        }
+        if (userEmail != null && !userEmail.equals("")) {
+            txt_email.setVisibility(View.VISIBLE);
+        } else {
+            txt_email.setVisibility(View.GONE);
+        }
+        txt_whats_app.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + "+91" + userPhone));
+                startActivity(intent);
+            }
+        });
+        txt_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_fun.checkPermission2(PostViewActivity.this)) {
+                    Function.CallNow(PostViewActivity.this, userPhone);
+                    ViewContact("2");
+                }
+            }
+        });
+        txt_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + txt_email.getText().toString()));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "");
+                intent.putExtra(Intent.EXTRA_TEXT, "");
+                startActivity(intent);
+                ViewContact("4");
+            }
+        });
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
     private void callAddFavorite() {
@@ -597,12 +684,11 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true, false));
         } else {
-            RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+            RetrofitClient.getClient().create(Api.class).deleteFavorite(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(PostViewActivity.this, addFavorite, true, false));
         }
     }
@@ -615,7 +701,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
+
+
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addLike(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true, false));
@@ -624,6 +711,20 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
 //            RetrofitClient.getClient().create(Api.class).deleteLike(catId, adId, "Bearer " + Sessions.getSession(Constant.UserToken, getApplicationContext()))
 //                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true));
         }
+    }
+
+
+    private void ViewContact(String type) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("ads_id", adId);
+        params.put("platform", "3");
+        params.put("type", type);
+        params.put("user_id", Sessions.getSession(Constant.UserId, getApplicationContext()));
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).viewContact(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(PostViewActivity.this, viewContactResponse, false, false));
     }
 
     retrofit2.Callback<DefaultResponse> addFavorite = new retrofit2.Callback<DefaultResponse>() {
@@ -712,6 +813,29 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         }
     };
 
+    retrofit2.Callback<DefaultResponse> viewContactResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                DefaultResponse dr = response.body();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     public void ShowPopupProsper() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_popup_unverified_user, null);
@@ -755,7 +879,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             }
         } else {
             Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-            startActivity(l);
+            startActivityForResult(l, LOGIN_VIEW);
             likeButton.setLiked(false);
         }
     }
@@ -771,7 +895,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             }
         } else {
             Intent l = new Intent(PostViewActivity.this, LoginActivity.class);
-            startActivity(l);
+            startActivityForResult(l, LOGIN_VIEW);
             likeButton.setLiked(false);
         }
     }
@@ -791,11 +915,38 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         }
         if (result) {
             Function.CallNow(PostViewActivity.this, userPhone);
+            ViewContact("2");
         }
     }
 
     @Override
     public void callCityChange() {
         PageFrom = "2";
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == LOGIN_VIEW) {
+                if (_fun.isInternetAvailable(PostViewActivity.this)) {
+                    GetAdDetails();
+                } else {
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            _fun.ShowNoInternetPopup(PostViewActivity.this, new Function.NoInternetCallBack() {
+                                @Override
+                                public void isInternet() {
+                                    GetAdDetails();
+                                }
+                            });
+                        }
+                    }, 200);
+
+                }
+
+            }
+        }
     }
 }

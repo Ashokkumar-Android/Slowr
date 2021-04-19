@@ -107,7 +107,6 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
                 String noteId = notificationList.get(pos).getNotificationId();
                 String isRead = notificationList.get(pos).getIsRead();
                 if (notificationList.get(pos).getNotificationType().equals("2")) {
-                    String catId = notificationList.get(pos).getCatId();
                     String adId = notificationList.get(pos).getAdId();
 //                    String userId = notificationList.get(pos).getUserId();
                     Intent p = null;
@@ -117,10 +116,9 @@ public class NotificationActivity extends AppCompatActivity implements View.OnCl
 //                        p = new Intent(NotificationActivity.this, PostViewActivity.class);
 //                    }
                     p = new Intent(NotificationActivity.this, MyPostViewActivity.class);
-                    p.putExtra("CatId", catId);
                     p.putExtra("AdId", adId);
                     startActivity(p);
-                } else if (notificationList.get(pos).getNotificationType().equals("1")) {
+                } else if (notificationList.get(pos).getNotificationType().equals("1")||notificationList.get(pos).getNotificationType().equals("6")) {
                     Intent profile = new Intent(NotificationActivity.this, ProfileActivity.class);
                     startActivity(profile);
                 } else if (notificationList.get(pos).getNotificationType().equals("4")) {

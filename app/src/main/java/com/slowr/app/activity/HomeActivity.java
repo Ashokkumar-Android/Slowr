@@ -68,11 +68,12 @@ import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.CategoryItemModel;
 import com.slowr.app.models.CityItemModel;
 import com.slowr.app.models.DefaultResponse;
+import com.slowr.app.models.Fillter.FilterModel;
+import com.slowr.app.models.FilterResult.FilterResult;
 import com.slowr.app.models.FiltersModel;
 import com.slowr.app.models.HomeAdsModel;
 import com.slowr.app.models.HomeBannerModel;
 import com.slowr.app.models.HomeDetailsModel;
-import com.slowr.app.models.HomeFilterAdModel;
 import com.slowr.app.models.HomeFlyersModel;
 import com.slowr.app.models.SortByModel;
 import com.slowr.app.models.SuggistionItem;
@@ -109,6 +110,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     Button btn_offer_req;
     ImageView img_category_no_ad;
     TextView txt_category_no_ad;
+    TextView txt_category_name;
 
     RecyclerView rc_product_list;
     RecyclerView rc_service_list;
@@ -137,7 +139,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private static int currentPage = 0;
     private static int NUM_PAGES = 3;
     boolean isCategory = false;
-    boolean isSearch = false;
     boolean isGrid = false;
     int favPosition = 0;
     int currentPageNo = 1;
@@ -155,7 +156,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     GridLayoutManager gridManager;
     LinearLayoutManager listManager;
     boolean doubleBackToExitPressedOnce = false;
-    int serachView = 0;
     private PopupWindow spinnerPopup, filterPopup, demoPopup;
     SortByAdapter sortByAdapter;
     FilterOptionAdapter filterOptionAdapter;
@@ -164,6 +164,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     HomeBannerAdapter homeBannerAdapter;
     boolean isFilterClear = false;
     int EDIT_AD_VIEW = 1266;
+    int LOGIN_VIEW = 1299;
     boolean isRegister = false;
     private Function _fun = new Function();
 
@@ -174,6 +175,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     boolean isBannerStarted = false;
     boolean isViewBack = false;
+    boolean isFilterSubCat = false;
+
 
     FusedLocationProviderClient fusedLocationProviderClient;
     Location currentLocation;
@@ -181,6 +184,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     String cityName = "";
     BaseActivity homeActivity;
     CallBackCity callBackCity;
+    String filterSubCatId = "";
+    int filterSelectCount = 0;
+    String maxValue = "";
+    String minValue = "";
+    int filterProSer = 3;
 
     long startTime;
 
@@ -227,6 +235,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         pb_circule = findViewById(R.id.pb_circule);
         img_category_no_ad = findViewById(R.id.img_category_no_ad);
         txt_category_no_ad = findViewById(R.id.txt_category_no_ad);
+        txt_category_name = findViewById(R.id.txt_category_name);
 
         LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(HomeActivity.this, RecyclerView.HORIZONTAL, false);
         rc_product_list.setLayoutManager(linearLayoutManager1);
@@ -378,6 +387,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (!params.isEmpty()) {
+                params.clear();
+            }
+
+            String deviceDet = "{" + getHardwareAndSoftwareInfo() + "}";
+            params.put("city", "");
+
+            params.put("longitude", "");
+            params.put("latitude", "");
+
+            params.put("device_details", deviceDet);
+            if (isRegister) {
+                params.put("action", "1");
+            }
+            Log.i("Params", params.toString());
+            RetrofitClient.getClient().create(Api.class).deviceDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, deviceDetailsResponse, false, false));
         }
     }
 
@@ -509,6 +535,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         if (userProsperId != null) {
                             Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
                             i.putExtra("prosperId", userProsperId);
+                            i.putExtra("PageFrom", "1");
                             startActivity(i);
                         } else {
                             ShowPopupDefauldBanner();
@@ -521,11 +548,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         homeAdGridAdapter.setCallback(new HomeAdGridAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String userId = adList.get(pos).getUserId();
                 clickRefresh = true;
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
             }
 
             @Override
@@ -550,7 +576,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         }
                     } else {
                         Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                        startActivity(l);
+                        startActivityForResult(l, LOGIN_VIEW);
                     }
 
 
@@ -559,24 +585,28 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
             @Override
             public void onShareClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
 
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup, url);
+                Function.ShareLink(HomeActivity.this, adId, adTitle, catGroup, url);
+            }
+
+            @Override
+            public void onLoginClick(int pos) {
+                Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivityForResult(l, LOGIN_VIEW);
             }
         });
 
         homeAdListAdapter.setCallback(new HomeAdListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String userId = adList.get(pos).getUserId();
                 clickRefresh = true;
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
 
             }
 
@@ -605,30 +635,34 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     }
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
 
             }
 
             @Override
             public void onShareClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
-                Function.ShareLink(HomeActivity.this, catId, adId, adTitle, catGroup, url);
+                Function.ShareLink(HomeActivity.this, adId, adTitle, catGroup, url);
+            }
+
+            @Override
+            public void onLoginClick(int pos) {
+                Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                startActivityForResult(l, LOGIN_VIEW);
             }
         });
 
         homeCustomListAdapter.setCallback(new HomeCustomListAdapter.Callback() {
             @Override
             public void itemClick(AdItemModel model) {
-                String catId = model.getCatId();
-                String adId = model.getAdId();
+                String adId = model.getAdSlug();
                 String userId = model.getUserId();
                 clickRefresh = false;
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
             }
 
             @Override
@@ -637,21 +671,21 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isFilterClear = false;
                 sortByList.clear();
                 filterList.clear();
+
                 productType = homeAdList.get(pos).getProductType();
+                filterProSer = Integer.valueOf(homeAdList.get(pos).getProductType());
                 currentPageNo = 1;
                 catId = "";
                 sortById = "";
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
+                minValue = "";
+                maxValue = "";
+                filterSubCatId = "";
+                isFilterSubCat = false;
+                filterSelectCount = 0;
+                txt_category_name.setText(homeAdList.get(pos).getListTitle());
+                getFilterData(false);
+                getAdList(true);
 
-                    getAdList(true);
-                } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(true);
-                        }
-                    });
-                }
             }
         });
 
@@ -662,26 +696,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isFilterClear = false;
                 sortByList.clear();
                 filterList.clear();
+                isFilterSubCat = false;
                 productType = "";
+                filterSubCatId = "";
                 sortById = "";
+                minValue = "";
+                maxValue = "";
+                filterSelectCount = 0;
+                filterProSer = 1;
                 if (sortByAdapter != null) {
                     sortByAdapter.clearValues();
                 }
                 catId = categoryList.get(pos).getId();
+                txt_category_name.setText(categoryList.get(pos).getName());
                 Constant.ParentId = catId;
                 currentPageNo = 1;
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
-
-                    getAdList(true);
-                } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(true);
-                        }
-                    });
-                }
-
+                getFilterData(false);
+                getAdList(true);
             }
         });
         serviceCategoryListAdapter.setCallback(new ServiceCategoryListAdapter.Callback() {
@@ -691,59 +722,65 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isFilterClear = false;
                 sortByList.clear();
                 filterList.clear();
+                isFilterSubCat = false;
                 catId = serviceList.get(pos).getId();
                 Constant.ParentId = catId;
                 currentPageNo = 1;
                 productType = "";
+                filterSubCatId = "";
                 sortById = "";
+                minValue = "";
+                maxValue = "";
+                filterSelectCount = 0;
+                filterProSer = 2;
+                txt_category_name.setText(serviceList.get(pos).getName());
                 if (sortByAdapter != null) {
                     sortByAdapter.clearValues();
                 }
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
-                    getAdList(true);
-                } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(true);
-                        }
-                    });
-                }
+                getFilterData(false);
+                getAdList(true);
 
             }
         });
 
     }
 
+    private void getFilterData(boolean isLoad) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("parent_id", catId);
+        params.put("subcategory_id", filterSubCatId);
+        params.put("city_id", Sessions.getSession(Constant.CityId, getApplicationContext()));
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).getFilter(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(HomeActivity.this, filterResponse, isLoad, false));
+    }
 
     private void callAddFavorite() {
-        String catId = adList.get(favPosition).getCatId();
-        String adId = adList.get(favPosition).getAdId();
+        String adId = adList.get(favPosition).getAdSlug();
         String isFav = adList.get(favPosition).getIsFavorite();
         if (isFav.equals("0")) {
             if (!params.isEmpty()) {
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false, false));
         } else {
-            RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+            RetrofitClient.getClient().create(Api.class).deleteFavorite(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(HomeActivity.this, addFavorite, false, false));
         }
     }
 
-    void changeFragment(String catId, String adId, String userId) {
+    void changeFragment(String adId, String userId) {
         if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
             Intent p = new Intent(HomeActivity.this, MyPostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, EDIT_AD_VIEW);
         } else {
             Intent p = new Intent(HomeActivity.this, PostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, EDIT_AD_VIEW);
         }
@@ -752,8 +789,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     private void Pageination() {
 
-
-        //Friends
         if (rc_ad_list.getLayoutManager() instanceof LinearLayoutManager) {
             if (!isGrid) {
                 listManager = (LinearLayoutManager) rc_ad_list
@@ -790,16 +825,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         if (!isLoading) {
                             currentPageNo = currentPageNo + 1;
 
-                            if (_fun.isInternetAvailable(HomeActivity.this)) {
-                                getAdList(true);
-                            } else {
-                                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                                    @Override
-                                    public void isInternet() {
-                                        getAdList(true);
-                                    }
-                                });
-                            }
+                            getAdList(true);
+
                         }
                     } else {
                         Log.i("List End", "Success");
@@ -817,33 +844,87 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             params.clear();
         }
         HashMap<String, Object> paramsFilter = new HashMap<String, Object>();
+        JsonArray rentalDuration = new JsonArray();
+        JsonArray adType = new JsonArray();
+        JsonArray fee = new JsonArray();
+        JsonArray locality = new JsonArray();
+        JsonArray attribute = new JsonArray();
 
 
         for (int i = 0; i < filterList.size(); i++) {
-            JsonArray jsonArray = new JsonArray();
-            for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
-                if (filterList.get(i).getFilterValue().get(j).isSelect()) {
-                    jsonArray.add(filterList.get(i).getFilterValue().get(j).getSortId());
+
+            if (filterList.get(i).getFilterId().equals("1")) {
+                for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
+                    if (filterList.get(i).getFilterValue().get(j).isSelect()) {
+                        rentalDuration.add(filterList.get(i).getFilterValue().get(j).getSortValue());
+                    }
                 }
             }
-            if (jsonArray.size() != 0) {
-                paramsFilter.put(filterList.get(i).getFilterId(), jsonArray);
+
+            if (filterList.get(i).getFilterId().equals("2")) {
+                for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
+                    if (filterList.get(i).getFilterValue().get(j).isSelect()) {
+                        adType.add(filterList.get(i).getFilterValue().get(j).getSortId());
+                    }
+                }
+            }
+
+            if (filterList.get(i).getFilterId().equals("3")) {
+                for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
+                    if (filterList.get(i).getFilterValue().get(j).isSelect()) {
+                        fee.add(filterList.get(i).getFilterValue().get(j).getSortId());
+                    }
+                }
+            }
+            if (filterList.get(i).getFilterId().equals("4")) {
+                for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
+                    if (filterList.get(i).getFilterValue().get(j).isSelect()) {
+                        locality.add(filterList.get(i).getFilterValue().get(j).getSortId());
+                    }
+                }
+            }
+            if (filterList.get(i).getFilterId().equals("6")) {
+                for (int j = 0; j < filterList.get(i).getFilterValue().size(); j++) {
+                    if (filterList.get(i).getFilterValue().get(j).isSelect()) {
+                        attribute.add(filterList.get(i).getFilterValue().get(j).getSortId());
+                    }
+                }
             }
         }
 
-        params.put("categoryId", catId);
-        params.put("subCategoryId", "");
-        params.put("childCategoryId", "");
-        params.put("cityId", Sessions.getSession(Constant.CityId, HomeActivity.this));
-        params.put("search", "");
+        paramsFilter.put("category_id", catId);
+        paramsFilter.put("subcategory_id", filterSubCatId);
+        paramsFilter.put("rental_duration", rentalDuration);
+        paramsFilter.put("ad_type", adType);
+        paramsFilter.put("fee", fee);
+        paramsFilter.put("attribute_value", attribute);
+        paramsFilter.put("sort_by", sortById);
+        paramsFilter.put("locality_id", locality);
+        paramsFilter.put("fee_min", minValue);
+        paramsFilter.put("fee_max", maxValue);
+        paramsFilter.put("category_type", productType);
+        paramsFilter.put("city_id", Sessions.getSession(Constant.CityId, getApplicationContext()));
+        params.put("filter", paramsFilter);
+        params.put("searchTerm", "");
+
         params.put("page", String.valueOf(currentPageNo));
-        params.put("sortBy", sortById);
-        params.put("attributeFilterOptions", paramsFilter);
-        params.put("productType", productType);
+
+
         Log.i("Params", params.toString());
 
-        RetrofitClient.getClient().create(Api.class).getHomeAds(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad, false));
+        if (_fun.isInternetAvailable(HomeActivity.this)) {
+
+            RetrofitClient.getClient().create(Api.class).getHomeAdsNew(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad, false));
+        } else {
+            _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getHomeAdsNew(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(HomeActivity.this, adListResponse, isLoad, false));
+                }
+            });
+        }
     }
 
     retrofit2.Callback<HomeBannerModel> homeBannerResponse = new retrofit2.Callback<HomeBannerModel>() {
@@ -992,24 +1073,31 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
-    retrofit2.Callback<HomeFilterAdModel> adListResponse = new retrofit2.Callback<HomeFilterAdModel>() {
+    retrofit2.Callback<FilterResult> adListResponse = new retrofit2.Callback<FilterResult>() {
         @Override
-        public void onResponse(Call<HomeFilterAdModel> call, retrofit2.Response<HomeFilterAdModel> response) {
+        public void onResponse(Call<FilterResult> call, retrofit2.Response<FilterResult> response) {
 
             Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
 
-            HomeFilterAdModel dr = response.body();
+            FilterResult dr = response.body();
             try {
                 if (layout_swipe_refresh.isRefreshing()) {
                     layout_swipe_refresh.setRefreshing(false);
                 }
-                if (dr.isStatus()) {
-                    currentPageNo = dr.getAdListModel().getCurrentPage();
-                    lastPageNo = dr.getAdListModel().getLastPage();
+                if (dr.getStatus()) {
+                    currentPageNo = dr.getCurrentPage();
+                    lastPageNo = dr.getLastPage();
+                    Log.i("CurrentPage", currentPageNo + "," + lastPageNo);
                     isLoading = false;
                     if (currentPageNo == 1) {
                         adList.clear();
-
+                        if (dr.getValue() != null) {
+                            sortByList.clear();
+                            sortByList.addAll(dr.getValue());
+                            if (sortByList.size() != 0) {
+                                layout_sort_by.setVisibility(View.VISIBLE);
+                            }
+                        }
                     }
 
                     if (isGrid) {
@@ -1017,14 +1105,65 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     } else {
                         homeAdListAdapter.notifyDataSetChanged();
                     }
-                    adList.addAll(dr.getAdListModel().getAdList());
-                    if (!isFilterClear) {
-                        sortByList.clear();
-                        sortByList.addAll(dr.getSortByModel());
 
-                        filterList.clear();
-                        filterList.addAll(dr.getFilterModel());
+                    for (int i = 0; i < dr.getData().size(); i++) {
+                        AdItemModel adItemModel = new AdItemModel();
+                        adItemModel.setAdId(String.valueOf(dr.getData().get(i).getId()));
+                        adItemModel.setCatId(String.valueOf(dr.getData().get(i).getCategoryId()));
+                        adItemModel.setAdTitle(dr.getData().get(i).getTitle());
+                        adItemModel.setAdDescription(dr.getData().get(i).getDescription());
+                        adItemModel.setAdDuration(dr.getData().get(i).getRentalDuration());
+                        adItemModel.setAdFee(dr.getData().get(i).getRentalFee());
+                        adItemModel.setAdNegotiable(String.valueOf(dr.getData().get(i).getIsRentNegotiable()));
+                        if (dr.getData().get(i).getCustomLocality() != null && !dr.getData().get(i).getCustomLocality().equals("")) {
+                            adItemModel.setAreaName(dr.getData().get(i).getCustomLocality());
+                        } else {
+                            if (dr.getData().get(i).getLocality() != null && dr.getData().get(i).getLocality().getArea() != null)
+                                adItemModel.setAreaName(dr.getData().get(i).getLocality().getArea());
+                        }
+                        adItemModel.setCityName(dr.getData().get(i).getCity().getCity());
+                        adItemModel.setStateName("");
+                        if (dr.getData().get(i).getPhotos() != null && !dr.getData().get(i).getPhotos().equals("")) {
+                            if (dr.getData().get(i).getPhotos().contains(",")) {
+                                String[] tempPrice = dr.getData().get(i).getPhotos().split(",");
+                                adItemModel.setPhotoType(dr.getImagePath() + tempPrice[0]);
+                            } else {
+                                adItemModel.setPhotoType(dr.getImagePath() + dr.getData().get(i).getPhotos());
+                            }
+                        }
+                        adItemModel.setLikeCount(String.valueOf(dr.getData().get(i).getTotalLike()));
+                        if (dr.getData().get(i).getIsFave() != null) {
+                            adItemModel.setIsFavorite("1");
+                        } else {
+                            adItemModel.setIsFavorite("0");
+                        }
+                        if (dr.getData().get(i).getAdsLike() != null) {
+                            adItemModel.setIsLike("1");
+                        } else {
+                            adItemModel.setIsLike("0");
+                        }
+                        adItemModel.setUserId(String.valueOf(dr.getData().get(i).getUserId()));
+                        adItemModel.setAdType(String.valueOf(dr.getData().get(i).getType()));
+                        adItemModel.setAdStatus(String.valueOf(dr.getData().get(i).getStatus()));
+                        adItemModel.setAdPromotion("");
+                        adItemModel.setCatGroup(String.valueOf(dr.getData().get(i).getCategoryType()));
+                        adItemModel.setServiceAdCount(dr.getData().get(i).getServiceAdCount());
+                        adItemModel.setProsperId(dr.getData().get(i).getUser().getProsperId());
+                        adItemModel.setAdParentId(String.valueOf(dr.getData().get(i).getParentId()));
+                        adItemModel.setAdSlug(dr.getData().get(i).getSlug());
+                        adItemModel.setProgress(false);
+                        adItemModel.setImagePath(dr.getImagePath());
+
+                        adList.add(adItemModel);
                     }
+//                    adList.addAll(dr.getAdListModel().getAdList());
+//                    if (!isFilterClear) {
+//                        sortByList.clear();
+//                        sortByList.addAll(dr.getSortByModel());
+//
+//                        filterList.clear();
+//                        filterList.addAll(dr.getFilterModel());
+//                    }
                     if (isGrid) {
                         homeAdGridAdapter.notifyDataSetChanged();
                     } else {
@@ -1040,20 +1179,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     }
                     layout_search_list.setVisibility(View.VISIBLE);
                     layout_home.setVisibility(View.GONE);
-                    isSearch = true;
-                    serachView = 1;
                     if (adList.size() == 0) {
                         rc_ad_list.setVisibility(View.GONE);
                         layout_requirement_ad.setVisibility(View.VISIBLE);
                         layout_filter_root.setVisibility(View.VISIBLE);
-                        if (isRefresh) {
-                            img_category_no_ad.setImageResource(R.drawable.ic_noads_city);
-                            txt_category_no_ad.setText(getString(R.string.txt_no_ad_city_content));
-                            layout_filter_root.setVisibility(View.GONE);
-                        } else {
-                            img_category_no_ad.setImageResource(R.drawable.ic_noad);
-                            txt_category_no_ad.setText(getString(R.string.txt_no_ad_category_content));
-                        }
                     } else {
                         rc_ad_list.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.GONE);
@@ -1183,6 +1312,118 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         }
     };
 
+    retrofit2.Callback<FilterModel> filterResponse = new retrofit2.Callback<FilterModel>() {
+        @Override
+        public void onResponse(Call<FilterModel> call, retrofit2.Response<FilterModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                FilterModel dr = response.body();
+//                if (dr.isStatus()) {
+
+
+//                } else {
+//                    Function.CustomMessage(HomeActivity.this, dr.getMessage());
+//                }
+                if (!isFilterSubCat) {
+
+                    filterList.clear();
+                    minValue = "";
+                    maxValue = "";
+                    filterSelectCount = 0;
+                    if (dr.getData().getRentalDuration() != null) {
+                        ArrayList<SortByModel> _rentalDuration = new ArrayList<>();
+
+                        for (int r = 0; r < dr.getData().getRentalDuration().getValue().size(); r++) {
+                            _rentalDuration.add(new SortByModel(String.valueOf(r), dr.getData().getRentalDuration().getValue().get(r), false));
+                        }
+                        filterList.add(new FiltersModel("1", dr.getData().getRentalDuration().getTitle(), _rentalDuration, "Any", false, true));
+                    }
+
+                    if (dr.getData().getAdType() != null) {
+                        ArrayList<SortByModel> _adType = new ArrayList<>();
+                        for (int r = 0; r < dr.getData().getAdType().getValue().size(); r++) {
+                            _adType.add(new SortByModel(String.valueOf(dr.getData().getAdType().getValue().get(r).getId()), dr.getData().getAdType().getValue().get(r).getValue(), false));
+                        }
+                        filterList.add(new FiltersModel("2", dr.getData().getAdType().getTitle(), _adType, "Any", false, false));
+                    }
+                    if (dr.getData().getFee() != null) {
+                        ArrayList<SortByModel> _feeType = new ArrayList<>();
+                        for (int r = 0; r < dr.getData().getFee().getValue().size(); r++) {
+                            _feeType.add(new SortByModel(String.valueOf(dr.getData().getFee().getValue().get(r).getId()), dr.getData().getFee().getValue().get(r).getValue(), false));
+                        }
+                        filterList.add(new FiltersModel("3", dr.getData().getFee().getTitle(), _feeType, "Any", false, false));
+
+                    }
+                    if (dr.getData().getLocalityList() != null) {
+                        ArrayList<SortByModel> _locality = new ArrayList<>();
+                        for (int r = 0; r < dr.getData().getLocalityList().getValue().size(); r++) {
+                            _locality.add(new SortByModel(String.valueOf(dr.getData().getLocalityList().getValue().get(r).getId()), dr.getData().getLocalityList().getValue().get(r).getArea(), false));
+                        }
+                        filterList.add(new FiltersModel("4", dr.getData().getLocalityList().getTitle(), _locality, "Any", true, false));
+                    }
+                    if (dr.getData().getSubcategoryFilterOption() != null) {
+                        ArrayList<SortByModel> _category = new ArrayList<>();
+                        for (int r = 0; r < dr.getData().getSubcategoryFilterOption().getSubCategory().size(); r++) {
+                            _category.add(new SortByModel(String.valueOf(dr.getData().getSubcategoryFilterOption().getSubCategory().get(r).getId()), dr.getData().getSubcategoryFilterOption().getSubCategory().get(r).getName(), false));
+                        }
+                        filterList.add(new FiltersModel("5", dr.getData().getSubcategoryFilterOption().getAdTitleLabel(), _category, "Any", true, false));
+                    }
+
+                    if (dr.getData().getAttributeFilterOption() != null) {
+                        for (int o = 0; o < dr.getData().getAttributeFilterOption().size(); o++) {
+
+                            ArrayList<SortByModel> _attribute = new ArrayList<>();
+                            for (int r = 0; r < dr.getData().getAttributeFilterOption().get(o).getAttributeValue().size(); r++) {
+                                _attribute.add(new SortByModel(String.valueOf(dr.getData().getAttributeFilterOption().get(o).getAttributeValue().get(r).getId()), dr.getData().getAttributeFilterOption().get(o).getAttributeValue().get(r).getValue(), false));
+                            }
+                            filterList.add(new FiltersModel("6", dr.getData().getAttributeFilterOption().get(o).getName(), _attribute, "Any", true, false));
+
+
+                        }
+                        filterOptionAdapter.notifyDataSetChanged();
+
+                    }
+
+                } else {
+                    for (int i = filterList.size() - 1; i >= 0; i--) {
+                        if (Integer.valueOf(filterList.get(i).getFilterId()) > 5) {
+                            filterList.remove(i);
+                        }
+                    }
+
+                    if (dr.getData().getAttributeFilterOption() != null) {
+                        for (int o = 0; o < dr.getData().getAttributeFilterOption().size(); o++) {
+
+                            ArrayList<SortByModel> _attribute = new ArrayList<>();
+                            for (int r = 0; r < dr.getData().getAttributeFilterOption().get(o).getAttributeValue().size(); r++) {
+                                _attribute.add(new SortByModel(String.valueOf(dr.getData().getAttributeFilterOption().get(o).getAttributeValue().get(r).getId()), dr.getData().getAttributeFilterOption().get(o).getAttributeValue().get(r).getValue(), false));
+                            }
+                            filterList.add(new FiltersModel("6", dr.getData().getAttributeFilterOption().get(o).getName(), _attribute, "Any", true, false));
+
+
+                        }
+                        filterOptionAdapter.notifyDataSetChanged();
+
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -1242,7 +1483,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(p);
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
             case R.id.btn_offer:
@@ -1253,7 +1494,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(p);
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
             case R.id.btn_offer_req:
@@ -1264,7 +1505,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(p);
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
             case R.id.btn_need:
@@ -1275,7 +1516,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(p);
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
                 break;
         }
@@ -1344,9 +1585,19 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         spinnerPopup.update();
         LinearLayout img_popup_back = view.findViewById(R.id.img_back);
         TextView txt_popup_title = view.findViewById(R.id.txt_page_title);
+        TextView txt_filter_option_title = view.findViewById(R.id.txt_filter_option_title);
         final TextView txt_page_action = view.findViewById(R.id.txt_page_action);
-        final RecyclerView rc_filter = view.findViewById(R.id.rc_filter);
+        final RecyclerView rc_filter_option = view.findViewById(R.id.rc_filter_option);
         final TextView txt_clear = view.findViewById(R.id.txt_clear);
+        TextView txt_rent_hire_title = view.findViewById(R.id.txt_rent_hire_title);
+        EditText edt_search_suggestion = view.findViewById(R.id.edt_search_suggestion);
+        EditText edt_min = view.findViewById(R.id.edt_min);
+        EditText edt_max = view.findViewById(R.id.edt_max);
+        Button btn_reset = view.findViewById(R.id.btn_reset);
+        LinearLayout layout_rent_hire = view.findViewById(R.id.layout_rent_hire);
+        LinearLayout layout_min_max = view.findViewById(R.id.layout_min_max);
+
+        RecyclerView rc_filter = view.findViewById(R.id.rc_filter);
         txt_page_action.setText(getString(R.string.txt_apply));
         txt_page_action.setEnabled(false);
         txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
@@ -1354,11 +1605,30 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
         txt_clear.setText(getString(R.string.txt_clear));
         LinearLayoutManager listManager = new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, false);
-        rc_filter.setLayoutManager(listManager);
+        rc_filter_option.setLayoutManager(listManager);
+        rc_filter_option.setItemAnimator(new DefaultItemAnimator());
+
+        LinearLayoutManager listManager2 = new LinearLayoutManager(HomeActivity.this, RecyclerView.VERTICAL, false);
+        rc_filter.setLayoutManager(listManager2);
         rc_filter.setItemAnimator(new DefaultItemAnimator());
+        rc_filter.setAdapter(filterSelectAdapter);
+        edt_max.setText(maxValue);
+        edt_min.setText(minValue);
+
+        if (filterSelectCount == 0 && minValue.equals("") && maxValue.equals("")) {
+            txt_page_action.setEnabled(false);
+            txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
+            txt_clear.setEnabled(false);
+            txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
+        } else {
+            txt_page_action.setEnabled(true);
+            txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+            txt_clear.setEnabled(true);
+            txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+        }
 //        SortByAdapter sortByAdapter = new SortByAdapter(sortByList, getApplicationContext());
         if (type == 1) {
-            rc_filter.setAdapter(sortByAdapter);
+            rc_filter_option.setAdapter(sortByAdapter);
             txt_popup_title.setText(getString(R.string.txt_sort_by));
             for (int s = 0; s < sortByList.size(); s++) {
                 if (sortByList.get(s).isSelect()) {
@@ -1370,7 +1640,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         } else if (type == 2) {
-            rc_filter.setAdapter(filterOptionAdapter);
+            rc_filter_option.setAdapter(filterOptionAdapter);
             txt_popup_title.setText(getString(R.string.txt_filter));
             for (int k = 0; k < filterList.size(); k++) {
                 if (!filterList.get(k).getSelectedValue().equals("Any")) {
@@ -1382,8 +1652,33 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
         }
-
-
+        for (int i = 0; i < filterList.size(); i++) {
+            if (i == 0) {
+                filterList.get(i).setSelect(true);
+            } else {
+                filterList.get(i).setSelect(false);
+            }
+        }
+        filterOptionAdapter.notifyDataSetChanged();
+        if (filterProSer == 1) {
+            txt_rent_hire_title.setText(getString(R.string.txt_rent_fee_range));
+            txt_filter_option_title.setText("Enter " + getString(R.string.txt_rent_fee_range));
+        } else if (filterProSer == 2) {
+            txt_rent_hire_title.setText(getString(R.string.txt_hire_fee_range));
+            txt_filter_option_title.setText("Enter " + getString(R.string.txt_hire_fee_range));
+        } else {
+            txt_rent_hire_title.setText(getString(R.string.txt_rent_hire));
+            txt_filter_option_title.setText("Enter " + getString(R.string.txt_rent_hire));
+        }
+        filterSelectList.clear();
+        filterSelectList.addAll(filterList.get(0).getFilterValue());
+        filterSelectAdapter.notifyDataSetChanged();
+        layout_rent_hire.setBackgroundColor(getResources().getColor(R.color.gst_bg));
+        txt_rent_hire_title.setTextColor(getResources().getColor(R.color.color_black_five));
+        layout_min_max.setVisibility(View.GONE);
+        rc_filter.setVisibility(View.VISIBLE);
+        txt_filter_option_title.setText(getString(R.string.txt_choose) + " " + filterList.get(0).getFilterTitle());
+        SetFilterOptions(0, txt_page_action, txt_clear, filterList.get(0).isSearch(), edt_search_suggestion);
         img_popup_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1411,27 +1706,42 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             public void itemClick(int pos) {
                 filterSelectList.clear();
                 filterSelectList.addAll(filterList.get(pos).getFilterValue());
-                ShowPopupFilter(pos, txt_page_action, txt_clear, filterList.get(pos).isSearch());
+                for (int i = 0; i < filterList.size(); i++) {
+                    if (i == pos) {
+                        filterList.get(i).setSelect(true);
+                    } else {
+                        filterList.get(i).setSelect(false);
+                    }
+                }
+                layout_rent_hire.setBackgroundColor(getResources().getColor(R.color.gst_bg));
+                txt_rent_hire_title.setTextColor(getResources().getColor(R.color.color_black_five));
+                filterOptionAdapter.notifyDataSetChanged();
+                txt_filter_option_title.setText(getString(R.string.txt_choose) + " " + filterList.get(pos).getFilterTitle());
+                layout_min_max.setVisibility(View.GONE);
+                rc_filter.setVisibility(View.VISIBLE);
+                Function.hideSoftKeyboard(HomeActivity.this, layout_min_max);
+                filterSelectAdapter.getFilter().filter("");
+                edt_search_suggestion.setText("");
+//                ShowPopupFilter(pos, txt_page_action, txt_clear, filterList.get(pos).isSearch());
+                SetFilterOptions(pos, txt_page_action, txt_clear, filterList.get(pos).isSearch(), edt_search_suggestion);
             }
         });
         txt_page_action.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (spinnerPopup.isShowing()) {
-                    spinnerPopup.dismiss();
-                }
-                isFilterClear = true;
-                currentPageNo = 1;
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
-                    getAdList(true);
+                if (!maxValue.equals("") && !minValue.equals("") && Integer.valueOf(maxValue) < Integer.valueOf(minValue)) {
+                    Function.CustomMessage(HomeActivity.this, getString(R.string.min_max_valitaion_msg));
                 } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(true);
-                        }
-                    });
+                    if (spinnerPopup.isShowing()) {
+                        spinnerPopup.dismiss();
+                    }
+                    filterSelectAdapter.getFilter().filter("");
+                    edt_search_suggestion.setText("");
+                    isFilterClear = true;
+                    currentPageNo = 1;
+                    getAdList(true);
                 }
+
 //                if (type == 1) {
 //                    getAdList(catId, "", true);
 //                } else if (type == 2) {
@@ -1455,30 +1765,188 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                             }
                         }
                     }
+                    for (int i = filterList.size() - 1; i >= 0; i--) {
+                        if (Integer.valueOf(filterList.get(i).getFilterId()) > 5) {
+                            filterList.remove(i);
+                        }
+                    }
                     filterOptionAdapter.notifyDataSetChanged();
-
+                    filterSubCatId = "";
                 }
                 txt_page_action.setEnabled(false);
                 txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
                 txt_clear.setEnabled(false);
                 txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
+                minValue = "";
+                maxValue = "";
+                btn_reset.performClick();
+                filterSelectAdapter.notifyDataSetChanged();
                 isFilterClear = true;
                 currentPageNo = 1;
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
-                    getAdList(false);
-                } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(false);
-                        }
-                    });
-                }
+                filterSelectCount = 0;
+                getAdList(false);
 
             }
 
         });
+        layout_rent_hire.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < filterList.size(); i++) {
+                    filterList.get(i).setSelect(false);
+                }
+                filterOptionAdapter.notifyDataSetChanged();
+                if (filterProSer == 1) {
+                    txt_filter_option_title.setText("Enter " + getString(R.string.txt_rent_fee_range));
+                } else if (filterProSer == 2) {
+                    txt_filter_option_title.setText("Enter " + getString(R.string.txt_hire_fee_range));
+                } else {
+                    txt_filter_option_title.setText("Enter " + getString(R.string.txt_rent_hire));
+                }
+                layout_rent_hire.setBackgroundColor(getResources().getColor(R.color.color_white));
+                txt_rent_hire_title.setTextColor(getResources().getColor(R.color.txt_orange));
+                layout_min_max.setVisibility(View.VISIBLE);
+                rc_filter.setVisibility(View.GONE);
+                edt_search_suggestion.setVisibility(View.GONE);
+            }
+        });
+        btn_reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edt_max.setText("");
+                edt_min.setText("");
+            }
+        });
+        edt_min.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                minValue = edt_min.getText().toString().trim();
+                if (filterSelectCount == 0 && minValue.equals("") && maxValue.equals("")) {
+                    txt_page_action.setEnabled(false);
+                    txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
+                    txt_clear.setEnabled(false);
+                    txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
+                } else {
+                    txt_page_action.setEnabled(true);
+                    txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+                    txt_clear.setEnabled(true);
+                    txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+                }
+            }
+        });
+        edt_max.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                maxValue = edt_max.getText().toString().trim();
+                if (filterSelectCount == 0 && minValue.equals("") && maxValue.equals("")) {
+                    txt_page_action.setEnabled(false);
+                    txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
+                    txt_clear.setEnabled(false);
+                    txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
+                } else {
+                    txt_page_action.setEnabled(true);
+                    txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+                    txt_clear.setEnabled(true);
+                    txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+                }
+            }
+        });
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void SetFilterOptions(final int pos, final TextView _txt_page_action, final TextView _txt_clear, boolean isSearch, EditText edt_search_suggestion) {
+        if (filterList.get(pos).getFilterId().equals("5")) {
+            filterSelectAdapter.isCategorySelect(true);
+        } else {
+            filterSelectAdapter.isCategorySelect(false);
+        }
+        filterSelectAdapter.notifyDataSetChanged();
+        filterSelectAdapter.setCallback(new FilterSelectAdapter.Callback() {
+            @Override
+            public void itemClick(SortByModel model) {
+                for (int i = 0; i < filterList.get(pos).getFilterValue().size(); i++) {
+                    if (filterList.get(pos).getFilterValue().get(i).getSortId().equals(model.getSortId())) {
+                        filterList.get(pos).getFilterValue().get(i).setSelect(true);
+                    } else {
+                        filterList.get(pos).getFilterValue().get(i).setSelect(false);
+                    }
+                }
+                filterSelectAdapter.notifyDataSetChanged();
+                isFilterSubCat = true;
+                filterSubCatId = model.getSortId();
+                filterList.get(pos).setSelectedValue(model.getSortValue());
+                filterOptionAdapter.notifyDataSetChanged();
+
+                getFilterData(true);
+                _txt_page_action.setEnabled(true);
+                _txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+                _txt_clear.setEnabled(true);
+                _txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+            }
+
+            @Override
+            public void itemClickEnableButton(boolean _isSelect) {
+                if (_isSelect) {
+                    filterSelectCount++;
+                } else {
+                    filterSelectCount--;
+                }
+                if (filterSelectCount == 0 && minValue.equals("") && maxValue.equals("")) {
+                    _txt_page_action.setEnabled(false);
+                    _txt_page_action.setTextColor(getResources().getColor(R.color.disabled_color));
+                    _txt_clear.setEnabled(false);
+                    _txt_clear.setTextColor(getResources().getColor(R.color.disabled_color));
+                } else {
+                    _txt_page_action.setEnabled(true);
+                    _txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+                    _txt_clear.setEnabled(true);
+                    _txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+                }
+
+            }
+        });
+        edt_search_suggestion.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterSelectAdapter.getFilter().filter(edt_search_suggestion.getText().toString());
+            }
+        });
+
+        if (isSearch) {
+            edt_search_suggestion.setVisibility(View.VISIBLE);
+        } else {
+            edt_search_suggestion.setVisibility(View.GONE);
+        }
     }
 
     public void ShowPopupFilter(final int pos, final TextView _txt_page_action, final TextView _txt_clear, boolean isSearch) {
@@ -1504,6 +1972,36 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         rc_filter.setAdapter(filterSelectAdapter);
         txt_page_action.setVisibility(View.VISIBLE);
         txt_popup_title.setText(getString(R.string.txt_filter));
+        if (filterList.get(pos).getFilterId().equals("5")) {
+            filterSelectAdapter.isCategorySelect(true);
+            txt_page_action.setVisibility(View.GONE);
+        } else {
+            filterSelectAdapter.isCategorySelect(false);
+            txt_page_action.setVisibility(View.VISIBLE);
+        }
+        filterSelectAdapter.setCallback(new FilterSelectAdapter.Callback() {
+            @Override
+            public void itemClick(SortByModel model) {
+                isFilterSubCat = true;
+                filterSubCatId = model.getSortId();
+                if (filterPopup.isShowing()) {
+                    filterPopup.dismiss();
+                }
+                filterList.get(pos).setSelectedValue(model.getSortValue());
+                filterOptionAdapter.notifyDataSetChanged();
+                filterSelectAdapter.getFilter().filter("");
+                getFilterData(true);
+                _txt_page_action.setEnabled(true);
+                _txt_page_action.setTextColor(getResources().getColor(R.color.color_white));
+                _txt_clear.setEnabled(true);
+                _txt_clear.setTextColor(getResources().getColor(R.color.color_white));
+            }
+
+            @Override
+            public void itemClickEnableButton(boolean isSelect) {
+
+            }
+        });
         edt_search_suggestion.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -1701,15 +2199,31 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             if (requestCode == EDIT_AD_VIEW && clickRefresh) {
                 currentPageNo = 1;
                 isViewBack = true;
-                if (_fun.isInternetAvailable(HomeActivity.this)) {
-                    getAdList(true);
+                getAdList(true);
+            } else if (requestCode == LOGIN_VIEW) {
+                if (isCategory) {
+                    currentPageNo = 1;
+                    isViewBack = true;
+                    isRefresh = true;
+                    getAdList(false);
+
                 } else {
-                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            getAdList(true);
-                        }
-                    });
+                    if (_fun.isInternetAvailable(HomeActivity.this)) {
+                        getHomeBannerDetails(false);
+                    } else {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                                    @Override
+                                    public void isInternet() {
+                                        getHomeBannerDetails(false);
+                                    }
+                                });
+                            }
+                        }, 200);
+
+                    }
                 }
             }
         }
@@ -1720,17 +2234,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         Function.CoinTone(HomeActivity.this);
         if (isCategory) {
             currentPageNo = 1;
+            getAdList(false);
 
-            if (_fun.isInternetAvailable(HomeActivity.this)) {
-                getAdList(false);
-            } else {
-                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                    @Override
-                    public void isInternet() {
-                        getAdList(false);
-                    }
-                });
-            }
         } else {
             if (_fun.isInternetAvailable(HomeActivity.this)) {
                 getHomeBannerDetails(false);
@@ -1833,7 +2338,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(b);
                 } else {
                     Intent l = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, LOGIN_VIEW);
                 }
             }
         });
@@ -1868,17 +2373,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             isFilterClear = false;
             sortByList.clear();
             filterList.clear();
+            minValue = "";
+            maxValue = "";
+            isFilterSubCat = false;
+            filterSelectCount = 0;
             sortById = "";
-            if (_fun.isInternetAvailable(HomeActivity.this)) {
-                getAdList(false);
-            } else {
-                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                    @Override
-                    public void isInternet() {
-                        getAdList(false);
-                    }
-                });
-            }
+            getFilterData(false);
+            getAdList(false);
+
         } else {
             if (_fun.isInternetAvailable(HomeActivity.this)) {
                 getHomeBannerDetails(false);

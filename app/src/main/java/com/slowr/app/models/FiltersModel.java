@@ -16,8 +16,8 @@ public class FiltersModel {
 
     String selectedValue = "Any";
 
-    @SerializedName("is_searchable")
     public boolean isSearch = false;
+    public boolean isSelect = false;
 
     public String getFilterId() {
         return filterId;
@@ -57,5 +57,22 @@ public class FiltersModel {
 
     public void setSearch(boolean search) {
         isSearch = search;
+    }
+
+    public boolean isSelect() {
+        return isSelect;
+    }
+
+    public void setSelect(boolean select) {
+        isSelect = select;
+    }
+
+    public FiltersModel(String filterId, String filterTitle, ArrayList<SortByModel> filterValue, String selectedValue, boolean isSearch, boolean _isSelcet) {
+        this.filterId = filterId;
+        this.filterTitle = filterTitle;
+        this.filterValue = filterValue;
+        this.selectedValue = selectedValue;
+        this.isSearch = isSearch;
+        this.isSelect = _isSelcet;
     }
 }

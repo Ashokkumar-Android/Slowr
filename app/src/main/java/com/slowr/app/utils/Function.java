@@ -58,9 +58,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.view.inputmethod.InputMethodManager.HIDE_NOT_ALWAYS;
 
@@ -390,7 +393,7 @@ public class Function {
         vi.setBackground(gd);
     }
 
-    public static void ShareLink(Activity ctx, String catId, String adId, String adTitle, String catGroup, String imgUrl) {
+    public static void ShareLink(Activity ctx, String adId, String adTitle, String catGroup, String imgUrl) {
         ViewDialog viewDialog;
         viewDialog = new ViewDialog(ctx);
         viewDialog.showDialog();
@@ -402,7 +405,7 @@ public class Function {
 
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setSocialMetaTagParameters(builder.build())
-                .setLink(Uri.parse("https://www.slowr.com/" + catId + "/" + adId))
+                .setLink(Uri.parse("https://www.slowr.com/ad-details/" + adId))
                 .setDomainUriPrefix("https://appslowr.page.link")
                 // Open links with this app on Android
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
@@ -480,7 +483,7 @@ public class Function {
                                 shareIntent.setType("text/plain");
                                 shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Slowr");
 
-                                    shareMessage = "\n" + ctx.getString(R.string.txt_profile_share_content) + " " + prosperId + "\n";
+                                shareMessage = "\n" + ctx.getString(R.string.txt_profile_share_content) + " " + prosperId + "\n";
 
                                 shareMessage = shareMessage + shortLink;
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
@@ -646,6 +649,43 @@ public class Function {
         return versionname;
     }
 
+    public static void SetRentalPrice(String adFee, String adRentalDuration, TextView txt_price, String catGroup, Context ctx) {
+        if (adFee != null) {
+            txt_price.setVisibility(View.VISIBLE);
+            String price = "";
+            if (adFee.contains(".")) {
+                String[] tempPrice = adFee.split("\\.");
+                price = tempPrice[0];
+            } else {
+                price = adFee;
+            }
+
+            if (price.equals("0") || price.equals("") || adRentalDuration.equals("Custom")) {
+                Function.RentalDurationText(txt_price, catGroup, adRentalDuration, ctx);
+            } else {
+                DecimalFormat formatter = new DecimalFormat("#,###,###");
+                String formatPrice = formatter.format(Integer.valueOf(price));
+
+                if (adRentalDuration.equals("Per Hour")) {
+                    txt_price.setText("₹ " + formatPrice + " / Hour");
+                } else if (adRentalDuration.equals("Per Day")) {
+                    txt_price.setText("₹ " + formatPrice + " / Day");
+                } else if (adRentalDuration.equals("Per Week")) {
+                    txt_price.setText("₹ " + formatPrice + " / Week");
+
+                } else if (adRentalDuration.equals("Per Month")) {
+                    txt_price.setText("₹ " + formatPrice + " / Month");
+                } else if (adRentalDuration.equals("Per Ride")) {
+                    txt_price.setText("₹ " + formatPrice + " / Ride");
+                } else {
+                    txt_price.setText("₹ " + formatPrice + " / Hour");
+                }
+
+            }
+        } else {
+            Function.RentalDurationText(txt_price, catGroup, adRentalDuration, ctx);
+        }
+    }
 
     public static void RentalDurationText(TextView txtRental, String catGroup, String rentalDuration, Context ctx) {
         if (catGroup.equals("1")) {
@@ -659,6 +699,8 @@ public class Function {
                 txtRental.setText(ctx.getString(R.string.week_rent));
             } else if (rentalDuration.equals("Per Month")) {
                 txtRental.setText(ctx.getString(R.string.month_rent));
+            } else if (rentalDuration.equals("Per Ride")) {
+                txtRental.setText(ctx.getString(R.string.ride_rent));
             }
         } else {
             if (rentalDuration.equals("Custom")) {
@@ -671,11 +713,14 @@ public class Function {
                 txtRental.setText(ctx.getString(R.string.week_hire));
             } else if (rentalDuration.equals("Per Month")) {
                 txtRental.setText(ctx.getString(R.string.month_hire));
+            } else if (rentalDuration.equals("Per Ride")) {
+                txtRental.setText(ctx.getString(R.string.ride_hire));
             }
         }
     }
 
-    public static void CoinTone(Activity ctx){
+
+    public static void CoinTone(Activity ctx) {
         try {
             Uri defaultSoundUri = Uri.parse("android.resource://" + ctx.getPackageName() + "/" + R.raw.slowr_tone);
             Ringtone r = RingtoneManager.getRingtone(ctx, defaultSoundUri);
@@ -684,5 +729,29 @@ public class Function {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean GSTNoValidation(String val) {
+        String gstNoPattern = "^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$";
+        Pattern p = Pattern.compile(gstNoPattern);
+        Matcher m = p.matcher(val);
+
+        return m.matches();
+    }
+
+    public static boolean GSTNameValidation(String val) {
+        String gstNoPattern = "^(s?.?[a-zA-Z]+.+[^,@])+$";
+        Pattern p = Pattern.compile(gstNoPattern);
+        Matcher m = p.matcher(val);
+
+        return m.matches();
+    }
+
+    public static boolean ProsperIdValidation(String val) {
+        String gstNoPattern = "[a-zA-Z]{2}\\d{4}";
+        Pattern p = Pattern.compile(gstNoPattern);
+        Matcher m = p.matcher(val);
+
+        return m.matches();
     }
 }

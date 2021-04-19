@@ -49,5 +49,7 @@
 
     </LinearLayout>
 
-    <View style="@style/attribute_line" />
+    <View
+        android:id="@+id/view_line"
+        style="@style/attribute_line" />
 </LinearLayout>

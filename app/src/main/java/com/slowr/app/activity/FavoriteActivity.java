@@ -103,10 +103,9 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
         homeAdListAdapter.setCallback(new HomeAdListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String userId = adList.get(pos).getUserId();
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
             }
 
             @Override
@@ -132,45 +131,45 @@ public class FavoriteActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onShareClick(int pos) {
-                String catId = adList.get(pos).getCatId();
-                String adId = adList.get(pos).getAdId();
+                String adId = adList.get(pos).getAdSlug();
                 String adTitle = adList.get(pos).getAdTitle();
                 String catGroup = adList.get(pos).getCatGroup();
                 String url = adList.get(pos).getPhotoType();
-                Function.ShareLink(FavoriteActivity.this, catId, adId, adTitle, catGroup, url);
+                Function.ShareLink(FavoriteActivity.this,  adId, adTitle, catGroup, url);
+            }
+
+            @Override
+            public void onLoginClick(int pos) {
+
             }
         });
     }
 
 
     private void callAddFavorite() {
-        String catId = adList.get(favPosition).getCatId();
-        String adId = adList.get(favPosition).getAdId();
+        String adId = adList.get(favPosition).getAdSlug();
         String isFav = adList.get(favPosition).getIsFavorite();
         if (isFav.equals("0")) {
             if (!params.isEmpty()) {
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true,false));
         } else {
-            RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+            RetrofitClient.getClient().create(Api.class).deleteFavorite(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(FavoriteActivity.this, addFavorite, true,false));
         }
     }
 
-    void changeFragment(String catId, String adId, String userId) {
+    void changeFragment(String adId, String userId) {
         if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
             Intent p = new Intent(FavoriteActivity.this, MyPostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, VIEW_POST_CODE);
         } else {
             Intent p = new Intent(FavoriteActivity.this, PostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, VIEW_POST_CODE);
         }

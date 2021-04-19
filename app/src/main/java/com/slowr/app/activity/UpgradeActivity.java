@@ -117,8 +117,8 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
     String prosperAmount = "0";
 
-    TextView txt_company_name;
-    TextView txt_company_address;
+    EditText txt_company_name;
+    EditText txt_company_address;
     EditText edt_gst_no_bill;
     LinearLayout layout_address;
     GSTListAdapter gstListAdapter;
@@ -129,6 +129,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     String gstName = "";
     String gstAddress = "";
     GridLayoutManager gridManager;
+    boolean isAddressEnable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1106,6 +1107,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 spinnerPopup.dismiss();
+                isAddressEnable = false;
                 ShowPopupGST();
 
             }
@@ -1233,9 +1235,24 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 Function.hideSoftKeyboard(UpgradeActivity.this, v);
-                if (!txt_company_name.getText().toString().equals("") && gstNo.equals(edt_gst_no_bill.getText().toString())) {
+                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("")&&gstNo.equals(edt_gst_no_bill.getText().toString())) {
                     gstName = txt_company_name.getText().toString();
                     gstAddress = txt_company_address.getText().toString();
+                    if (gstName.length() == 0) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_name), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_company_name));
+                        return;
+                    }
+                    if (!Function.GSTNameValidation(gstName)) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_company_name), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_valid_company_name));
+                        return;
+                    }
+                    if (gstAddress.length() == 0) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_address), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_company_address));
+                        return;
+                    }
                     getOrderId();
                     spinnerPopup.dismiss();
                 } else {
@@ -1274,9 +1291,14 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     private void doValidationGST(String _gstNo) {
 
         if (_gstNo.length() == 0) {
-            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
+            Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_gst_no));
             return;
-        } else {
+        }
+        if (!Function.GSTNoValidation(_gstNo)) {
+//            Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_gst_no), Toast.LENGTH_SHORT).show();
+            Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_valid_gst_no));
+            return;
         }
         gstNo = _gstNo;
         if (_fun.isInternetAvailable(UpgradeActivity.this)) {
@@ -1319,7 +1341,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                         JSONObject json_data = json.getJSONObject("data");
                         if (json_data.getString("tradeNam").equals("")) {
                             txt_company_name.setText(json_data.getString("lgnm"));
-                        }else {
+                        } else {
                             txt_company_name.setText(json_data.getString("tradeNam"));
                         }
                         JSONObject json_data_pre = json_data.getJSONObject("pradr");
@@ -1333,28 +1355,36 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                                 json_data_address.getString("pncd");
                         txt_company_address.setText(address);
                         layout_address.setVisibility(View.VISIBLE);
+                        isAddressEnable = true;
                         gstId = "0";
                     } else {
-//                    Function.CustomMessage(AddBannerActivity.this, "Enter a valid GST No");
-                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
+                    Function.CustomMessage(UpgradeActivity.this, "Enter a valid GST No");
+//                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
                         txt_company_name.setText("");
                         txt_company_address.setText("");
-                        layout_address.setVisibility(View.GONE);
-                        gstNo = "";
+                        layout_address.setVisibility(View.VISIBLE);
+                        isAddressEnable = true;
+//                        gstNo = "";
 
                     }
                 } else {
-                    if (value.equals("invalid_grant")) {
-                        updateToken();
-                    }
+
 
                     txt_company_name.setText("");
                     txt_company_address.setText("");
-                    layout_address.setVisibility(View.GONE);
-                    gstNo = "";
+                    layout_address.setVisibility(View.VISIBLE);
+                    isAddressEnable = true;
+//                    gstNo = "";
+                    if (value.equals("invalid_grant")) {
+                        updateToken();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                txt_company_name.setText("");
+                txt_company_address.setText("");
+                layout_address.setVisibility(View.VISIBLE);
+                isAddressEnable = true;
             }
         }
 
@@ -1362,6 +1392,10 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            txt_company_name.setText("");
+            txt_company_address.setText("");
+            layout_address.setVisibility(View.VISIBLE);
+            isAddressEnable = true;
         }
     };
 
@@ -1442,7 +1476,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             _fun.ShowNoInternetPopup(UpgradeActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
-                    RetrofitClient.getClient().create(Api.class).getToken(params)
+                    RetrofitClient.getTokenGST().create(Api.class).getToken(params)
                             .enqueue(new RetrofitCallBack(UpgradeActivity.this, gstTokenResponse, true, false));
                 }
             });

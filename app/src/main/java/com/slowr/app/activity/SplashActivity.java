@@ -23,6 +23,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         img_splash = findViewById(R.id.img_splash);
+
         Glide.with(this)
                 .load(R.drawable.ic_splash_load)
 

@@ -8,9 +8,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -157,7 +160,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void CallBackFunction() {
-        txt_description_count.setText(getString(R.string.txt_des_count, "0"));
+        txt_description_count.setText(getString(R.string.txt_report_count, "0"));
         edt_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -172,7 +175,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void afterTextChanged(Editable s) {
                 int desValue = edt_description.getText().toString().length();
-                txt_description_count.setText(getString(R.string.txt_des_count, String.valueOf(desValue)));
+                txt_description_count.setText(getString(R.string.txt_report_count, String.valueOf(desValue)));
                 if (desValue == 200) {
                     Function.CustomMessage(ReportUsActivity.this, getString(R.string.txt_limit_reached));
                 }
@@ -199,6 +202,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
                 return false;
             }
         });
+
     }
 
     private void getReportType() {
@@ -291,7 +295,10 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
             Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_name));
             return;
         }
-
+        if (name.length()<3) {
+            Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_name_minimum));
+            return;
+        }
         if (email.isEmpty()) {
             Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_your_phone_no_email_content));
             return;
@@ -405,7 +412,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
 
     public void ShowPopupProsper() {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.layout_fillter_popup, null);
+        View view = inflater.inflate(R.layout.layout_report_type_popup, null);
         spinnerPopup = new PopupWindow(view,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);

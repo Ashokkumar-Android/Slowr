@@ -26,8 +26,8 @@ public class TwitterHelper {
 
 
 
-    private static final String TWITTER_KEY = "LGtAXW0Y4KripAHg7ifTEw0N6"; //Production
-    private static final String TWITTER_SECRET = "KCmjIDQiSnSbXyReGVvhypwANWysub7TVn6eU1fMx6llHqimC2";
+    private static final String TWITTER_KEY = "lTQ8DoybVTZ8DV4Ow6Rlso8PD"; //Production
+    private static final String TWITTER_SECRET = "OQBbdveuAgu1GljbCYB6axFIENaHV0J7CWRVAB2ZIyThHlEjRo";
     private UserDetails userDetails = new UserDetails();
     /**
      * To get Email Address need to submit a request in the below link

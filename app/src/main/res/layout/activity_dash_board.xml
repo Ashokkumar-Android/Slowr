@@ -149,6 +149,7 @@
                     android:drawableRight="@drawable/ic_search"
                     android:inputType="text"
                     android:paddingLeft="@dimen/size_ten"
+                    android:imeOptions="actionDone"
                     android:paddingRight="@dimen/size_ten"
                     android:textSize="@dimen/size_fifteen" />
 

@@ -130,6 +130,7 @@
                         android:inputType="textEmailAddress"
                         android:textColor="@color/color_black"
                         android:textSize="@dimen/size_fifteen"
+                        android:imeOptions="actionDone"
                         app:hintTextColor="@color/color_black" />
 
                 </com.google.android.material.textfield.TextInputLayout>

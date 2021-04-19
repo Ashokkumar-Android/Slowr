@@ -10,15 +10,15 @@
     <include layout="@layout/layout_header" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/layout_root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <LinearLayout
-            android:id="@+id/layout_root"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="visible">
+            android:orientation="vertical">
 
             <com.slowr.app.components.carouselview.CarouselView
                 android:id="@+id/rc_banner"
@@ -117,6 +117,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:gravity="center"
                             android:orientation="vertical">
 
 
@@ -126,7 +127,8 @@
                                 android:drawableLeft="@drawable/ic_profile_two"
                                 android:drawablePadding="@dimen/size_five"
                                 android:text=""
-                                android:textSize="@dimen/size_fifteen" />
+                                android:textSize="@dimen/size_fifteen"
+                                android:visibility="visible" />
 
                             <TextView
                                 android:id="@+id/txt_phone"
@@ -135,7 +137,8 @@
                                 android:drawableLeft="@drawable/ic_phone_two"
                                 android:drawablePadding="@dimen/size_five"
                                 android:text=""
-                                android:textSize="@dimen/size_fifteen" />
+                                android:textSize="@dimen/size_fifteen"
+                                android:visibility="gone" />
 
                             <TextView
                                 android:id="@+id/txt_email"
@@ -149,14 +152,32 @@
                                 android:marqueeRepeatLimit="marquee_forever"
                                 android:singleLine="true"
                                 android:text=""
-                                android:textSize="@dimen/size_fifteen" />
+                                android:textSize="@dimen/size_fifteen"
+                                android:visibility="gone" />
+
+                            <Button
+                                android:id="@+id/btn_view_contact"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="@dimen/size_ten"
+                                android:background="@drawable/bg_green_view"
+                                android:fontFamily="@font/nunito_regular"
+                                android:gravity="center"
+                                android:paddingLeft="@dimen/size_five"
+                                android:paddingRight="@dimen/size_five"
+                                android:text="@string/view_contact"
+                                android:textAllCaps="false"
+                                android:textColor="@color/color_white"
+                                android:textSize="@dimen/size_fourteen"
+                                android:visibility="visible" />
 
                             <TextView
                                 android:id="@+id/txt_no_of_ads"
                                 style="@style/ad_view_title"
                                 android:layout_gravity="center"
-                                android:layout_marginTop="@dimen/size_ten"
-                                android:text="Total no of Ads: 4"
+                                android:layout_marginTop="@dimen/size_five"
+                                android:text="Total no of Ads: 0"
                                 android:textColor="@color/bg_green"
                                 android:textSize="@dimen/size_fifteen" />
 
@@ -167,13 +188,14 @@
                                 android:layout_gravity="center"
                                 android:layout_margin="@dimen/size_five"
                                 android:background="@drawable/bg_orenge"
-                                android:text="@string/share_my_business"
-                                android:paddingLeft="@dimen/size_twenty"
-                                android:paddingRight="@dimen/size_twenty"
                                 android:drawableLeft="@drawable/ic_share_white"
-                                android:textColor="@color/color_white"
                                 android:drawablePadding="@dimen/size_ten"
-                                android:textAllCaps="false"/>
+                                android:paddingLeft="@dimen/size_ten"
+                                android:paddingRight="@dimen/size_ten"
+                                android:text="@string/share_my_business"
+                                android:textSize="@dimen/size_fourteen"
+                                android:textAllCaps="false"
+                                android:textColor="@color/color_white" />
 
 
                         </LinearLayout>
@@ -201,7 +223,150 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
+            <LinearLayout
+                android:id="@+id/layout_no_ads"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/size_twenty"
+                    app:cardBackgroundColor="@color/color_white"
+                    app:cardCornerRadius="@dimen/size_ten">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="@dimen/size_twenty">
+
+                        <ImageView
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:src="@drawable/ic_noad" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/no_ads_display"
+                            android:textColor="@color/color_black"
+                            android:textSize="@dimen/size_eighteen" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/size_ten"
+                            android:fontFamily="@font/nunito_regular"
+                            android:text="@string/new_ad_click"
+                            android:textColor="@color/color_black"
+                            android:textSize="@dimen/size_eighteen"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/btn_add_post"
+                            android:layout_width="70dp"
+                            android:layout_height="28dp"
+                            android:layout_marginTop="@dimen/size_twenty"
+                            android:background="@drawable/bg_orenge"
+                            android:fontFamily="@font/nunito_regular"
+                            android:gravity="center"
+                            android:text="@string/post_ad"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_white"
+                            android:textSize="@dimen/size_thirteen"
+                            android:visibility="gone" />
+
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
 
         </LinearLayout>
+
+
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/layout_no_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_twenty"
+            app:cardBackgroundColor="@color/color_white"
+            app:cardCornerRadius="@dimen/size_ten">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/size_twenty">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/attribute_title"
+                        android:text="@string/txt_prosper_id"
+                        android:textColor="@color/txt_gray_trans"
+                        android:textSize="@dimen/size_twenty" />
+
+
+                    <TextView
+                        android:id="@+id/txt_prosperId_no"
+                        style="@style/txt_title"
+                        android:layout_centerInParent="true"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text=""
+                        android:textColor="@color/txt_gray_trans"
+                        android:textSize="@dimen/size_twenty_six" />
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/nunito_regular"
+                    android:text="@string/no_user_content"
+                    android:textColor="@color/color_black"
+                    android:textSize="@dimen/size_eighteen" />
+
+
+                <Button
+                    android:id="@+id/btn_home_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginTop="@dimen/size_twenty"
+                    android:background="@drawable/bg_orenge"
+                    android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/size_fifteen"
+                    android:paddingRight="@dimen/size_fifteen"
+                    android:text="@string/txt_home_page"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_thirteen" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
 </LinearLayout>

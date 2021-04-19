@@ -27,7 +27,7 @@ public class CategoryItemModel {
     @SerializedName("rental_duration")
     String rentalDuration;
 
-    @SerializedName("sub_categories")
+    @SerializedName("sub_category")
     private ArrayList<SubCategoryItemModel> subCategoryList;
 
     public String getId() {

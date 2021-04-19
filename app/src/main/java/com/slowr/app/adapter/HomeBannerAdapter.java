@@ -100,16 +100,7 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
             holder.txt_banner_price.setText(bannerItemModel.getDescription().trim());
             String[] col = bannerItemModel.getColorCode().split(",");
             Function.GradientBgSet(holder.defult_one, col[0], col[1]);
-            if (bannerItemModel.getIsDefault() == 1) {
-                holder.layout_root.setVisibility(View.VISIBLE);
-                holder.img_default_banner.setVisibility(View.GONE);
-                Glide.with(ctx)
-                        .load(bannerItemModel.getBannerImage())
-                        .error(R.drawable.ic_no_image)
-                        .placeholder(R.drawable.ic_no_image)
-                        .into(holder.img_banner);
-
-            } else {
+            if (bannerItemModel.getIsDefault() == 0) {
                 holder.img_default_banner.setVisibility(View.VISIBLE);
                 holder.layout_root.setVisibility(View.GONE);
 
@@ -118,6 +109,16 @@ public class HomeBannerAdapter extends CarouselAdapter<HomeBannerAdapter.MyViewH
                         .error(R.drawable.ic_no_image)
                         .placeholder(R.drawable.ic_no_image)
                         .into(holder.img_default_banner);
+
+            } else {
+
+                holder.layout_root.setVisibility(View.VISIBLE);
+                holder.img_default_banner.setVisibility(View.GONE);
+                Glide.with(ctx)
+                        .load(bannerItemModel.getBannerImage())
+                        .error(R.drawable.ic_no_image)
+                        .placeholder(R.drawable.ic_no_image)
+                        .into(holder.img_banner);
 
             }
 //            holder.layout_click.setOnClickListener(new View.OnClickListener() {

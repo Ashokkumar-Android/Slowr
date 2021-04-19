@@ -13,6 +13,9 @@ public class SuggistionItem {
     @SerializedName("value")
     String searchValue = "";
 
+    @SerializedName("is_prosper")
+    String isProsper = "";
+
     public String getCatId() {
         return catId;
     }
@@ -43,5 +46,13 @@ public class SuggistionItem {
 
     public void setSearchValue(String searchValue) {
         this.searchValue = searchValue;
+    }
+
+    public String getIsProsper() {
+        return isProsper;
+    }
+
+    public void setIsProsper(String isProsper) {
+        this.isProsper = isProsper;
     }
 }

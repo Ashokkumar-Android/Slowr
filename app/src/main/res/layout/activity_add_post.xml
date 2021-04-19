@@ -489,7 +489,7 @@
                 android:background="@drawable/bg_description"
                 android:gravity="top"
                 android:inputType="textMultiLine|textCapSentences"
-                android:maxLength="200"
+                android:maxLength="300"
                 android:minHeight="80dp"
                 android:padding="@dimen/size_ten"
                 android:hint="@string/des_products"
@@ -548,6 +548,7 @@
                         android:background="@drawable/add_image_pluse"
                         android:fontFamily="@font/nunito_regular"
                         android:padding="30dp"
+                        android:visibility="gone"
                         android:src="@drawable/ic_add_image" />
 
 

@@ -291,6 +291,7 @@
                                     android:paddingRight="@dimen/size_ten"
                                     android:paddingBottom="3dp"
                                     android:text=""
+                                    android:visibility="gone"
                                     android:textColor="@color/color_white"
                                     android:textSize="@dimen/size_ten" />
                             </FrameLayout>
@@ -361,12 +362,13 @@
                         android:textColor="@color/txt_orange"
                         android:textSize="@dimen/size_fourteen"
                         android:layout_marginTop="@dimen/size_five"
-                        android:visibility="visible" />
+                        android:visibility="gone" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/layout_profile_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/size_five"
@@ -448,7 +450,23 @@
                                 android:drawableLeft="@drawable/ic_phone_call"
                                 android:drawablePadding="@dimen/size_five"
                                 android:text=""
+                                android:visibility="gone"
                                 android:textSize="@dimen/size_twenty" />
+                            <Button
+                                android:id="@+id/btn_view_contact"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/bg_green_view"
+                                android:fontFamily="@font/nunito_regular"
+                                android:gravity="center"
+                                android:paddingLeft="@dimen/size_ten"
+                                android:paddingRight="@dimen/size_ten"
+                                android:text="@string/view_contact"
+                                android:textAllCaps="false"
+                                android:textColor="@color/color_white"
+                                android:textSize="@dimen/size_fourteen"
+                                android:visibility="visible" />
 
                         </LinearLayout>
 
@@ -503,11 +521,16 @@
                         <TextView
                             android:id="@+id/txt_view_profile"
                             style="@style/txt_nav_sub_title"
-                            android:layout_gravity="right|bottom"
+                            android:layout_gravity="center"
                             android:layout_marginTop="@dimen/size_five"
                             android:text="@string/txt_view_profile"
                             android:textColor="@color/txt_orange"
                             android:textSize="@dimen/size_fourteen"
+                            android:paddingRight="@dimen/size_ten"
+                            android:paddingLeft="@dimen/size_ten"
+                            android:paddingTop="@dimen/size_five"
+                            android:paddingBottom="@dimen/size_five"
+                            android:background="@drawable/bg_orenge_border"
                             android:visibility="visible" />
                     </LinearLayout>
                 </LinearLayout>

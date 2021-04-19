@@ -62,7 +62,7 @@
                     android:id="@+id/txt_banner_price"
                     style="@style/attribute_title"
                     android:ellipsize="end"
-                    android:maxLines="3"
+                    android:maxLines="5"
                     android:text="Renting @ ₹1800/day"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_ten" />

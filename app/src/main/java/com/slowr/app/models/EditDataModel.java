@@ -6,13 +6,13 @@ import java.util.ArrayList;
 
 public class EditDataModel {
 
-    @SerializedName("cat_group")
+    @SerializedName("category_type")
     private String catGroup;
 
     @SerializedName("ad_title_label")
     String categoryTitle;
 
-    @SerializedName("SuperParent")
+    @SerializedName("parent_name")
     private String parentTitle;
 
     @SerializedName("ads")
@@ -163,14 +163,6 @@ public class EditDataModel {
         this.categoryTitle = categoryTitle;
     }
 
-    public ArrayList<String> getGuideLines() {
-        return guideLines;
-    }
-
-    public void setGuideLines(ArrayList<String> guideLines) {
-        this.guideLines = guideLines;
-    }
-
     public CommunicationModel getCommunicationModel() {
         return communicationModel;
     }
@@ -193,5 +185,13 @@ public class EditDataModel {
 
     public void setRentalDuration(String rentalDuration) {
         this.rentalDuration = rentalDuration;
+    }
+
+    public ArrayList<String> getGuideLines() {
+        return guideLines;
+    }
+
+    public void setGuideLines(ArrayList<String> guideLines) {
+        this.guideLines = guideLines;
     }
 }

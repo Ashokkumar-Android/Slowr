@@ -2,8 +2,6 @@ package com.slowr.app.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-
 public class SubCategoryItemModel {
     @SerializedName("id")
     private String subcategoryId;
@@ -14,8 +12,7 @@ public class SubCategoryItemModel {
     @SerializedName("slug")
     private String subcategorySlug;
 
-    @SerializedName("sub_categories")
-    private ArrayList<SubCategoryChildModel> subCategoryList;
+
 
     public String getSubcategoryId() {
         return subcategoryId;
@@ -41,18 +38,11 @@ public class SubCategoryItemModel {
         this.subcategorySlug = subcategorySlug;
     }
 
-    public ArrayList<SubCategoryChildModel> getSubCategoryList() {
-        return subCategoryList;
-    }
 
-    public void setSubCategoryList(ArrayList<SubCategoryChildModel> subCategoryList) {
-        this.subCategoryList = subCategoryList;
-    }
 
-    public SubCategoryItemModel(String subcategoryId, String subcategoryName, String subcategorySlug, ArrayList<SubCategoryChildModel> subCategoryList) {
+    public SubCategoryItemModel(String subcategoryId, String subcategoryName, String subcategorySlug) {
         this.subcategoryId = subcategoryId;
         this.subcategoryName = subcategoryName;
         this.subcategorySlug = subcategorySlug;
-        this.subCategoryList = subCategoryList;
     }
 }

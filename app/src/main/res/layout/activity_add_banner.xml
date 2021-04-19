@@ -490,8 +490,8 @@
         <Button
             android:id="@+id/btn_done"
             style="@style/LoginButtonStyle"
-            android:layout_gravity="center|right"
-            android:layout_marginRight="@dimen/size_twenty"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/size_twenty"
             android:background="@drawable/bg_orenge"
             android:text="@string/txt_done"
             android:textSize="@dimen/size_fourteen" />

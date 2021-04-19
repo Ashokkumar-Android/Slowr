@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +47,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
         ImageView img_share;
+        ImageView img_like;
 
         public MyViewHolder(View view) {
             super(view);
@@ -61,6 +63,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
             img_share = view.findViewById(R.id.img_share);
             txt_service_count = view.findViewById(R.id.txt_service_count);
+            img_like = view.findViewById(R.id.img_like);
 
             layout_root.setOnClickListener(this);
 //            img_favorite.setOnClickListener(this);
@@ -92,6 +95,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                 case R.id.txt_service_count:
                     Intent i = new Intent(ctx, UserProfileActivity.class);
                     i.putExtra("prosperId", categoryList.get(getAdapterPosition()).getProsperId());
+                    i.putExtra("PageFrom", "1");
                     ctx.startActivity(i);
                     break;
 
@@ -110,8 +114,9 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Intent l = new Intent(ctx, LoginActivity.class);
-                ctx.startActivity(l);
+//                Intent l = new Intent(ctx, LoginActivity.class);
+//                ctx.startActivity(l);
+                callback.onLoginClick(getAdapterPosition());
                 likeButton.setLiked(false);
             }
         }
@@ -127,8 +132,9 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Intent l = new Intent(ctx, LoginActivity.class);
-                ctx.startActivity(l);
+//                Intent l = new Intent(ctx, LoginActivity.class);
+//                ctx.startActivity(l);
+                callback.onLoginClick(getAdapterPosition());
                 likeButton.setLiked(false);
             }
         }
@@ -170,34 +176,41 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
             } else {
                 holder.layout_promoted.setVisibility(View.GONE);
             }
-            if (movie.getAdFee() != null) {
-                holder.txt_price.setVisibility(View.VISIBLE);
-                String price = "";
-                if (movie.getAdFee().contains(".")) {
-                    String[] tempPrice = movie.getAdFee().split("\\.");
-                    price = tempPrice[0];
-                } else {
-                    price = movie.getAdFee();
-                }
 
-                Log.i("Fave", movie.getIsFavorite());
-                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
-                } else {
-                    DecimalFormat formatter = new DecimalFormat("#,###,###");
-                    String formatPrice = formatter.format(Integer.valueOf(price));
-                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
-                }
-            } else {
-                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
-            }
+            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+//            if (movie.getAdFee() != null) {
+//                holder.txt_price.setVisibility(View.VISIBLE);
+//                String price = "";
+//                if (movie.getAdFee().contains(".")) {
+//                    String[] tempPrice = movie.getAdFee().split("\\.");
+//                    price = tempPrice[0];
+//                } else {
+//                    price = movie.getAdFee();
+//                }
+//
+//                Log.i("Fave", movie.getIsFavorite());
+//                Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+//                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+//                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//                } else {
+//                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                    String formatPrice = formatter.format(Integer.valueOf(price));
+//                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
+//                }
+//            } else {
+//                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//            }
             if (movie.getIsFavorite().equals("0")) {
                 holder.img_favorite.setLiked(false);
 
             } else {
                 holder.img_favorite.setLiked(true);
             }
-
+            if (movie.getIsLike().equals("0")) {
+                holder.img_like.setColorFilter(ContextCompat.getColor(ctx, R.color.colorPrimary));
+            } else {
+                holder.img_like.setColorFilter(ContextCompat.getColor(ctx, R.color.txt_orange));
+            }
             int defu = R.drawable.ic_no_image;
             if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
                 if (movie.getAdType().equals("1")) {
@@ -205,7 +218,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                 } else {
                     if (movie.getAdParentId() != null && movie.getAdParentId().equals("1")) {
                         defu = R.drawable.ic_need_space;
-                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("34")) {
                         defu = R.drawable.ic_need_pet;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;
@@ -274,5 +287,7 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
         void onFavoriteClick(int pos);
 
         void onShareClick(int pos);
+
+        void onLoginClick(int pos);
     }
 }

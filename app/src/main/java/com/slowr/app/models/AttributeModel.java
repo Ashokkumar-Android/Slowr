@@ -3,7 +3,6 @@ package com.slowr.app.models;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class AttributeModel {
 
@@ -17,7 +16,7 @@ public class AttributeModel {
     private ArrayList<AttributeItemModel> attributeEditList;
 
     @SerializedName("ads_value")
-    private Map<String, String> selectValue;
+    private ArrayList<AttributesValueItem> attributeValues;
 
     public boolean isStatus() {
         return status;
@@ -43,11 +42,11 @@ public class AttributeModel {
         this.attributeEditList = attributeEditList;
     }
 
-    public Map<String, String> getSelectValue() {
-        return selectValue;
+    public ArrayList<AttributesValueItem> getAttributeValues() {
+        return attributeValues;
     }
 
-    public void setSelectValue(Map<String, String> selectValue) {
-        this.selectValue = selectValue;
+    public void setAttributeValues(ArrayList<AttributesValueItem> attributeValues) {
+        this.attributeValues = attributeValues;
     }
 }

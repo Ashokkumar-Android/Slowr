@@ -170,7 +170,12 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
 
         txtChatUnread = viewChat.findViewById(R.id.txt_unread_count);
         txtNotificationUnread = viewNotification.findViewById(R.id.txt_unread_count);
+setLoginItem();
 
+        callBackCity = (CallBackCity) this;
+    }
+
+    private void setLoginItem() {
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             layout_login.setVisibility(View.GONE);
             layout_prosper.setVisibility(View.VISIBLE);
@@ -210,7 +215,6 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
             menuChat.setVisible(false);
             menuBanner.setVisible(false);
         }
-        callBackCity = (CallBackCity) this;
     }
 
     private void ClickFunction() {
@@ -422,14 +426,14 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_report_us:
 
-                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+//                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
                     Intent ru = new Intent(BaseActivity.this, ReportUsActivity.class);
                     ru.putExtra("PageFrom", "1");
                     startActivity(ru);
-                } else {
-                    Intent l = new Intent(BaseActivity.this, LoginActivity.class);
-                    startActivity(l);
-                }
+//                } else {
+//                    Intent l = new Intent(BaseActivity.this, LoginActivity.class);
+//                    startActivity(l);
+//                }
                 break;
             case R.id.nav_about_us:
                 Intent ab = new Intent(BaseActivity.this, AboutUsActivity.class);
@@ -714,6 +718,7 @@ public class BaseActivity extends AppCompatActivity implements NavigationView.On
         if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
             callUnreadCount();
         }
+        setLoginItem();
         super.onRestart();
     }
 

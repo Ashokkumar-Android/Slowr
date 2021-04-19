@@ -1,6 +1,7 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,20 +26,23 @@ public class FilterOptionAdapter extends RecyclerView.Adapter<FilterOptionAdapte
         public TextView txt_filter_title;
         public TextView txt_filter_type_content;
         public LinearLayout layout_filter_type;
+        public LinearLayout layout_root;
 
         public MyViewHolder(View view) {
             super(view);
             txt_filter_title = view.findViewById(R.id.txt_filter_title);
             layout_filter_type = view.findViewById(R.id.layout_filter_type);
             txt_filter_type_content = view.findViewById(R.id.txt_filter_type_content);
+            layout_root = view.findViewById(R.id.layout_root);
             layout_filter_type.setOnClickListener(this);
+            layout_root.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.layout_filter_type:
+                case R.id.layout_root:
                     callback.itemClick(getAdapterPosition());
                     break;
 
@@ -62,11 +66,19 @@ public class FilterOptionAdapter extends RecyclerView.Adapter<FilterOptionAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        try{
-        FiltersModel movie = categoryListFilter.get(position);
+        try {
+            FiltersModel movie = categoryListFilter.get(position);
 
-        holder.txt_filter_title.setText(movie.getFilterTitle().trim());
-        holder.txt_filter_type_content.setText(movie.getSelectedValue());
+            holder.txt_filter_title.setText(movie.getFilterTitle().trim());
+            holder.txt_filter_type_content.setText(movie.getSelectedValue());
+
+            if (movie.isSelect()) {
+                holder.layout_root.setBackgroundColor(ctx.getResources().getColor(R.color.color_white));
+                holder.txt_filter_title.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
+            } else {
+                holder.layout_root.setBackgroundColor(Color.TRANSPARENT);
+                holder.txt_filter_title.setTextColor(ctx.getResources().getColor(R.color.color_black_five));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

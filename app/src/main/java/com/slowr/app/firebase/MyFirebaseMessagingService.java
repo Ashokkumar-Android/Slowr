@@ -3,8 +3,11 @@ package com.slowr.app.firebase;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.BuildConfig;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
@@ -25,6 +29,8 @@ import com.slowr.app.activity.ProfileActivity;
 import com.slowr.app.activity.TransactionActivity;
 import com.slowr.app.chat.ChatActivity;
 import com.squareup.picasso.Picasso;
+
+import java.util.Random;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -89,7 +95,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                            }
                             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             notificationIntent.putExtra("PageFrom", "2");
-                            notificationIntent.putExtra("CatId", remoteMessage.getData().get("category_id"));
                             notificationIntent.putExtra("AdId", remoteMessage.getData().get("ads_id"));
                             notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
                             break;
@@ -129,6 +134,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             notificationIntent.putExtra("PageFrom", "2");
                             notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
                             break;
+                        case "6":
+                            notificationIntent = new Intent(getApplicationContext(), ProfileActivity.class);
+                            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            notificationIntent.putExtra("PageFrom", "2");
+                            notificationIntent.putExtra("NotificationId", remoteMessage.getData().get("notification_id"));
+                            break;
                     }
 //                    notificationIntent.putExtra("NotificationBoardId", notificationBoardId);
 
@@ -138,14 +149,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     e.printStackTrace();
                 }
 
-
-
-                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, notificationIntent,
+                final int random = new Random().nextInt(10000) + 100;
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, random /* Request code */, notificationIntent,
                         PendingIntent.FLAG_ONE_SHOT);
 
                 String channelId = getString(R.string.default_notification_channel_id);
-                Uri defaultSoundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.slowr_tone);
+//                Uri defaultSoundUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.slowr_tone);
+//                Uri defaultSoundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + BuildConfig.APPLICATION_ID + "/" + R.raw.slowr_tone);
 //                Uri defaultSoundUri = Uri. parse (ContentResolver. SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/raw/slowr_tone.mp3" ) ;
+                Uri defaultSoundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"+ getApplicationContext().getPackageName() + "/" + R.raw.slowr_tone);
+                Uri sound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.slowr_tone);
+
 
                 if (!media_url.equals("") && !media_url.equalsIgnoreCase("null") && media_url != null) {
                     notificationBuilder =
@@ -154,7 +168,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     .setLargeIcon(Picasso.with(this).load(media_url).error(R.drawable.ic_slowr_logo).get())
 //                            .setCustomContentView(contentViewSmall)
 //                            .setCustomBigContentView(contentViewBig)
-
+                                    .setSound(sound)
                                     .setStyle(new NotificationCompat.BigTextStyle()
                                             .bigText(msg_text))
                                     .setContentTitle(msg_title)
@@ -168,7 +182,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     .setLargeIcon(Picasso.with(this).load(R.drawable.ic_slowr_logo).error(R.drawable.ic_slowr_logo).get())
 //                            .setCustomContentView(contentViewSmall)
 //                            .setCustomBigContentView(contentViewBig)
-
+                                    .setSound(sound)
                                     .setStyle(new NotificationCompat.BigTextStyle()
                                             .bigText(msg_text))
                                     .setContentTitle(msg_title)
@@ -181,20 +195,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 // Since android Oreo notification channel is needed.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                    AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .build();
                     NotificationChannel channel = new NotificationChannel(channelId,
                             "Channel human readable title",
                             NotificationManager.IMPORTANCE_DEFAULT);
+                    channel.setSound(sound, audioAttributes);
+                    channel.setDescription("");
+                    channel.enableLights(true);
+                    channel.enableVibration(false);
+
                     notificationManager.createNotificationChannel(channel);
                 }
 
-                notificationManager.notify((int) (System.currentTimeMillis()) /* ID of notification */, notificationBuilder.build());
-                try {
-                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
-                    r.play();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                notificationManager.notify(random /* ID of notification */, notificationBuilder.build());
+                Log.i("NotificationId", String.valueOf(random));
+//                try {
+//                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                    Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), defaultSoundUri);
+//                    r.play();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//
+//                }
                 if (BaseActivity.instance != null) {
                     BaseActivity.instance.callUnreadCount();
                 }

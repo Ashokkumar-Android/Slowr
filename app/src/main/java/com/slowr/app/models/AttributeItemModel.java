@@ -2,11 +2,13 @@ package com.slowr.app.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 public class AttributeItemModel {
     @SerializedName("name")
     private String name;
-    @SerializedName("attribute_values")
-    private String attributeValues;
+    @SerializedName("attribute_value")
+    private ArrayList<AttributesValueItem> attributeValues;
 
     @SerializedName("type")
     private String type;
@@ -24,7 +26,10 @@ public class AttributeItemModel {
     private String isPrefix;
 
     private String inputValue = "";
+    private String inputId = "";
     private String textLength = "";
+
+    private ArrayList<AttributesValueItemTemp> attributeValuesTemp;
 
     public String getName() {
         return name;
@@ -34,11 +39,11 @@ public class AttributeItemModel {
         this.name = name;
     }
 
-    public String getAttributeValues() {
+    public ArrayList<AttributesValueItem> getAttributeValues() {
         return attributeValues;
     }
 
-    public void setAttributeValues(String attributeValues) {
+    public void setAttributeValues(ArrayList<AttributesValueItem> attributeValues) {
         this.attributeValues = attributeValues;
     }
 
@@ -98,7 +103,23 @@ public class AttributeItemModel {
         this.textLength = textLength;
     }
 
-    public AttributeItemModel(String name, String attributeValues, String type, String attributeId, String mandatory, String isTitle, String isPrefix, String inputValue, String txtLength) {
+    public String getInputId() {
+        return inputId;
+    }
+
+    public void setInputId(String inputId) {
+        this.inputId = inputId;
+    }
+
+    public ArrayList<AttributesValueItemTemp> getAttributeValuesTemp() {
+        return attributeValuesTemp;
+    }
+
+    public void setAttributeValuesTemp(ArrayList<AttributesValueItemTemp> attributeValuesTemp) {
+        this.attributeValuesTemp = attributeValuesTemp;
+    }
+
+    public AttributeItemModel(String name, ArrayList<AttributesValueItem> attributeValues, String type, String attributeId, String mandatory, String isTitle, String isPrefix, String inputValue, String inputId, String txtLength, ArrayList<AttributesValueItemTemp> attributeValuesTemp) {
         this.name = name;
         this.attributeValues = attributeValues;
         this.type = type;
@@ -107,6 +128,8 @@ public class AttributeItemModel {
         this.isTitle = isTitle;
         this.isPrefix = isPrefix;
         this.inputValue = inputValue;
+        this.inputId = inputId;
         this.textLength = txtLength;
+        this.attributeValuesTemp = attributeValuesTemp;
     }
 }

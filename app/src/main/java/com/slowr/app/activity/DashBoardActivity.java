@@ -154,22 +154,19 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         adListAdapter.setCallback(new AdListAdapter.Callback() {
             @Override
             public void itemClick(AdItemModel model) {
-                String catId = model.getCatId();
-                String adId = model.getAdId();
+                String adId = model.getAdSlug();
                 Intent p = new Intent(DashBoardActivity.this, MyPostViewActivity.class);
-                p.putExtra("CatId", catId);
                 p.putExtra("AdId", adId);
                 startActivityForResult(p, MY_POST_VIEW_CODE);
             }
 
             @Override
             public void onShareClick(AdItemModel model) {
-                String catId = model.getCatId();
-                String adId = model.getAdId();
+                String adId = model.getAdSlug();
                 String adTitle = model.getAdTitle();
                 String catGroup = model.getCatGroup();
                 String url = model.getPhotoType();
-                Function.ShareLink(DashBoardActivity.this, catId, adId, adTitle, catGroup, url);
+                Function.ShareLink(DashBoardActivity.this,  adId, adTitle, catGroup, url);
             }
 
             @Override
@@ -416,8 +413,10 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         LinearLayout layout_no_count = view.findViewById(R.id.layout_no_count);
         TextView txt_ad_view_count = view.findViewById(R.id.txt_ad_view_count);
         TextView txt_page_view_count = view.findViewById(R.id.txt_page_view_count);
+        TextView txt_contact_view_count = view.findViewById(R.id.txt_contact_view_count);
         txt_ad_view_count.setText(model.getUserViewCount());
         txt_page_view_count.setText(model.getProsperPageViewCount());
+        txt_contact_view_count.setText(model.getUserContactViewCount());
         if(model.getAdStatus().equals("0")||model.getAdStatus().equals("9")){
             layout_ad_view.setVisibility(View.GONE);
             layout_no_count.setVisibility(View.VISIBLE);

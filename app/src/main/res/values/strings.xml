@@ -21,7 +21,7 @@
 
     <string name="enter_your_name">Your Name*</string>
     <string name="enter_your_phone_no">Mobile Number*</string>
-    <string name="enter_your_phone_no_email">Mobile Number / Email</string>
+    <string name="enter_your_phone_no_email">Mobile Number(10digit) / Email Address</string>
     <string name="enter_your_phone_no_email_content">Enter Email</string>
     <string name="enter_your_email">E-mail ID</string>
     <string name="enter_your_email_man">E-mail ID*</string>
@@ -64,7 +64,8 @@
     <string name="password_required">Enter the New Password</string>
     <string name="confirm_password_required">Enter the Re-type Password</string>
     <string name="password_new_retype_same">New Password and Re-type New password should be same</string>
-    <string name="txt_profile">My Prosper Page</string>
+    <string name="txt_profile">My Profile</string>
+    <string name="txt_profile_edit">Edit Profile</string>
 
     <string name="enter_name">Enter Your Name</string>
     <string name="enter_name_minimum">Enter Minimum 3 Character</string>
@@ -126,7 +127,8 @@
 
     <string name="txt_hiring_pattern">Hiring Pattern *</string>
     <string name="txt_hiring_fee">Hiring Fee *</string>
-    <string name="txt_des_count">%1$s/200</string>
+    <string name="txt_des_count">%1$s/300</string>
+    <string name="txt_report_count">%1$s/200</string>
     <string name="txt_des_count_banner">%1$s/100</string>
     <string name="txt_pro_count">%1$s/50</string>
     <string name="txt_title_count">%1$s/55</string>
@@ -280,7 +282,10 @@
     <string name="name_in_adhaar">Name as per Aadhaar</string>
     <string name="adhaar_no">Aadhaar Number</string>
     <string name="enter_company_name">Enter the Company Name</string>
+    <string name="enter_valid_company_name">Please enter valid Company Name</string>
+    <string name="enter_company_address">Enter the Company Address</string>
     <string name="enter_gst_no">Enter the GSTIN</string>
+    <string name="enter_valid_gst_no">The GSTIN passed in the request is invalid</string>
 
     <string name="ad_delete_message">Are you sure you want to delete this Ad?</string>
     <string name="banner_delete_message">Are you sure you want to delete this Banner?</string>
@@ -392,7 +397,7 @@
     <string name="txt_delete">Delete</string>
     <string name="txt_rent_temp">*Rent Temporarily*</string>
     <string name="txt_hire_temp">*Hire Temporarily*</string>
-    <string name="txt_profile_share_content">You are invited to view my Prosper Page - </string>
+    <string name="txt_profile_share_content">You are invited to view Prosper Page - </string>
 
     <string name="custom_rent">Custom Rent</string>
     <string name="custom_hire">Custom Hire</string>
@@ -409,6 +414,9 @@
     <string name="month_rent">Monthly Rent</string>
     <string name="month_hire">Monthly Hire</string>
 
+    <string name="ride_rent">Per Ride</string>
+    <string name="ride_hire">Per Ride</string>
+
     <string name="chat_top_message">This is official Chat for Business purpose only. We record and maintain the Chat history.</string>
 
     <string name="enter_something_search">Enter Something To Search</string>
@@ -422,9 +430,9 @@
     <string name="service_image_alert">*Your profile image is the Services Ad image</string>
     <string name="txt_welcome_content">Remember your Prosper ID is your website</string>
 
-    <string name="txt_no_ad_city_content">There are currently no ads in the selected city.\nClick the below button to post ads.</string>
-    <string name="txt_no_ad_category_content">There are currently no Ads from the selected option(s).\nClick the below button to post ads.</string>
-    <string name="txt_no_ad_search_content">There are currently no Ads from the searched result.\nClick the below button to post ads.</string>
+    <string name="txt_no_ad_city_content">There are currently no ads in the selected city.\nClick the below button to Post Ads.</string>
+    <string name="txt_no_ad_category_content">There are currently no Ads from the selected option(s).\nClick the below button to Post Ads.</string>
+    <string name="txt_no_ad_search_content">There are currently no Ads from the searched result.\nClick the below button to Post Ads.</string>
 
     <string name="txt_i_offer">I Offer</string>
     <string name="txt_i_need">I Need</string>
@@ -443,7 +451,7 @@
     <string name="txt_check_demo">Check Demo</string>
 
     <string name="txt_demo_profile">Demo Prosper Page</string>
-    <string name="txt_view_client">View As Client</string>
+    <string name="txt_view_client">My Prosper Page</string>
     <string name="txt_view_profile_hint">Type here to search within the Prosper page</string>
     <string name="txt_inactive_no_content">No inactive Ads to display</string>
 
@@ -463,11 +471,24 @@
 
     <string name="ad_views">Ad views</string>
     <string name="page_views">Prosper Page visits</string>
+    <string name="contact_views">Contact views</string>
     <string name="page_views_content">Post more Ads to increase Prosper Page visits</string>
     <string name="page_views_content_two">Your Ad is in review.\nAd impression will be displayed\nonce published.</string>
     <string name="view_as_client_content">Post at least one Ad to view your Prosper Page as Client. \nClick below to post your first Ad</string>
 
-    <string name="share_my_business">Share my Business</string>
+    <string name="share_my_business">Share Prosper Page</string>
+    <string name="post_more">Do you want to post more ads</string>
+    <string name="txt_reset">Reset</string>
+    <string name="txt_rent_hire">Fee Range</string>
+    <string name="txt_rent_fee_range">Rental Fee Range</string>
+    <string name="txt_hire_fee_range">Hiring Fee Range</string>
+    <string name="txt_choose">Choose</string>
+    <string name="ent_rental_hire_range">Enter Rental / Hiring Range</string>
+    <string name="view_contact">View Contact</string>
+    <string name="no_user_content">The entered Prosper Id is\nnot yet allotted to any user</string>
+    <string name="no_ads_display">No Ads to display</string>
+    <string name="no_description">No Description</string>
+    <string name="min_max_valitaion_msg">Min value should not be lesser than Max value</string>
 
     <string name="serial">SERIAL: </string>
     <string name="model">MODEL: </string>

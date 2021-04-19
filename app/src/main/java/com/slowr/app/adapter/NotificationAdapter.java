@@ -2,6 +2,7 @@ package com.slowr.app.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.slowr.app.R;
 import com.slowr.app.models.NotificationItemModel;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
@@ -113,8 +116,20 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         try {
             NotificationItemModel movie = categoryListFilter.get(position);
             holder.txt_notification_title.setText(movie.getNotificationContent().trim());
+            Date date = null;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                date = format.parse(movie.getNotificationDate());
+                System.out.println(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy");
-            holder.txt_date.setText(spf.format(movie.getNotificationDate()));
+            if (date != null) {
+                holder.txt_date.setText(spf.format(date));
+            } else {
+                holder.txt_date.setText("");
+            }
             if (movie.isCheck()) {
                 holder.layout_bg.setBackgroundColor(ctx.getResources().getColor(R.color.txt_gray_trans));
             } else {
@@ -140,6 +155,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 holder.txt_date.setTextColor(ctx.getResources().getColor(R.color.color_black));
             }
         } catch (Exception e) {
+            Log.e("Notification", e.getMessage());
             e.printStackTrace();
         }
     }

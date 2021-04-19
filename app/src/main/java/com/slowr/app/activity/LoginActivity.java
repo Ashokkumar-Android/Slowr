@@ -289,6 +289,44 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         MobileEmailCheckFunction();
         GetDeviceId();
+        edt_email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    resentCount = 0;
+                    if (btn_sign_in.getText().toString().equals(getString(R.string.request_otp))) {
+                        sendOTP(true);
+                    } else if (btn_sign_in.getText().toString().equals(getString(R.string.txt_sigin))) {
+
+                        callLoginWithPassword();
+                    } else {
+                        callLogin();
+                    }
+                    isForgotPass = false;
+                    return true;
+                }
+                return false;
+            }
+        });
+        edt_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    resentCount = 0;
+                    if (btn_sign_in.getText().toString().equals(getString(R.string.request_otp))) {
+                        sendOTP(true);
+                    } else if (btn_sign_in.getText().toString().equals(getString(R.string.txt_sigin))) {
+
+                        callLoginWithPassword();
+                    } else {
+                        callLogin();
+                    }
+                    isForgotPass = false;
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void GetDeviceId() {
@@ -325,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                     Log.i("params", params.toString());
 
                     RetrofitClient.getClient().create(Api.class).emailPhoneValidate(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true, false));
 
                     isMobileLogin = true;
                 } else {
@@ -501,7 +539,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                 params.put("password_confirmation", password);
 
                 RetrofitClient.getClient().create(Api.class).updatePassword(params)
-                        .enqueue(new RetrofitCallBack(LoginActivity.this, updatePassword, true,false));
+                        .enqueue(new RetrofitCallBack(LoginActivity.this, updatePassword, true, false));
                 break;
 
             case R.id.btn_request_otp:
@@ -674,13 +712,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         params.put("device_platform", "1");
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).toLogin(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, login, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, login, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).toLogin(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, login, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, login, true, false));
                 }
             });
         }
@@ -701,13 +739,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, isLoad,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, isLoad, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, isLoad,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, isLoad, false));
                 }
             });
         }
@@ -747,16 +785,16 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (digitsOnly) {
 //            if (val.equals("1")) {
-                if (!params.isEmpty()) {
-                    params.clear();
-                }
-                params.put("mobile", email);
-                params.put("status", "2");
-                params.put("message_type", "3");
-                Log.i("Params", params.toString());
-                isOTPMail = false;
-                RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                        .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, true,false));
+            if (!params.isEmpty()) {
+                params.clear();
+            }
+            params.put("mobile", email);
+            params.put("status", "2");
+            params.put("message_type", "3");
+            Log.i("Params", params.toString());
+            isOTPMail = false;
+            RetrofitClient.getClient().create(Api.class).sendOTP(params)
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, sendOTP, true, false));
 //            } else {
 //                reSendOTP("2");
 //            }
@@ -767,7 +805,7 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
             }
             params.put("email", email);
             RetrofitClient.getClient().create(Api.class).forgotPasswordSendMail(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, forgotPassword, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, forgotPassword, true, false));
         }
 
 
@@ -815,13 +853,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).emailPhoneValidate(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).emailPhoneValidate(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, emailPhoneValidate, true, false));
                 }
             });
         }
@@ -843,8 +881,10 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                             if (isPasswordLayout) {
                                 btn_sign_in.setText(getString(R.string.txt_sigin));
                             } else {
-                                btn_sign_in.setText(getString(R.string.request_otp));
-                                txt_login_password.setVisibility(View.VISIBLE);
+                                layout_password.setVisibility(View.VISIBLE);
+                                isPasswordLayout = true;
+                                btn_sign_in.setText(getString(R.string.txt_sigin));
+                                til_email.setHint(getString(R.string.enter_your_phone_no_email));
                             }
                         } else {
                             Intent signup = new Intent(LoginActivity.this, SignupActivity.class);
@@ -922,13 +962,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).toLogin(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, login, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, login, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).toLogin(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, login, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, login, true, false));
                 }
             });
         }
@@ -958,12 +998,15 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                         Sessions.saveSession(Constant.ProsperId, dr.getProsperId(), getApplicationContext());
                         Sessions.saveSession(Constant.UserProfile, dr.getProUrl(), getApplicationContext());
                         Sessions.saveSession(Constant.UserVerified, dr.getIsVerified(), getApplicationContext());
-                        Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
-                        signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
                         if (dr.getIsRegister().equals("1")) {
+                            Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
+                            signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             signup.putExtra("IsRegister", "True");
+                            startActivity(signup);
                         }
-                        startActivity(signup);
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
                         finish();
 
                     }
@@ -1043,13 +1086,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, reSendOTP, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, reSendOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, reSendOTP, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, reSendOTP, true, false));
                 }
             });
         }
@@ -1066,13 +1109,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).forgotPasswordVerifyOTP(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).forgotPasswordVerifyOTP(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true, false));
                 }
             });
         }
@@ -1092,13 +1135,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
 
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).verifyOTPForgotPassword(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).verifyOTPForgotPassword(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, verifyOTP, true, false));
                 }
             });
         }
@@ -1119,13 +1162,13 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
         Sessions.saveSessionBool(Constant.LoginType, false, getApplicationContext());
         if (_fun.isInternetAvailable(LoginActivity.this)) {
             RetrofitClient.getClient().create(Api.class).verifyOTPLogin(params)
-                    .enqueue(new RetrofitCallBack(LoginActivity.this, mobileLogin, true,false));
+                    .enqueue(new RetrofitCallBack(LoginActivity.this, mobileLogin, true, false));
         } else {
             _fun.ShowNoInternetPopup(LoginActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).verifyOTPLogin(params)
-                            .enqueue(new RetrofitCallBack(LoginActivity.this, mobileLogin, true,false));
+                            .enqueue(new RetrofitCallBack(LoginActivity.this, mobileLogin, true, false));
                 }
             });
         }
@@ -1150,12 +1193,15 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                     Sessions.saveSession(Constant.ProsperId, dr.getProsperId(), getApplicationContext());
                     Sessions.saveSession(Constant.UserProfile, dr.getProUrl(), getApplicationContext());
                     Sessions.saveSession(Constant.UserVerified, dr.getIsVerified(), getApplicationContext());
-                    Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
-                    signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
                     if (dr.getIsRegister().equals("1")) {
+                        Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
+                        signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         signup.putExtra("PageFrom", "1");
+                        startActivity(signup);
                     }
-                    startActivity(signup);
+                    Intent intent = new Intent();
+                    setResult(RESULT_OK, intent);
                     finish();
                 } else {
                     Function.CustomMessage(LoginActivity.this, dr.getMessage());

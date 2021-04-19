@@ -394,9 +394,17 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                     } else {
                         btn_edit.setText(getString(R.string.txt_edit));
                     }
+
+                    if (detailsModel.getAdStatus().equals("9")||detailsModel.getAdStatus().equals("7")) {
+                        btn_edit.setVisibility(View.GONE);
+                    }else {
+                        btn_edit.setVisibility(View.VISIBLE);
+                    }
+
                 } else {
                     Function.CustomMessage(BannerActivity.this, dr.getMessage());
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

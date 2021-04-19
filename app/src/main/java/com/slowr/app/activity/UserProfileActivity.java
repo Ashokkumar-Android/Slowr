@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +56,9 @@ import retrofit2.Call;
 public class UserProfileActivity extends AppCompatActivity implements View.OnClickListener {
     TextView txt_page_title;
     LinearLayout img_back;
-    LinearLayout layout_root;
+    LinearLayout layout_no_result;
+    LinearLayout layout_no_ads;
+    NestedScrollView layout_root;
     RecyclerView rc_ad_list;
     TextView txt_prosperId_post;
     TextView txt_name;
@@ -68,6 +71,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     CarouselView rc_banner;
     EditText edt_search_ad;
     Button btn_share_business;
+    Button btn_view_contact;
+    Button btn_home_page;
+    TextView txt_prosperId_no;
     ArrayList<BannerItemModel> bannerList = new ArrayList<>();
 
 
@@ -82,6 +88,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     String prosperId = "";
     String userId = "";
     String userPhone = "";
+    String userEmail = "";
+    String userName = "";
     private PopupWindow spinnerPopup, demoPopup;
 
     String shareMessage = "";
@@ -106,7 +114,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private void doDeclaration() {
         if (getIntent().hasExtra("prosperId")) {
             prosperId = getIntent().getStringExtra("prosperId");
-            pageFrom = "1";
+            if (getIntent().hasExtra("PageFrom")) {
+                pageFrom = getIntent().getStringExtra("PageFrom");
+            }
         }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
@@ -122,6 +132,11 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         rc_banner = findViewById(R.id.rc_banner);
         txt_no_of_ads = findViewById(R.id.txt_no_of_ads);
         btn_share_business = findViewById(R.id.btn_share_business);
+        btn_view_contact = findViewById(R.id.btn_view_contact);
+        layout_no_result = findViewById(R.id.layout_no_result);
+        btn_home_page = findViewById(R.id.btn_home_page);
+        layout_no_ads = findViewById(R.id.layout_no_ads);
+        txt_prosperId_no = findViewById(R.id.txt_prosperId_no);
 
         edt_search_ad = findViewById(R.id.edt_search_ad);
         txt_page_title.setText("Prosper Page");
@@ -147,6 +162,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         txt_email.setOnClickListener(this);
         img_user_profile.setOnClickListener(this);
         btn_share_business.setOnClickListener(this);
+        btn_view_contact.setOnClickListener(this);
+        btn_home_page.setOnClickListener(this);
 
         doFilter();
 
@@ -175,8 +192,13 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     private void getAdList() {
         if (prosperId != null && !prosperId.equals("")) {
             if (_fun.isInternetAvailable(UserProfileActivity.this)) {
-                RetrofitClient.getClient().create(Api.class).getUserAdDetails(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
+                if (pageFrom.equals("3")) {
+                    RetrofitClient.getClient().create(Api.class).getUserAdDetailsSearch(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
+                } else {
+                    RetrofitClient.getClient().create(Api.class).getUserAdDetails(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
+                }
             } else {
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -204,10 +226,9 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         homeAdListAdapter.setCallback(new UserAdListAdapter.Callback() {
             @Override
             public void itemClick(AdItemModel adItemModel) {
-                String catId = adItemModel.getCatId();
-                String adId = adItemModel.getAdId();
+                String adId = adItemModel.getAdSlug();
                 String userId = adItemModel.getUserId();
-                changeFragment(catId, adId, userId);
+                changeFragment(adId, userId);
             }
 
             @Override
@@ -238,18 +259,23 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
                 } else {
                     Intent l = new Intent(UserProfileActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, VIEW_POST_CODE);
                 }
             }
 
             @Override
             public void onShareClick(AdItemModel adItemModel) {
-                String catId = adItemModel.getCatId();
-                String adId = adItemModel.getAdId();
+                String adId = adItemModel.getAdSlug();
                 String adTitle = adItemModel.getAdTitle();
                 String catGroup = adItemModel.getCatGroup();
                 String url = adItemModel.getPhotoType();
-                Function.ShareLink(UserProfileActivity.this, catId, adId, adTitle, catGroup, url);
+                Function.ShareLink(UserProfileActivity.this, adId, adTitle, catGroup, url);
+            }
+
+            @Override
+            public void onLoginClick(AdItemModel adItemModel) {
+                Intent l = new Intent(UserProfileActivity.this, LoginActivity.class);
+                startActivityForResult(l, VIEW_POST_CODE);
             }
         });
     }
@@ -289,42 +315,33 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     }
 
     private void callAddFavorite(AdItemModel adItemModel) {
-        String catId = adItemModel.getCatId();
-        String adId = adItemModel.getAdId();
+        String adId = adItemModel.getAdSlug();
         String isFav = adItemModel.getIsFavorite();
         if (isFav.equals("0")) {
             if (!params.isEmpty()) {
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(UserProfileActivity.this, addFavorite, true, false));
         } else {
-            RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+            RetrofitClient.getClient().create(Api.class).deleteFavorite(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(UserProfileActivity.this, addFavorite, true, false));
         }
     }
 
-    void changeFragment(String catId, String adId, String userId) {
+    void changeFragment(String adId, String userId) {
         if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
             Intent p = new Intent(UserProfileActivity.this, MyPostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, VIEW_POST_CODE);
         } else {
             Intent p = new Intent(UserProfileActivity.this, PostViewActivity.class);
-            p.putExtra("CatId", catId);
             p.putExtra("AdId", adId);
             startActivityForResult(p, VIEW_POST_CODE);
         }
 
-
-//        Intent p = new Intent(FavoriteActivity.this, PostViewActivity.class);
-//        p.putExtra("CatId", catId);
-//        p.putExtra("AdId", adId);
-//        startActivityForResult(p, VIEW_POST_CODE);
     }
 
     @Override
@@ -369,11 +386,129 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     }
                 break;
             case R.id.btn_share_business:
-                Function.ShareProfileLink(UserProfileActivity.this,userProsperId,userProUrl );
+                Function.ShareProfileLink(UserProfileActivity.this, userProsperId, userProUrl);
+                break;
+            case R.id.btn_view_contact:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    ShowPopupContact();
+                    ViewContact("1");
+                } else {
+                    Intent l = new Intent(UserProfileActivity.this, LoginActivity.class);
+                    startActivityForResult(l, VIEW_POST_CODE);
+                }
+                break;
+            case R.id.btn_home_page:
+                Intent h = new Intent(UserProfileActivity.this, HomeActivity.class);
+                h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(h);
                 break;
 
         }
     }
+
+    public void ShowPopupContact() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_contact_view, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        TextView txt_phone = view.findViewById(R.id.txt_phone);
+        TextView txt_email = view.findViewById(R.id.txt_email);
+        TextView txt_name = view.findViewById(R.id.txt_name);
+        TextView txt_whats_app = view.findViewById(R.id.txt_whats_app);
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        txt_phone.setText(userPhone);
+        txt_email.setText(userEmail);
+        txt_name.setText(userName);
+        txt_whats_app.setText(userPhone);
+        txt_whats_app.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + "+91" + userPhone));
+                startActivity(intent);
+            }
+        });
+        if (userPhone != null && !userPhone.equals("")) {
+            txt_phone.setVisibility(View.VISIBLE);
+            txt_whats_app.setVisibility(View.VISIBLE);
+        } else {
+            txt_phone.setVisibility(View.GONE);
+            txt_whats_app.setVisibility(View.GONE);
+        }
+        if (userEmail != null && !userEmail.equals("")) {
+            txt_email.setVisibility(View.VISIBLE);
+        } else {
+            txt_email.setVisibility(View.GONE);
+        }
+        txt_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_fun.checkPermission2(UserProfileActivity.this)) {
+                    Function.CallNow(UserProfileActivity.this, userPhone);
+                    ViewContact("2");
+                }
+            }
+        });
+        txt_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + txt_email.getText().toString()));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "");
+                intent.putExtra(Intent.EXTRA_TEXT, "");
+                startActivity(intent);
+                ViewContact("4");
+            }
+        });
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void ViewContact(String type) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("platform", "3");
+        params.put("type", type);
+        params.put("prosperId", prosperId);
+
+        Log.i("Params", params.toString());
+        if (!userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
+            RetrofitClient.getClient().create(Api.class).viewContact(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(UserProfileActivity.this, viewContactResponse, false, false));
+        }
+    }
+
+    retrofit2.Callback<DefaultResponse> viewContactResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                DefaultResponse dr = response.body();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
 
     retrofit2.Callback<OtherProfileModel> adListResponse = new retrofit2.Callback<OtherProfileModel>() {
         @Override
@@ -391,15 +526,19 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     txt_prosperId_post.setText(dr.getUserDetailsModel().getProsperId());
                     userProsperId = dr.getUserDetailsModel().getProsperId();
                     txt_name.setText(dr.getUserDetailsModel().getUserName());
+                    userName = dr.getUserDetailsModel().getUserName();
                     userPhone = dr.getUserDetailsModel().getUserPhone();
                     userProUrl = dr.getUserDetailsModel().getUserPhoto();
+                    userEmail = dr.getUserDetailsModel().getUserEmail();
                     if (userPhone != null && !userPhone.equals("")) {
                         txt_phone.setText(dr.getUserDetailsModel().getUserPhone());
+                        txt_phone.setVisibility(View.GONE);
                     } else {
                         txt_phone.setVisibility(View.GONE);
                     }
                     if (dr.getUserDetailsModel().getUserEmail() != null && !dr.getUserDetailsModel().getUserEmail().equals("")) {
                         txt_email.setText(dr.getUserDetailsModel().getUserEmail());
+                        txt_email.setVisibility(View.GONE);
                     } else {
                         txt_email.setVisibility(View.GONE);
                     }
@@ -420,8 +559,12 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     txt_no_of_ads.setText(getString(R.string.txt_total_no_ad) + " " + adList.size());
                     if (adList.size() == 0) {
                         edt_search_ad.setVisibility(View.GONE);
+                        rc_ad_list.setVisibility(View.GONE);
+                        layout_no_ads.setVisibility(View.VISIBLE);
                     } else {
                         edt_search_ad.setVisibility(View.VISIBLE);
+                        rc_ad_list.setVisibility(View.VISIBLE);
+                        layout_no_ads.setVisibility(View.GONE);
                     }
                     bannerList.clear();
                     if (dr.getBannerList() != null) {
@@ -439,10 +582,15 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                         }
                     }
                 } else {
-                    Function.CustomMessage(UserProfileActivity.this, dr.getMessage());
+//                    Function.CustomMessage(UserProfileActivity.this, dr.getMessage());
+                    txt_prosperId_no.setText(prosperId.toUpperCase());
+                    layout_no_result.setVisibility(View.VISIBLE);
+                    layout_root.setVisibility(View.GONE);
 
                 }
             } catch (Exception e) {
+                layout_no_result.setVisibility(View.VISIBLE);
+                layout_root.setVisibility(View.GONE);
                 e.printStackTrace();
             }
         }
@@ -526,6 +674,7 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
         }
         if (result) {
             Function.CallNow(UserProfileActivity.this, userPhone);
+            ViewContact("2");
         }
     }
 

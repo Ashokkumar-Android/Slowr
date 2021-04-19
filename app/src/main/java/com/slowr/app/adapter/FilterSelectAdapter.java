@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
-import com.slowr.app.models.AreaItemModel;
 import com.slowr.app.models.SortByModel;
 
 import java.util.ArrayList;
@@ -23,43 +22,63 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
 
     private List<SortByModel> categoryListFilter;
     private List<SortByModel> categoryList;
-    //    Callback callback;
+    Callback callback;
     Context ctx;
+    boolean _isSelect = false;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_category_name;
         public LinearLayout layout_root;
         public RadioButton rb_select;
+        public View view_line;
 
         public MyViewHolder(View view) {
             super(view);
             txt_category_name = view.findViewById(R.id.txt_category_name);
             layout_root = view.findViewById(R.id.layout_root);
             rb_select = view.findViewById(R.id.rb_select);
+            view_line = view.findViewById(R.id.view_line);
             layout_root.setOnClickListener(this);
             rb_select.setOnClickListener(this);
+            view_line.setVisibility(View.GONE);
+//            if (_isSelect) {
+//                rb_select.setVisibility(View.GONE);
+//            } else {
             rb_select.setVisibility(View.VISIBLE);
+//            }
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.layout_root:
-                    if (!categoryListFilter.get(getAdapterPosition()).isSelect()) {
-                        rb_select.setChecked(true);
-                        categoryListFilter.get(getAdapterPosition()).setSelect(true);
+                    if (_isSelect) {
+                        callback.itemClick(categoryListFilter.get(getAdapterPosition()));
                     } else {
-                        rb_select.setChecked(false);
-                        categoryListFilter.get(getAdapterPosition()).setSelect(false);
+                        if (!categoryListFilter.get(getAdapterPosition()).isSelect()) {
+                            rb_select.setChecked(true);
+                            categoryListFilter.get(getAdapterPosition()).setSelect(true);
+                            callback.itemClickEnableButton(true);
+                        } else {
+                            rb_select.setChecked(false);
+                            categoryListFilter.get(getAdapterPosition()).setSelect(false);
+                            callback.itemClickEnableButton(false);
+                        }
                     }
                     break;
                 case R.id.rb_select:
-                    if (!categoryListFilter.get(getAdapterPosition()).isSelect()) {
-                        rb_select.setChecked(true);
-                        categoryListFilter.get(getAdapterPosition()).setSelect(true);
+                    if (_isSelect) {
+                        callback.itemClick(categoryListFilter.get(getAdapterPosition()));
                     } else {
-                        rb_select.setChecked(false);
-                        categoryListFilter.get(getAdapterPosition()).setSelect(false);
+                        if (!categoryListFilter.get(getAdapterPosition()).isSelect()) {
+                            rb_select.setChecked(true);
+                            categoryListFilter.get(getAdapterPosition()).setSelect(true);
+                            callback.itemClickEnableButton(true);
+                        } else {
+                            rb_select.setChecked(false);
+                            categoryListFilter.get(getAdapterPosition()).setSelect(false);
+                            callback.itemClickEnableButton(false);
+                        }
                     }
                     break;
             }
@@ -91,6 +110,11 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
             } else {
                 holder.rb_select.setChecked(false);
             }
+//            if (_isSelect) {
+//                holder.rb_select.setVisibility(View.GONE);
+//            } else {
+//                holder.rb_select.setVisibility(View.VISIBLE);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,47 +130,55 @@ public class FilterSelectAdapter extends RecyclerView.Adapter<FilterSelectAdapte
         return position;
     }
 
-//    public void setCallback(Callback callback) {
-//        this.callback = callback;
-//    }
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
 
-//    public interface Callback {
-//        public void itemClick(SortByModel model);
-//
-//
-//    }
-@Override
-public Filter getFilter() {
-    return new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence charSequence) {
-            String charString = charSequence.toString();
-            if (charString.isEmpty()) {
-                categoryListFilter = categoryList;
-            } else {
-                List<SortByModel> filteredList = new ArrayList<>();
-                for (SortByModel row : categoryList) {
+    public interface Callback {
+        void itemClick(SortByModel model);
 
-                    // name match condition. this might differ depending on your requirement
-                    // here we are looking for name or phone number match
-                    if (row.getSortValue().toLowerCase().startsWith(charString.toLowerCase())) {
-                        filteredList.add(row);
+        void itemClickEnableButton(boolean isSelect);
+
+
+    }
+
+    public void isCategorySelect(boolean isSelect) {
+        _isSelect = isSelect;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    categoryListFilter = categoryList;
+                } else {
+                    List<SortByModel> filteredList = new ArrayList<>();
+                    for (SortByModel row : categoryList) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getSortValue().toLowerCase().startsWith(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
                     }
+
+                    categoryListFilter = filteredList;
                 }
 
-                categoryListFilter = filteredList;
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = categoryListFilter;
+                return filterResults;
             }
 
-            FilterResults filterResults = new FilterResults();
-            filterResults.values = categoryListFilter;
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            categoryListFilter = (ArrayList<SortByModel>) filterResults.values;
-            notifyDataSetChanged();
-        }
-    };
-}
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                categoryListFilter = (ArrayList<SortByModel>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 }

@@ -103,7 +103,9 @@
                             android:importantForAutofill="auto"
                             android:inputType="textEmailAddress"
                             android:textColor="@color/color_black"
+                            android:longClickable="false"
                             android:textSize="@dimen/size_fifteen"
+                            android:textIsSelectable="false"
                             app:hintTextColor="@color/color_black" />
 
                     </com.google.android.material.textfield.TextInputLayout>

@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/layout_root"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="15dp">
+        android:paddingLeft="@dimen/size_five"
+        android:paddingTop="@dimen/size_ten"
+        android:paddingRight="@dimen/size_five"
+        android:paddingBottom="@dimen/size_ten">
 
         <TextView
             android:id="@+id/txt_filter_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/size_ten"
             android:layout_weight="1"
             android:fontFamily="@font/nunito_regular"
-            android:textColor="@color/color_black"
-            android:textSize="@dimen/size_fifteen" />
+            android:textColor="@color/color_black_five"
+            android:textSize="@dimen/size_fourteen" />
 
 
         <LinearLayout
@@ -28,15 +31,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/txt_filter_type_content"
                 style="@style/attribute_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
                 android:paddingRight="@dimen/size_ten"
                 android:singleLine="true"
-                android:ellipsize="end"
                 android:text=""
                 android:textColor="@color/txt_orange" />
 
@@ -50,6 +54,8 @@
 
     </LinearLayout>
 
-    <View style="@style/attribute_line" />
+    <View
+        style="@style/attribute_line"
+        android:background="@color/color_white" />
 
 </LinearLayout>

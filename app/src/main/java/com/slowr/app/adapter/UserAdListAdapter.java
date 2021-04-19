@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -50,6 +51,7 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
         ImageView img_share;
+        ImageView img_like;
 
         public MyViewHolder(View view) {
             super(view);
@@ -65,6 +67,7 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
             img_share = view.findViewById(R.id.img_share);
             txt_service_count = view.findViewById(R.id.txt_service_count);
+            img_like = view.findViewById(R.id.img_like);
 
             layout_root.setOnClickListener(this);
 //            img_favorite.setOnClickListener(this);
@@ -96,6 +99,7 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
                 case R.id.txt_service_count:
                     Intent i = new Intent(ctx, UserProfileActivity.class);
                     i.putExtra("prosperId", categoryListFilter.get(getAdapterPosition()).getProsperId());
+                    i.putExtra("PageFrom", "1");
                     ctx.startActivity(i);
                     break;
 
@@ -114,8 +118,9 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Intent l = new Intent(ctx, LoginActivity.class);
-                ctx.startActivity(l);
+//                Intent l = new Intent(ctx, LoginActivity.class);
+//                ctx.startActivity(l);
+                callback.onLoginClick(categoryListFilter.get(getAdapterPosition()));
                 likeButton.setLiked(false);
             }
         }
@@ -131,8 +136,9 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
                     likeButton.setLiked(false);
                 }
             } else {
-                Intent l = new Intent(ctx, LoginActivity.class);
-                ctx.startActivity(l);
+//                Intent l = new Intent(ctx, LoginActivity.class);
+//                ctx.startActivity(l);
+                callback.onLoginClick(categoryListFilter.get(getAdapterPosition()));
                 likeButton.setLiked(false);
             }
         }
@@ -164,6 +170,11 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
             } else {
                 holder.txt_like_count.setText(movie.getLikeCount());
             }
+            if (movie.getIsLike().equals("0")) {
+                holder.img_like.setColorFilter(ContextCompat.getColor(ctx, R.color.colorPrimary));
+            } else {
+                holder.img_like.setColorFilter(ContextCompat.getColor(ctx, R.color.txt_orange));
+            }
             if (movie.getAdPromotion().equals("1")) {
                 holder.layout_promoted.setVisibility(View.VISIBLE);
                 holder.txt_premium_mark.setVisibility(View.GONE);
@@ -175,27 +186,29 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
             } else {
                 holder.layout_promoted.setVisibility(View.GONE);
             }
-            if (movie.getAdFee() != null) {
-                holder.txt_price.setVisibility(View.VISIBLE);
-                String price = "";
-                if (movie.getAdFee().contains(".")) {
-                    String[] tempPrice = movie.getAdFee().split("\\.");
-                    price = tempPrice[0];
-                } else {
-                    price = movie.getAdFee();
-                }
+//            if (movie.getAdFee() != null) {
+//                holder.txt_price.setVisibility(View.VISIBLE);
+//                String price = "";
+//                if (movie.getAdFee().contains(".")) {
+//                    String[] tempPrice = movie.getAdFee().split("\\.");
+//                    price = tempPrice[0];
+//                } else {
+//                    price = movie.getAdFee();
+//                }
+//
+//                Log.i("Fave", movie.getIsFavorite());
+//                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
+//                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//                } else {
+//                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                    String formatPrice = formatter.format(Integer.valueOf(price));
+//                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
+//                }
+//            } else {
+//                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
+//            }
 
-                Log.i("Fave", movie.getIsFavorite());
-                if (price.equals("0") || price.equals("") || movie.getAdDuration().equals("Custom")) {
-                    Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
-                } else {
-                    DecimalFormat formatter = new DecimalFormat("#,###,###");
-                    String formatPrice = formatter.format(Integer.valueOf(price));
-                    holder.txt_price.setText("₹ " + formatPrice + " / " + movie.getAdDuration());
-                }
-            } else {
-                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
-            }
+            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
             if (movie.getIsFavorite().equals("0")) {
                 holder.img_favorite.setLiked(false);
 
@@ -210,7 +223,7 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
                 } else {
                     if (movie.getAdParentId() != null && movie.getAdParentId().equals("1")) {
                         defu = R.drawable.ic_need_space;
-                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("1306")) {
+                    } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("34")) {
                         defu = R.drawable.ic_need_pet;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;
@@ -279,6 +292,8 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
         void onFavoriteClick(AdItemModel adItemModel);
 
         void onShareClick(AdItemModel adItemModel);
+
+        void onLoginClick(AdItemModel adItemModel);
     }
 
     @Override

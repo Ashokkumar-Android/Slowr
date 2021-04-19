@@ -18,9 +18,6 @@ public class NotificationItemModel {
     @SerializedName("user_id")
     String userId;
 
-    @SerializedName("category_id")
-    String catId;
-
     @SerializedName("message")
     String notificationContent;
 
@@ -28,7 +25,7 @@ public class NotificationItemModel {
     String notificationColor;
 
     @SerializedName("created_at")
-    Date notificationDate;
+    String notificationDate;
 
     @SerializedName("is_read")
     String isRead;
@@ -59,13 +56,6 @@ public class NotificationItemModel {
         this.adId = adId;
     }
 
-    public String getCatId() {
-        return catId;
-    }
-
-    public void setCatId(String catId) {
-        this.catId = catId;
-    }
 
     public String getNotificationContent() {
         return notificationContent;
@@ -83,11 +73,11 @@ public class NotificationItemModel {
         this.notificationColor = notificationColor;
     }
 
-    public Date getNotificationDate() {
+    public String getNotificationDate() {
         return notificationDate;
     }
 
-    public void setNotificationDate(Date notificationDate) {
+    public void setNotificationDate(String notificationDate) {
         this.notificationDate = notificationDate;
     }
 

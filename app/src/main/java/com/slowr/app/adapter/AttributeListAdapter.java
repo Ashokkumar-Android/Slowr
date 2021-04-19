@@ -16,10 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.slowr.app.R;
 import com.slowr.app.models.AttributeItemModel;
-import com.slowr.app.models.AttributeSelectModel;
+import com.slowr.app.models.AttributesValueItem;
 import com.slowr.app.utils.Function;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdapter.MyViewHolder> {
@@ -99,7 +98,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
 
             if (movie.getInputValue() != null && movie.getInputValue().equals("")) {
 //                holder.txt_select_content.setHint("Type" + " " + movie.getName());
-                if (movie.getType().equals("select")) {
+                if (movie.getAttributeValues() != null && movie.getAttributeValues().size() != 0) {
                     holder.txt_select_content.setText("");
                 } else {
                     holder.edt_attributeValue.setText("");
@@ -107,7 +106,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             } else {
 //                holder.txt_select_content.setHint("Type" + " " + movie.getName());
                 isChange = true;
-                if (movie.getType().equals("select")) {
+                if (movie.getAttributeValues() != null && movie.getAttributeValues().size() != 0) {
                     holder.txt_select_content.setText(movie.getInputValue().trim());
                     holder.txt_brand_count.setText(ctx.getString(R.string.txt_pro_count, String.valueOf(movie.getInputValue().trim().length())));
                 } else {
@@ -118,27 +117,22 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
             }
 
 
-            if (movie.getType().equals("select")) {
+            if (movie.getAttributeValues() != null && movie.getAttributeValues().size() != 0) {
                 holder.txt_select_content.setHint("Type" + " " + movie.getName());
                 holder.layout_select.setVisibility(View.VISIBLE);
                 holder.layout_input.setVisibility(View.GONE);
-
-                String[] strArray = movie.getAttributeValues().split(",");
-                ArrayList<AttributeSelectModel> attributeValueList = new ArrayList<>();
-                attributeValueList.clear();
-                for (int i = 0; i < strArray.length; i++) {
-                    attributeValueList.add(new AttributeSelectModel("", strArray[i]));
-                }
-                AttributesAutoCompleteAdapter attributesAutoCompleteAdapter = new AttributesAutoCompleteAdapter(ctx, R.layout.layout_sub_category_item, attributeValueList);
+                AttributesAutoCompleteAdapter attributesAutoCompleteAdapter = new AttributesAutoCompleteAdapter(ctx, R.layout.layout_sub_category_item, movie.getAttributeValues());
                 //Getting the instance of AutoCompleteTextView
+
                 holder.txt_select_content.setThreshold(1);//will start working from first character
                 holder.txt_select_content.setAdapter(attributesAutoCompleteAdapter);
                 attributesAutoCompleteAdapter.setCallback(new AttributesAutoCompleteAdapter.Callback() {
                     @Override
-                    public void itemClick(AttributeSelectModel model) {
-                        holder.txt_select_content.setText(model.getAttributeValue().trim());
+                    public void itemClick(AttributesValueItem model) {
+                        holder.txt_select_content.setText(model.getValue().trim());
                         holder.txt_select_content.dismissDropDown();
                         holder.txt_select_content.setSelection(holder.txt_select_content.getText().toString().length());
+                        movie.setInputId(model.getId());
                     }
                 });
 
@@ -182,6 +176,7 @@ public class AttributeListAdapter extends RecyclerView.Adapter<AttributeListAdap
                     if (desValue == 50 && !isChange) {
                         Function.CustomMessage(ctx, ctx.getString(R.string.txt_limit_reached));
                     }
+
                 }
             });
 

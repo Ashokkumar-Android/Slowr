@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -162,10 +161,11 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     String paymentSignature = "";
     boolean changeDeductedAmount = false;
     boolean changeChip = false;
+    boolean isAddressEnable = false;
 
 
-    TextView txt_company_name;
-    TextView txt_company_address;
+    EditText txt_company_name;
+    EditText txt_company_address;
     LinearLayout layout_address;
     EditText edt_gst_no_bill;
     GSTListAdapter gstListAdapter;
@@ -645,6 +645,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             }
 //        String totalDays = getCountOfDays(adStartDate, adEndDate);
             if (Type.equals("1")) {
+                isAddressEnable = false;
                 ShowPopupGST();
 
             } else {
@@ -1365,9 +1366,25 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onClick(View v) {
                 Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                if (!txt_company_name.getText().toString().equals("") && gstNo.equals(edt_gst_no_bill.getText().toString())) {
+                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("")&&gstNo.equals(edt_gst_no_bill.getText().toString())) {
                     gstName = txt_company_name.getText().toString();
                     gstAddress = txt_company_address.getText().toString();
+                    if (gstName.length() == 0) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_name), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_company_name));
+                        return;
+                    }
+                    if (!Function.GSTNameValidation(gstName)) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_company_name), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_valid_company_name));
+                        return;
+                    }
+                    if (gstAddress.length() == 0) {
+//                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_address), Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_company_address));
+                        return;
+                    }
+
                     addBannerCall();
                     spinnerPopup.dismiss();
                 } else {
@@ -1379,6 +1396,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                             gstAddress = gstNoList.get(i).getCompanyAddress();
                             gstName = gstNoList.get(i).getCompanyName();
                             layout_address.setVisibility(View.VISIBLE);
+                            isAddressEnable = true;
                             txt_company_name.setText(gstName);
                             txt_company_address.setText(gstAddress);
                             isSelect = true;
@@ -1406,10 +1424,17 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
     private void doValidationGST(String _gstNo) {
 
         if (_gstNo.length() == 0) {
-            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
+            Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_gst_no));
             return;
-        } else {
         }
+        if (!Function.GSTNoValidation(_gstNo)) {
+//            Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_gst_no), Toast.LENGTH_SHORT).show();
+            Function.CustomMessage(AddBannerActivity.this, getString(R.string.enter_valid_gst_no));
+
+            return;
+        }
+
         gstNo = _gstNo;
         if (_fun.isInternetAvailable(AddBannerActivity.this)) {
             verifyGSTNO(_gstNo);
@@ -1465,28 +1490,36 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
                                 json_data_address.getString("pncd");
                         txt_company_address.setText(address);
                         layout_address.setVisibility(View.VISIBLE);
+                        isAddressEnable = true;
                         gstId = "0";
                     } else {
-//                    Function.CustomMessage(AddBannerActivity.this, "Enter a valid GST No");
-                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
+                        Function.CustomMessage(AddBannerActivity.this, "Enter a valid GST No");
+//                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
                         txt_company_name.setText("");
                         txt_company_address.setText("");
-                        layout_address.setVisibility(View.GONE);
-                        gstNo = "";
+                        layout_address.setVisibility(View.VISIBLE);
+                        isAddressEnable = true;
+//                        gstNo = "";
 
                     }
                 } else {
-                    if (value.equals("invalid_grant")) {
-                        updateToken();
-                    }
+
 
                     txt_company_name.setText("");
                     txt_company_address.setText("");
-                    layout_address.setVisibility(View.GONE);
-                    gstNo = "";
+                    layout_address.setVisibility(View.VISIBLE);
+                    isAddressEnable = true;
+//                    gstNo = "";
+                    if (value.equals("invalid_grant")) {
+                        updateToken();
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                txt_company_name.setText("");
+                txt_company_address.setText("");
+                layout_address.setVisibility(View.VISIBLE);
+                isAddressEnable = true;
             }
         }
 
@@ -1494,6 +1527,10 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
         public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
+            txt_company_name.setText("");
+            txt_company_address.setText("");
+            layout_address.setVisibility(View.VISIBLE);
+            isAddressEnable = true;
         }
     };
 

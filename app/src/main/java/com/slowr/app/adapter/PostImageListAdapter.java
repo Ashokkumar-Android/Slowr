@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
 
         public ImageView imageViewIcon;
         public ImageView txt_add_image;
+        FrameLayout layout_image_frame;
         CardView layout_delete;
 
         public MyViewHolder(View itemView) {
@@ -42,6 +44,7 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
             this.imageViewIcon = itemView.findViewById(R.id.img_captured);
             this.txt_add_image = itemView.findViewById(R.id.txt_add_image);
             this.layout_delete = itemView.findViewById(R.id.layout_delete);
+            this.layout_image_frame = itemView.findViewById(R.id.layout_image_frame);
         }
     }
 
@@ -108,16 +111,14 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
             }
 
 
-            if (listPosition == 0) {
-                if (shareImageList.size() > size) {
-                    holder.txt_add_image.setVisibility(View.GONE);
-                } else {
-                    holder.txt_add_image.setVisibility(View.VISIBLE);
-                }
-
+            if (model.getImgURL().equals("") && model.getUri().equals("")) {
+                holder.txt_add_image.setVisibility(View.VISIBLE);
+                holder.layout_image_frame.setVisibility(View.GONE);
             } else {
                 holder.txt_add_image.setVisibility(View.GONE);
+                holder.layout_image_frame.setVisibility(View.VISIBLE);
             }
+
 
             holder.imageViewIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -128,7 +129,7 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
             holder.txt_add_image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    callBack.addClick();
+                    callBack.addClick(listPosition);
                 }
             });
             holder.layout_delete.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +162,7 @@ public class PostImageListAdapter extends RecyclerView.Adapter<PostImageListAdap
     public interface CallBack {
         void itemClick(int pos);
 
-        void addClick();
+        void addClick(int pos);
     }
 
 }

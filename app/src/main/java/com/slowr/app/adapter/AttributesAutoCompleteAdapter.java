@@ -15,18 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.slowr.app.R;
-import com.slowr.app.models.AttributeSelectModel;
+import com.slowr.app.models.AttributesValueItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectModel> {
+public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributesValueItem> {
     private Context context;
     private int resourceId;
     Callback callback;
-    private List<AttributeSelectModel> items, tempItems, suggestions;
+    private List<AttributesValueItem> items, tempItems, suggestions;
 
-    public AttributesAutoCompleteAdapter(@NonNull Context context, int resourceId, ArrayList<AttributeSelectModel> items) {
+    public AttributesAutoCompleteAdapter(@NonNull Context context, int resourceId, ArrayList<AttributesValueItem> items) {
         super(context, resourceId, items);
         this.items = items;
         this.context = context;
@@ -44,11 +44,11 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 view = inflater.inflate(resourceId, parent, false);
             }
-            AttributeSelectModel fruit = getItem(position);
+            AttributesValueItem fruit = getItem(position);
             TextView name = view.findViewById(R.id.txt_category_name);
             RadioButton rb_select = view.findViewById(R.id.rb_select);
             rb_select.setVisibility(View.GONE);
-            name.setText(fruit.getAttributeValue().trim());
+            name.setText(fruit.getValue().trim());
             LinearLayout linearLayout = view.findViewById(R.id.layout_root);
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -64,7 +64,7 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
 
     @Nullable
     @Override
-    public AttributeSelectModel getItem(int position) {
+    public AttributesValueItem getItem(int position) {
         return items.get(position);
     }
 
@@ -83,7 +83,7 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
     }
 
     public interface Callback {
-        void itemClick(AttributeSelectModel model);
+        void itemClick(AttributesValueItem model);
 
 
     }
@@ -97,16 +97,16 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
     private Filter fruitFilter = new Filter() {
         @Override
         public CharSequence convertResultToString(Object resultValue) {
-            AttributeSelectModel fruit = (AttributeSelectModel) resultValue;
-            return fruit.getAttributeValue().trim();
+            AttributesValueItem fruit = (AttributesValueItem) resultValue;
+            return fruit.getValue().trim();
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
             if (charSequence != null) {
                 suggestions.clear();
-                for (AttributeSelectModel fruit : tempItems) {
-                    if (fruit.getAttributeValue().toLowerCase().trim().startsWith(charSequence.toString().toLowerCase().trim())) {
+                for (AttributesValueItem fruit : tempItems) {
+                    if (fruit.getValue().toLowerCase().trim().startsWith(charSequence.toString().toLowerCase().trim())) {
                         suggestions.add(fruit);
                     }
                 }
@@ -121,10 +121,10 @@ public class AttributesAutoCompleteAdapter extends ArrayAdapter<AttributeSelectM
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            ArrayList<AttributeSelectModel> tempValues = (ArrayList<AttributeSelectModel>) filterResults.values;
+            ArrayList<AttributesValueItem> tempValues = (ArrayList<AttributesValueItem>) filterResults.values;
             if (filterResults != null && filterResults.count > 0) {
                 clear();
-                for (AttributeSelectModel fruitObj : tempValues) {
+                for (AttributesValueItem fruitObj : tempValues) {
                     add(fruitObj);
                 }
                 notifyDataSetChanged();

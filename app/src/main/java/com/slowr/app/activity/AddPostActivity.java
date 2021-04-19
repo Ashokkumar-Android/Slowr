@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -24,7 +23,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -50,10 +48,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gioco.image.cropper.CropImage;
 import com.gioco.image.cropper.CropImageView;
-import com.google.gson.JsonArray;
 import com.slowr.app.R;
 import com.slowr.app.adapter.AreaAutoCompleteAdapter;
-import com.slowr.app.adapter.AreaListAdapter;
 import com.slowr.app.adapter.AttributeListAdapter;
 import com.slowr.app.adapter.AttributeSelectAdapter;
 import com.slowr.app.adapter.CategoryListAdapter;
@@ -61,7 +57,6 @@ import com.slowr.app.adapter.CityListAdapter;
 import com.slowr.app.adapter.PostImageListAdapter;
 import com.slowr.app.adapter.ProductAutoCompleteAdapter;
 import com.slowr.app.adapter.RentalDurationAdapter;
-import com.slowr.app.adapter.SubCategoryListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
@@ -73,6 +68,7 @@ import com.slowr.app.models.AreaModel;
 import com.slowr.app.models.AttributeItemModel;
 import com.slowr.app.models.AttributeModel;
 import com.slowr.app.models.AttributeSelectModel;
+import com.slowr.app.models.AttributesValueItemTemp;
 import com.slowr.app.models.CategoryItemModel;
 import com.slowr.app.models.CategoryModel;
 import com.slowr.app.models.CityItemModel;
@@ -102,7 +98,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
-public class AddPostActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AddPostActivity extends AppCompatActivity implements View.OnClickListener {
 
     LinearLayout img_back;
     TextView txt_page_title;
@@ -161,10 +157,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     TextView txt_service_img_alert;
 
     CategoryListAdapter categoryListAdapter;
-    SubCategoryListAdapter subCategoryListAdapter;
     AttributeListAdapter attributeListAdapter;
     CityListAdapter cityListAdapter;
-    AreaListAdapter areaListAdapter;
     AttributeSelectAdapter attributeSelectAdapter;
     RentalDurationAdapter rentalDurationAdapter;
     ArrayAdapter<String> spinnerAdapter;
@@ -173,9 +167,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     ArrayList<CategoryItemModel> tempCategoryList = new ArrayList<>();
     ArrayList<CategoryItemModel> tempServiceList = new ArrayList<>();
     ArrayList<SubCategoryItemModel> subCategoryList = new ArrayList<>();
+    ArrayList<SubCategoryItemModel> subCategoryTempList = new ArrayList<>();
     ArrayList<AttributeItemModel> attributeList = new ArrayList<>();
     ArrayList<CityItemModel> cityList = new ArrayList<>();
     ArrayList<AreaItemModel> areaList = new ArrayList<>();
+    ArrayList<AreaItemModel> tempAreaList = new ArrayList<>();
     ArrayList<AttributeSelectModel> attributeValueList = new ArrayList<>();
 
     public List<Uri> selectedUris = new ArrayList<>();
@@ -186,7 +182,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     public int attributeSelectPos = 0;
     public int filterType = 1;
     public boolean isCity = false;
-    public boolean isSubCat = false;
     public boolean isPriceVisible = true;
     public boolean isPostView = false;
     public boolean isRequirement = false;
@@ -206,6 +201,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     boolean isAttributes = false;
     boolean isPrefix = false;
     String titleContent = "";
+    String areaString = "";
 
     int tabNo = 1;
     int AdType = 0;
@@ -228,6 +224,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     ViewDialog viewDialog;
     String imagePath = "";
     boolean isClickChange = false;
+    boolean isTyped = false;
+    int imageSelectPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +238,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         viewDialog = new ViewDialog(this);
         AdType = getIntent().getIntExtra("AdType", 0);
         if (AdType == 1) {
-            catId = getIntent().getStringExtra("CatId");
             adId = getIntent().getStringExtra("AdId");
             EditType = getIntent().getStringExtra("EditType");
         } else if (AdType == 2) {
@@ -346,6 +343,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         LinearLayoutManager horizontalLayoutManagaer
                 = new LinearLayoutManager(AddPostActivity.this, LinearLayoutManager.HORIZONTAL, false);
         rc_image_list.setLayoutManager(horizontalLayoutManagaer);
+        AddImageItems();
         postImageListAdapter = new PostImageListAdapter(AddPostActivity.this, shareImageList);
         rc_image_list.setAdapter(postImageListAdapter);
 
@@ -365,11 +363,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         attributeListAdapter = new AttributeListAdapter(attributeList, AddPostActivity.this);
         rc_attributes.setAdapter(attributeListAdapter);
 
-        subCategoryListAdapter = new SubCategoryListAdapter(subCategoryList, getApplicationContext());
         attributeSelectAdapter = new AttributeSelectAdapter(attributeValueList, getApplicationContext());
         cityListAdapter = new CityListAdapter(cityList, getApplicationContext());
-        areaListAdapter = new AreaListAdapter(areaList, AddPostActivity.this);
-        areaCallBack(areaListAdapter);
         rentalDurationAdapter = new RentalDurationAdapter(rentalDurationList, getApplicationContext());
 
 
@@ -449,6 +444,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    private void AddImageItems() {
+        shareImageList.clear();
+        shareImageList.add(new UploadImageModel("", false, "", "1"));
+        shareImageList.add(new UploadImageModel("", false, "", "1"));
+        shareImageList.add(new UploadImageModel("", false, "", "1"));
+        shareImageList.add(new UploadImageModel("", false, "", "1"));
+        shareImageList.add(new UploadImageModel("", false, "", "1"));
+    }
+
     public void TCPPTextView(TextView textView) {
 
         SpannableStringBuilder spanText = new SpannableStringBuilder();
@@ -480,7 +484,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     private void GetAdDetails() {
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
-            RetrofitClient.getClient().create(Api.class).getAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+            RetrofitClient.getClient().create(Api.class).getAdDetails(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                     .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true, false));
         } else {
             new Handler().postDelayed(new Runnable() {
@@ -489,7 +493,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
-                            RetrofitClient.getClient().create(Api.class).getAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            RetrofitClient.getClient().create(Api.class).getAdDetails(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                                     .enqueue(new RetrofitCallBack(AddPostActivity.this, adDetails, true, false));
                         }
                     });
@@ -514,17 +518,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void afterTextChanged(Editable s) {
                 switch (filterType) {
-                    case 1:
-                        subCategoryListAdapter.getFilter().filter(edt_search.getText().toString());
-                        break;
-                    case 3:
-                        attributeSelectAdapter.getFilter().filter(edt_search.getText().toString());
-                        break;
                     case 4:
                         cityListAdapter.getFilter().filter(edt_search.getText().toString());
-                        break;
-                    case 5:
-                        areaListAdapter.getFilter().filter(edt_search.getText().toString());
                         break;
                 }
 
@@ -552,32 +547,12 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void afterTextChanged(Editable s) {
                 int desValue = edt_description.getText().toString().length();
                 txt_description_count.setText(getString(R.string.txt_des_count, String.valueOf(desValue)));
-                if (desValue == 200 && !changeDeductedAmount) {
+                if (desValue == 300 && !changeDeductedAmount) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
                 }
             }
         });
 
-        edt_search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                int desValue = edt_search.getText().toString().length();
-                txt_product_count.setText(getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                if (desValue == 50 && !changeDeductedAmount) {
-                    Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
-                }
-            }
-        });
         txt_product_type_content.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -598,7 +573,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
                 }
                 productTitle = txt_product_type_content.getText().toString().trim();
+                catId = "";
                 AdTitleCreation();
+                Log.i("TypedText", productTitle);
+                if (attributeList.size() != 0) {
+                    attributeList.clear();
+                    attributeListAdapter.notifyDataSetChanged();
+                }
             }
         });
         txt_area_content.addTextChangedListener(new TextWatcher() {
@@ -616,7 +597,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             public void afterTextChanged(Editable s) {
                 int desValue = txt_area_content.getText().toString().length();
                 txt_area_count.setText(getString(R.string.txt_pro_count, String.valueOf(desValue)));
-                areaId = txt_area_content.getText().toString().trim();
+                areaString = txt_area_content.getText().toString().trim();
+                areaId = "";
                 if (desValue == 50 && !changeDeductedAmount) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_limit_reached));
                 }
@@ -626,35 +608,21 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void itemClick(int pos) {
 
-//                selectedPaths.remove(pos);
-//                selectedUris.remove(pos);
-                shareImageList.remove(pos);
+                shareImageList.set(pos, new UploadImageModel("", false, "", "2"));
                 postImageListAdapter.notifyDataSetChanged();
                 if (shareImageList.size() != 0) {
                     btn_add_image.setVisibility(View.GONE);
-//                        view_gallery.setVisibility(View.GONE);
                     rc_image_list.setVisibility(View.VISIBLE);
                 } else {
                     btn_add_image.setVisibility(View.VISIBLE);
-//                        view_gallery.setVisibility(View.VISIBLE);
                     rc_image_list.setVisibility(View.GONE);
                 }
-//                if (!isPageChange) {
-//                    isPageChange = true;
-//                    isAddIcon = 0;
-//                    Intent intent = new Intent(getApplicationContext(), MatisseCropActivity.class);
-//                    intent.putParcelableArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION, (ArrayList<? extends Parcelable>) selectedUris);
-//                    intent.putStringArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION_PATH, (ArrayList<String>) selectedPaths);
-////                    intent.putStringArrayListExtra(MatisseActivity.EXTRA_RESULT_CROP_TYPE, CropTypes);
-//                    intent.putExtra("pos", pos);
-//                    startActivityForResult(intent, 50);
-//                }
-               /* showPopupWindow(pos);
-                vp_position = pos;*/
+
             }
 
             @Override
-            public void addClick() {
+            public void addClick(int pos) {
+                imageSelectPos = pos;
                 isAddIcon = 1;
                 Log.e("CallBackFunction", "addClick");
                 if (_fun.checkPermission(AddPostActivity.this)) {
@@ -683,23 +651,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         attributeListAdapter.setCallback(new AttributeListAdapter.Callback() {
             @Override
             public void itemClick(int pos) {
-                attributeSelectPos = pos;
-                String[] strArray = attributeList.get(pos).getAttributeValues().split(",");
-                attributeValueList.clear();
-                for (int i = 0; i < strArray.length; i++) {
-                    attributeValueList.add(new AttributeSelectModel("", strArray[i]));
-                }
-
-                rc_category.setAdapter(attributeSelectAdapter);
-                filterType = 3;
-                txt_page_action.setVisibility(View.VISIBLE);
-
-                ListVisible(true);
-                edt_search.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                txt_page_title.setText(getString(R.string.txt_type) + " " + attributeList.get(pos).getName());
-                edt_search.setText(attributeList.get(pos).getInputValue());
-                attributeSelectAdapter.getFilter().filter("");
-                isCity = true;
 
             }
 
@@ -729,54 +680,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 AdTitleCreation();
             }
         });
-        edt_search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
 
-                    if (filterType == 1) {
-                        txt_product_type_content.setText(edt_search.getText().toString());
-                        AdTitleCreation();
-
-                        Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-
-                        if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                            GetAttributes(edt_search.getText().toString());
-                        } else {
-                            _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                                @Override
-                                public void isInternet() {
-                                    GetAttributes(edt_search.getText().toString());
-                                }
-                            });
-                        }
-                    } else if (filterType == 3) {
-                        attributeList.get(attributeSelectPos).setInputValue(edt_search.getText().toString());
-                        attributeListAdapter.notifyDataSetChanged();
-                        attributeTitle = "";
-                        for (int i = 0; i < attributeList.size(); i++) {
-                            if (attributeList.get(i).getIsTitle().equals("1")) {
-                                if (attributeTitle.equals("")) {
-                                    attributeTitle = attributeList.get(i).getInputValue().trim();
-                                } else {
-                                    attributeTitle = attributeTitle + " " + attributeList.get(i).getInputValue().trim();
-                                }
-                            }
-                        }
-
-                        AdTitleCreation();
-                    } else {
-                        txt_area_content.setText(edt_search.getText().toString());
-                        areaId = edt_search.getText().toString().trim();
-                    }
-                    ListVisible(false);
-                    isCity = false;
-                    return true;
-                }
-                return false;
-            }
-        });
         attributeSelectAdapter.setCallback(new AttributeSelectAdapter.Callback() {
             @Override
             public void itemClick(AttributeSelectModel model) {
@@ -823,6 +727,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     isRequirement = true;
                     txt_area_content.setHint(getString(R.string.enter_locality_your));
                     txt_service_img_alert.setVisibility(View.GONE);
+                    edt_price.setText("");
                     if (tabNo == 1) {
                         edt_description.setHint(getString(R.string.des_products_req));
                     } else {
@@ -862,35 +767,20 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         rentalDuration = pos;
         if (pos.equals("Per Hour")) {
             rentalDurationTitle = getString(R.string.txt_hourly);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-                view_rental_fee.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
         } else if (pos.equals("Per Day")) {
             rentalDurationTitle = getString(R.string.txt_daily);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-                view_rental_fee.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
         } else if (pos.equals("Per Week")) {
-//            layout_input_price.setVisibility(View.INVISIBLE);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-                view_rental_fee.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
-//            edt_price.setText("");
             rentalDurationTitle = getString(R.string.txt_weekly);
         } else if (pos.equals("Per Month")) {
             rentalDurationTitle = getString(R.string.txt_monthly);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-                view_rental_fee.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
+        } else if (pos.equals("Per Ride")) {
+            rentalDurationTitle = "";
         }
+        if (AdType != 2) {
+            layout_input_price.setVisibility(View.VISIBLE);
+            view_rental_fee.setVisibility(View.VISIBLE);
+        }
+        edt_price.setText("");
         AdTitleCreation();
 
     }
@@ -905,15 +795,31 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             }
             if (tabNo == 1) {
                 if (AdType == 2) {
-                    txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_rental));
+                    if (rentalDurationTitle.equals("")) {
+                        txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + getString(R.string.txt_rental));
+                    } else {
+                        txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_rental));
+                    }
                 } else {
-                    txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_rental));
+                    if (rentalDurationTitle.equals("")) {
+                        txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + getString(R.string.txt_rental));
+                    } else {
+                        txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_rental));
+                    }
                 }
             } else {
                 if (AdType == 2) {
-                    txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_hiring));
+                    if (rentalDurationTitle.equals("")) {
+                        txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + getString(R.string.txt_hiring));
+                    } else {
+                        txt_post_title_content.setText(getString(R.string.txt_need) + " " + prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_hiring));
+                    }
                 } else {
-                    txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_hiring));
+                    if (rentalDurationTitle.equals("")) {
+                        txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + getString(R.string.txt_hiring));
+                    } else {
+                        txt_post_title_content.setText(prefix.trim() + " " + getString(R.string.txt_for) + " " + rentalDurationTitle + " " + getString(R.string.txt_hiring));
+                    }
                 }
             }
 
@@ -958,13 +864,14 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 parentId = categoryList.get(pos).getId();
                 layout_selection_button.setVisibility(View.GONE);
                 subCategoryList.clear();
+                subCategoryTempList.clear();
                 subCategoryList.addAll(categoryList.get(pos).getSubCategoryList());
+                subCategoryTempList.addAll(categoryList.get(pos).getSubCategoryList());
                 rc_category.setVisibility(View.VISIBLE);
                 rc_service.setVisibility(View.GONE);
 
                 ListVisible(false);
                 RentalDurationList(categoryList.get(pos).getRentalDuration());
-                isSubCat = false;
 
                 productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
                 txt_product_type_content.setThreshold(1);
@@ -1043,16 +950,17 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                 titleContent = tempCategoryList.get(i).getCategoryTitle();
                                 parentId = tempCategoryList.get(i).getId();
                                 subCategoryList.clear();
+                                subCategoryTempList.clear();
                                 subCategoryList.addAll(tempCategoryList.get(i).getSubCategoryList());
+                                subCategoryTempList.addAll(tempCategoryList.get(i).getSubCategoryList());
                                 if (AdType != 1) {
                                     RentalDurationList(tempCategoryList.get(i).getRentalDuration());
                                     isPostView = true;
-                                    ClearFileds();
+                                    ClearFileds(1);
                                     layout_selection_button.setVisibility(View.GONE);
                                     rc_category.setVisibility(View.VISIBLE);
                                     rc_service.setVisibility(View.GONE);
                                     ListVisible(false);
-                                    isSubCat = false;
 
                                 }
                                 productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
@@ -1083,7 +991,9 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                         edt_description.setHint(getString(R.string.des_service));
                                     }
                                     subCategoryList.clear();
+                                    subCategoryTempList.clear();
                                     subCategoryList.addAll(tempServiceList.get(i).getSubCategoryList());
+                                    subCategoryTempList.addAll(tempServiceList.get(i).getSubCategoryList());
 
                                     if (!isRequirement)
                                         layout_image_upload.setVisibility(View.VISIBLE);
@@ -1091,14 +1001,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                                     if (AdType != 1) {
                                         RentalDurationList(tempServiceList.get(i).getRentalDuration());
                                         isPostView = true;
-                                        ClearFileds();
+                                        ClearFileds(1);
                                         layout_selection_button.setVisibility(View.GONE);
 
                                         rc_category.setVisibility(View.VISIBLE);
                                         rc_service.setVisibility(View.GONE);
 
                                         ListVisible(false);
-                                        isSubCat = false;
 
                                     }
 
@@ -1142,35 +1051,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void SubCategoryCallBack() {
-
-        subCategoryListAdapter.setCallback(new SubCategoryListAdapter.Callback() {
-            @Override
-            public void itemClick(final SubCategoryItemModel model) {
-//                subCategoryChildList.clear();
-//                subCategoryChildList.addAll(model.getSubCategoryList());
-                txt_product_type_content.setText(model.getSubcategoryName().trim());
-                txt_product_type_content.setSelection(txt_product_type_content.getText().toString().trim().length());
-                productTitle = model.getSubcategoryName().trim();
-                AdTitleCreation();
-
-                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    GetAttributes(model.getSubcategoryName());
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            GetAttributes(model.getSubcategoryName());
-                        }
-                    });
-                }
-
-                ListVisible(false);
-
-//                ChildCategoryCallBack();
-            }
-        });
         productAutoCompleteAdapter.setCallback(new ProductAutoCompleteAdapter.Callback() {
             @Override
             public void itemClick(SubCategoryItemModel model) {
@@ -1180,17 +1060,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 productTitle = model.getSubcategoryName().trim();
                 AdTitleCreation();
                 Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    GetAttributes(model.getSubcategoryName());
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            GetAttributes(model.getSubcategoryName());
-                        }
-                    });
-                }
+                isTyped = false;
+                GetAttributes(model.getSubcategoryId());
             }
         });
 
@@ -1198,22 +1069,29 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus && !isAttributes) {
+                    String subCatId = "";
+                    String otherCatId = "";
                     productTitle = txt_product_type_content.getText().toString().trim();
+                    for (int i = 0; i < subCategoryTempList.size(); i++) {
+                        if (productTitle.toLowerCase().equals(subCategoryTempList.get(i).getSubcategoryName().toLowerCase())) {
+                            subCatId = subCategoryTempList.get(i).getSubcategoryId();
+                            isTyped = false;
+                        }
+
+                        if (subCategoryTempList.get(i).getSubcategoryName().toLowerCase().equals("others")) {
+                            otherCatId = subCategoryTempList.get(i).getSubcategoryId();
+                        }
+                    }
+                    if (subCatId.equals("")) {
+                        subCatId = otherCatId;
+                        isTyped = true;
+                    }
                     if (productTitle.length() != 0) {
                         AdTitleCreation();
 
                         Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
+                        GetAttributes(subCatId);
 
-                        if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                            GetAttributes(productTitle);
-                        } else {
-                            _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                                @Override
-                                public void isInternet() {
-                                    GetAttributes(productTitle);
-                                }
-                            });
-                        }
                     }
                 }
             }
@@ -1259,13 +1137,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     layout_post_details.setVisibility(View.VISIBLE);
                     if (!isEdit)
                         tb_offer_need.setVisibility(View.VISIBLE);
-                } else if (isSubCat) {
-                    isSubCat = false;
-                    layout_list.setVisibility(View.VISIBLE);
-                    layout_post_details.setVisibility(View.GONE);
-                    tb_offer_need.setVisibility(View.GONE);
-                    layout_search.setVisibility(View.GONE);
-                    rc_category.setAdapter(subCategoryListAdapter);
                 } else if (isPostView) {
                     if (checkData()) {
                         WarningPopup();
@@ -1311,51 +1182,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 txt_product_count.setVisibility(View.GONE);
                 break;
             case R.id.txt_area_content:
-//
                 if (cityId.equals("")) {
                     Function.CustomMessage(AddPostActivity.this, getString(R.string.select_city));
                     Function.hideSoftKeyboard(AddPostActivity.this, v);
                 }
-//                else {
-//
-//                    txt_page_action.setVisibility(View.VISIBLE);
-//
-//                    filterType = 5;
-//
-//                    rc_category.setAdapter(areaListAdapter);
-//                    ListVisible(true);
-//                    edt_search.setImeOptions(EditorInfo.IME_ACTION_DONE);
-//                    txt_page_title.setText(getString(R.string.txt_type) + " " + getString(R.string.txt_locality_select));
-//                    edt_search.setText(areaId);
-//                    areaListAdapter.getFilter().filter("");
-//                    isCity = true;
-//                }
-                break;
-            case R.id.layout_product_type:
-//                isCity = true;
-//                Function.hideSoftKeyboard(AddPostActivity.this, v);
-////                if (subCategoryChildList.size() == 0) {
-//                filterType = 1;
-//                subCategoryListAdapter.getFilter().filter("");
-//                rc_category.setAdapter(subCategoryListAdapter);
-//                subCategoryListAdapter.notifyDataSetChanged();
-////                } else {
-////                    filterType = 2;
-////                    childCategoryListAdapter.getFilter().filter("");
-////                    rc_category.setAdapter(childCategoryListAdapter);
-////                    childCategoryListAdapter.notifyDataSetChanged();
-////                }
-//                txt_page_action.setVisibility(View.VISIBLE);
-//                ListVisible(true);
-//                edt_search.setImeOptions(EditorInfo.IME_ACTION_DONE);
-//                if (tabNo == 1) {
-//                    txt_page_title.setText(getString(R.string.txt_type) + " " + getString(R.string.txt_product_type_select));
-//                } else {
-//                    txt_page_title.setText(getString(R.string.txt_type) + " " + getString(R.string.txt_profession_select));
-//                }
-//                edt_search.setText(txt_product_type_content.getText().toString());
-//                subCategoryListAdapter.getFilter().filter("");
-//                isCity = true;
+
                 break;
             case R.id.btn_add_post:
                 resentCount = 0;
@@ -1469,47 +1300,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     startActivity(i);
                 }
                 break;
-            case R.id.txt_page_action:
-                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-                if (filterType == 1) {
-                    txt_product_type_content.setText(edt_search.getText().toString());
-                    productTitle = edt_search.getText().toString();
-                    AdTitleCreation();
-                    Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-
-                    if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                        GetAttributes(edt_search.getText().toString());
-                    } else {
-                        _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                GetAttributes(edt_search.getText().toString());
-                            }
-                        });
-                    }
-                } else if (filterType == 3) {
-                    attributeList.get(attributeSelectPos).setInputValue(edt_search.getText().toString());
-                    attributeListAdapter.notifyDataSetChanged();
-                    attributeTitle = "";
-                    for (int i = 0; i < attributeList.size(); i++) {
-                        if (attributeList.get(i).getIsTitle().equals("1")) {
-                            if (attributeTitle.equals("")) {
-                                attributeTitle = attributeList.get(i).getInputValue().trim();
-                            } else {
-                                attributeTitle = attributeTitle + " " + attributeList.get(i).getInputValue().trim();
-                            }
-                        }
-                    }
-
-                    AdTitleCreation();
-                } else {
-                    txt_area_content.setText(edt_search.getText().toString());
-                    areaId = edt_search.getText().toString();
-                }
-
-                ListVisible(false);
-                isCity = false;
-                break;
             case R.id.layout_rental_duration:
                 Function.hideSoftKeyboard(AddPostActivity.this, v);
                 isCity = true;
@@ -1575,35 +1365,38 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void AddPostValidation() {
-        if (catId.equals("")) {
-            Function.CustomMessage(AddPostActivity.this, "Enter " + titleContent);
 
-            return;
+        if (catId.equals("") || productTitle.equals("")) {
+            if (catId.equals("") && !productTitle.equals("")) {
+                txt_product_type_content.clearFocus();
+            } else {
+                Function.CustomMessage(AddPostActivity.this, "Enter " + titleContent);
+
+                return;
+            }
         }
 
 
         for (int i = 0; i < attributeList.size(); i++) {
 
             if (attributeList.get(i).getMandatory().equals("1") && attributeList.get(i).getInputValue().equals("") && !isRequirement) {
-                if (attributeList.get(i).getType().equals("select")) {
-                    Function.CustomMessage(AddPostActivity.this, "Select " + attributeList.get(i).getName());
-                } else {
-                    Function.CustomMessage(AddPostActivity.this, "Enter " + attributeList.get(i).getName());
-                }
+//                if (attributeList.get(i).getAttributeValues().size() != 0) {
+//                    Function.CustomMessage(AddPostActivity.this, "Select " + attributeList.get(i).getName());
+//                } else {
+                Function.CustomMessage(AddPostActivity.this, "Enter " + attributeList.get(i).getName());
+//                }
                 return;
             }
         }
 
         if (AdType != 2) {
-            if (isPriceVisible) {
-                if (edt_price.getText().toString().length() == 0 || edt_price.getText().toString().equals("0")) {
-                    if (tabNo == 1) {
-                        Function.CustomMessage(AddPostActivity.this, getString(R.string.enter_rental_fee));
-                    } else {
-                        Function.CustomMessage(AddPostActivity.this, getString(R.string.enter_hiring_fee));
-                    }
-                    return;
+            if (edt_price.getText().toString().length() == 0 || edt_price.getText().toString().equals("0")) {
+                if (tabNo == 1) {
+                    Function.CustomMessage(AddPostActivity.this, getString(R.string.enter_rental_fee));
+                } else {
+                    Function.CustomMessage(AddPostActivity.this, getString(R.string.enter_hiring_fee));
                 }
+                return;
             }
         }
 
@@ -1613,10 +1406,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
 
 
-        if (areaId.equals("")) {
+        if (areaString.equals("")) {
             Function.CustomMessage(AddPostActivity.this, getString(R.string.txt_select_locality));
             return;
-        } else if (areaId.length() < 3) {
+        } else if (areaString.length() < 3) {
             Function.CustomMessage(AddPostActivity.this, getString(R.string.enter_locality_minimum));
             return;
         }
@@ -1638,13 +1431,22 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 //        }
-        if (AdType != 2 && shareImageList.size() == 0) {
-            if (tabNo == 1) {
-                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
-            } else {
-                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
+        if (AdType != 2) {
+            boolean isImage = false;
+            for (int i = 0; i < shareImageList.size(); i++) {
+                if (!shareImageList.get(i).getUri().equals("") || !shareImageList.get(i).getImgURL().equals("")) {
+                    isImage = true;
+                }
             }
-            return;
+
+            if (tabNo == 1 && !isImage) {
+                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
+                return;
+            } else if (tabNo == 2 && !isImage) {
+                Function.CustomMessage(AddPostActivity.this, getString(R.string.image_one_must));
+                return;
+            }
+
         }
 
         if (!cb_tc.isChecked()) {
@@ -1653,73 +1455,17 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         }
         if (!Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
             if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals(edt_mobile_number.getText().toString()) || postMobileNum != null && postMobileNum.equals(edt_mobile_number.getText().toString())) {
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    if (AdType == 0) {
-                        savePostDetails();
-                    } else {
-                        new AsyncTaskSavePost().execute("");
-                    }
-//
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            if (AdType == 0) {
-                                savePostDetails();
-                            } else {
-                                new AsyncTaskSavePost().execute("");
-                            }
-//                            new AsyncTaskSavePost().execute("");
-                        }
-                    });
-                }
+                savePostDetails();
+
             } else {
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    sendOTP();
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            sendOTP();
-                        }
-                    });
-                }
+                sendOTP();
             }
         } else {
             if (postMobileNum.equals(edt_mobile_number.getText().toString())) {
+                savePostDetails();
 
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    if (AdType == 0) {
-                        savePostDetails();
-                    } else {
-                        new AsyncTaskSavePost().execute("");
-                    }
-//                    new AsyncTaskSavePost().execute("");
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            if (AdType == 0) {
-                                savePostDetails();
-                            } else {
-                                new AsyncTaskSavePost().execute("");
-                            }
-//                            new AsyncTaskSavePost().execute("");
-                        }
-                    });
-                }
             } else {
-
-                if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                    sendOTP();
-                } else {
-                    _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                        @Override
-                        public void isInternet() {
-                            sendOTP();
-                        }
-                    });
-                }
+                sendOTP();
             }
         }
     }
@@ -1741,6 +1487,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
         viewDialog.showDialog();
         isClickChange = true;
+        params.clear();
         try {
             String isNegos = "";
             if (cb_price.isChecked()) {
@@ -1755,15 +1502,57 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             } else {
                 isMobile = "0";
             }
+            final RequestBody _adLocalityString;
+            for (int a = 0; a < tempAreaList.size(); a++) {
+                if (tempAreaList.get(a).getAreaName().toLowerCase().equals(areaString.toLowerCase())) {
+                    areaId = tempAreaList.get(a).getAreaId();
+                }
+            }
 
+            if (areaId.equals("")) {
+                _adLocalityString = RequestBody.create(okhttp3.MultipartBody.FORM, areaString);
+            } else {
+                _adLocalityString = RequestBody.create(okhttp3.MultipartBody.FORM, "");
+            }
 
             List<RequestBody> attId = new ArrayList<>();
-            List<RequestBody> attVal = new ArrayList<>();
+            List<RequestBody> _newPhoto = new ArrayList<>();
+            List<RequestBody> _deletePhoto = new ArrayList<>();
+
+
+            Map<String, RequestBody> bodyMap = new HashMap<>();
             for (int i = 0; i < attributeList.size(); i++) {
+
                 attId.add(RequestBody.create(okhttp3.MultipartBody.FORM, attributeList.get(i).getAttributeId()));
-                attVal.add(RequestBody.create(okhttp3.MultipartBody.FORM, attributeList.get(i).getInputValue()));
+                String inputId = "";
+                String otherId = "";
+
+                for (int a = 0; a < attributeList.get(i).getAttributeValuesTemp().size(); a++) {
+                    if (!attributeList.get(i).getInputValue().trim().equals("")) {
+                        if (attributeList.get(i).getAttributeValuesTemp().get(a).getValue().trim().toLowerCase().equals(attributeList.get(i).getInputValue().trim().toLowerCase())) {
+                            inputId = attributeList.get(i).getAttributeValuesTemp().get(a).getId();
+
+                        }
+                        if (attributeList.get(i).getAttributeValuesTemp().get(a).getValue().trim().toLowerCase().equals("others")) {
+                            otherId = attributeList.get(i).getAttributeValuesTemp().get(a).getId();
+
+                        }
+                    }
+                }
+                if (!attributeList.get(i).getInputValue().trim().equals("")) {
+                    if (!inputId.equals("")) {
+                        bodyMap.put("attributeValue[" + i + "][id]", RequestBody.create(okhttp3.MultipartBody.FORM, inputId));
+                        bodyMap.put("attributeValue[" + i + "][custom]", RequestBody.create(okhttp3.MultipartBody.FORM, ""));
+                        Log.i("AttributeId", inputId);
+                    } else {
+                        bodyMap.put("attributeValue[" + i + "][id]", RequestBody.create(okhttp3.MultipartBody.FORM, otherId));
+                        bodyMap.put("attributeValue[" + i + "][custom]", RequestBody.create(okhttp3.MultipartBody.FORM, attributeList.get(i).getInputValue()));
+                        Log.i("AttributeId", otherId);
+                    }
+                }
 
             }
+
             final RequestBody _parentId = RequestBody.create(okhttp3.MultipartBody.FORM, parentId);
             final RequestBody _catId = RequestBody.create(okhttp3.MultipartBody.FORM, catId);
             final RequestBody _rentalFee = RequestBody.create(okhttp3.MultipartBody.FORM, edt_price.getText().toString());
@@ -1776,151 +1565,95 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             final RequestBody _adNegos = RequestBody.create(okhttp3.MultipartBody.FORM, isNegos);
             final RequestBody _adMobileNo = RequestBody.create(okhttp3.MultipartBody.FORM, edt_mobile_number.getText().toString());
             final RequestBody _adMobileVisible = RequestBody.create(okhttp3.MultipartBody.FORM, isMobile);
+            final RequestBody _adId = RequestBody.create(okhttp3.MultipartBody.FORM, adId);
 
+            final RequestBody _adCategoryString;
+            final RequestBody _adType;
+            final RequestBody _catType;
+            if (isRequirement) {
+                _adType = RequestBody.create(okhttp3.MultipartBody.FORM, "2");
+            } else {
+                _adType = RequestBody.create(okhttp3.MultipartBody.FORM, "1");
+            }
+            if (tabNo == 1) {
+                _catType = RequestBody.create(okhttp3.MultipartBody.FORM, "1");
+            } else {
+                _catType = RequestBody.create(okhttp3.MultipartBody.FORM, "2");
+            }
+            if (isTyped) {
+                _adCategoryString = RequestBody.create(okhttp3.MultipartBody.FORM, productTitle);
+            } else {
+                _adCategoryString = RequestBody.create(okhttp3.MultipartBody.FORM, "");
+            }
             List<MultipartBody.Part> parts = new ArrayList<>();
             for (int i = 0; i < shareImageList.size(); i++) {
-                if (shareImageList.get(i).getImgURL().equals("")) {
+                if (shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("")) {
                     File file = new File(Function.compressImage(shareImageList.get(i).getUri()));
                     final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                     parts.add(MultipartBody.Part.createFormData("photos[]", file.getName(), requestFile));
-                }
+                } else if (!shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("")) {
+                    File file = new File(Function.compressImage(shareImageList.get(i).getUri()));
+                    final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                    parts.add(MultipartBody.Part.createFormData("photos[]", file.getName(), requestFile));
 
+                }
+                if (!shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("") && shareImageList.get(i).getUriType().equals("2")) {
+
+                    _newPhoto.add(RequestBody.create(okhttp3.MultipartBody.FORM, String.valueOf(i)));
+                } else if (shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("") && shareImageList.get(i).getUriType().equals("1")) {
+                    _newPhoto.add(RequestBody.create(okhttp3.MultipartBody.FORM, String.valueOf(i)));
+                } else if (shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("") && shareImageList.get(i).getUriType().equals("2")) {
+                    _newPhoto.add(RequestBody.create(okhttp3.MultipartBody.FORM, String.valueOf(i)));
+                } else if (shareImageList.get(i).getImgURL().equals("") && shareImageList.get(i).getUri().equals("") && shareImageList.get(i).getUriType().equals("2")) {
+                    _deletePhoto.add(RequestBody.create(okhttp3.MultipartBody.FORM, String.valueOf(i)));
+                }
             }
+
             RequestBody.create(okhttp3.MultipartBody.FORM, isMobile);
 
-            RetrofitClient.getClient().create(Api.class).savePostForm(parts, _catId, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
-                    _adAreaId, _adStatus, _adNegos, attId, attVal, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
-            Log.i("Form called", "True");
+
+            if (_fun.isInternetAvailable(AddPostActivity.this)) {
+                if (AdType == 0 || AdType == 2 && !EditType.equals("2")) {
+                    RetrofitClient.getClient().create(Api.class).savePostForm(parts, _adType, _catType, _catId, _adCategoryString, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+                            _adAreaId, _adLocalityString, _adStatus, _adNegos, attId, bodyMap, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
+                } else {
+                    RetrofitClient.getClient().create(Api.class).updatePostForm(parts, _adType, _catType, _catId, _adCategoryString, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+                            _adAreaId, _adLocalityString, _adStatus, _adNegos, attId, bodyMap, _adMobileNo, _adMobileVisible, _parentId, _adId, _newPhoto, _deletePhoto, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
+                }
+
+            } else {
+                _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
+                    @Override
+                    public void isInternet() {
+                        if (AdType == 0 || AdType == 2 && !EditType.equals("2")) {
+                            RetrofitClient.getClient().create(Api.class).savePostForm(parts, _adType, _catType, _catId, _adCategoryString, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+                                    _adAreaId, _adLocalityString, _adStatus, _adNegos, attId, bodyMap, _adMobileNo, _adMobileVisible, _parentId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
+                        } else {
+                            RetrofitClient.getClient().create(Api.class).updatePostForm(parts, _adType, _catType, _catId, _adCategoryString, _rentalFee, _rentalDuration, _adTitle, _adDescription, _adCityId,
+                                    _adAreaId, _adLocalityString, _adStatus, _adNegos, attId, bodyMap, _adMobileNo, _adMobileVisible, _parentId, _adId, _newPhoto, _deletePhoto, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                    .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
+                        }
+
+                    }
+                });
+            }
+
+
+            Log.i("Values", adId);
+            Log.i("AreaId", areaId + "," + areaString);
 
 
             Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
         } catch (Exception e) {
+            Log.i("Exception", e.getMessage());
             viewDialog.hideDialog();
             isClickChange = false;
         }
     }
 
-    private class AsyncTaskSavePost extends AsyncTask<String, String, HashMap<String, Object>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            viewDialog.showDialog();
-            isClickChange = true;
-        }
-
-        @Override
-        protected HashMap<String, Object> doInBackground(String... strings) {
-            try {
-                if (!params.isEmpty()) {
-                    params.clear();
-                }
-                String isNegos = "";
-                if (cb_price.isChecked()) {
-                    isNegos = "1";
-                } else {
-                    isNegos = "0";
-                }
-
-                String isMobile = "";
-                if (cb_mobile_number.isChecked()) {
-                    isMobile = "1";
-                } else {
-                    isMobile = "0";
-                }
-
-                String attId = "";
-                String attVal = "";
-                HashMap<Object, Object> paramsId = new HashMap<Object, Object>();
-                HashMap<Object, Object> paramsValue = new HashMap<Object, Object>();
-                for (int i = 0; i < attributeList.size(); i++) {
-                    paramsId.put(String.valueOf(i), attributeList.get(i).getAttributeId());
-                    paramsValue.put(String.valueOf(i), attributeList.get(i).getInputValue());
-                    if (i == 0) {
-                        attId = attributeList.get(i).getAttributeId();
-                        attVal = attributeList.get(i).getInputValue();
-                    } else {
-                        attId = attId + attributeList.get(i).getAttributeId();
-                        attVal = attVal + attributeList.get(i).getInputValue();
-                    }
-                }
-                JsonArray jsonArray = new JsonArray();
-                for (int i = 0; i < shareImageList.size(); i++) {
-                    if (shareImageList.get(i).getImgURL().equals("")) {
-                        jsonArray.add(Function.getBase64String(shareImageList.get(i).getUri()));
-                    } else {
-                        jsonArray.add(shareImageList.get(i).getImgURL());
-                    }
-                }
-                params.put("category_id", catId);
-                if (AdType != 2) {
-                    params.put("rental_fee", edt_price.getText().toString());
-                }
-                params.put("rental_duration", rentalDuration);
-                params.put("title", txt_post_title_content.getText().toString());
-                params.put("description", edt_description.getText().toString());
-                if (AdType != 2) {
-                    params.put("photos", jsonArray);
-                }
-                params.put("city_id", cityId);
-                params.put("locality_id", areaId);
-                params.put("status", adStatus);
-                params.put("is_rent_negotiable", isNegos);
-                params.put("attributeId", paramsId);
-                params.put("attributeValue", paramsValue);
-                params.put("mobile", edt_mobile_number.getText().toString());
-                params.put("is_mobile_visible", isMobile);
-                params.put("parent_id", parentId);
-                params.put("is_base", "1");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return params;
-        }
-
-        @Override
-        protected void onPostExecute(HashMap<String, Object> params) {
-            super.onPostExecute(params);
-            if (AdType == 0) {
-                RetrofitClient.getClient().create(Api.class).savePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
-
-            } else if (AdType == 1) {
-                params.put("ads_id", adId);
-
-
-                RetrofitClient.getClient().create(Api.class).updatePost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                        .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
-
-            } else if (AdType == 2) {
-                if (EditType.equals("2")) {
-                    params.put("ads_id", adId);
-                    RetrofitClient.getClient().create(Api.class).updateRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
-                } else {
-                    RetrofitClient.getClient().create(Api.class).saveRequirementPost(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(AddPostActivity.this, savePost, false, false));
-
-                }
-            }
-
-            Log.i("Params", params.toString());
-            Log.i("Token", Sessions.getSession(Constant.UserToken, getApplicationContext()));
-        }
-    }
-
-
-    private void areaCallBack(AreaListAdapter areaListAdapter) {
-        areaListAdapter.setCallback(new AreaListAdapter.Callback() {
-            @Override
-            public void itemClick(AreaItemModel model) {
-//                Function.hideSoftKeyboard(AddPostActivity.this, btn_add_post);
-                txt_area_content.setText(model.getAreaName());
-                areaId = model.getAreaName().trim();
-                ListVisible(false);
-            }
-        });
-    }
 
     private void cityCallBack(CityListAdapter cityListAdapter) {
         cityListAdapter.setCallback(new CityListAdapter.Callback() {
@@ -1932,6 +1665,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 txt_area_content.setText("");
                 txt_area_content.setFocusableInTouchMode(true);
                 areaId = "";
+                areaString = "";
                 ListVisible(false);
                 if (_fun.isInternetAvailable(AddPostActivity.this)) {
                     GetArea(model.getCityId(), true);
@@ -1981,10 +1715,12 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
             if (result.getType() == 2) {
                 Uri resultUri = result.getUri();
-                shareImageList.add(new UploadImageModel("", true, resultUri.getPath(), "1"));
+                shareImageList.get(imageSelectPos).setUri(resultUri.getPath());
+                shareImageList.get(imageSelectPos).setChanged(true);
                 Log.e("Crop", "PostSelected: " + resultUri.getPath() + "\n" + selectedUris.size());
             } else {
-                shareImageList.add(new UploadImageModel("", true, imagePath, "1"));
+                shareImageList.get(imageSelectPos).setUri(imagePath);
+                shareImageList.get(imageSelectPos).setChanged(true);
             }
             postImageListAdapter.notifyDataSetChanged();
 
@@ -2012,13 +1748,24 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         if (!params.isEmpty()) {
             params.clear();
         }
-        params.put("attributeValue", attVal);
+        params.put("subcategory_id", attVal);
         params.put("parent_id", parentId);
 
         Log.i("Params", params.toString());
+        if (_fun.isInternetAvailable(AddPostActivity.this)) {
+            RetrofitClient.getClient().create(Api.class).getAttributes(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(AddPostActivity.this, attributeValue, true, false));
+        } else {
+            _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
+                @Override
+                public void isInternet() {
+                    RetrofitClient.getClient().create(Api.class).getAttributes(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                            .enqueue(new RetrofitCallBack(AddPostActivity.this, attributeValue, true, false));
+                }
+            });
+        }
 
-        RetrofitClient.getClient().create(Api.class).getAttributes(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(AddPostActivity.this, attributeValue, true, false));
+
     }
 
     public void GetCity() {
@@ -2063,7 +1810,15 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     }
 //                    attributeList.addAll(dr.getAttributeList());
                     for (int i = 0; i < dr.getAttributeList().size(); i++) {
-                        attributeList.add(new AttributeItemModel(dr.getAttributeList().get(i).getName(), dr.getAttributeList().get(i).getAttributeValues(), dr.getAttributeList().get(i).getType(), dr.getAttributeList().get(i).getAttributeId(), dr.getAttributeList().get(i).getMandatory(), dr.getAttributeList().get(i).getIsTitle(), dr.getAttributeList().get(i).getIsPrefix(), "", ""));
+                        ArrayList<AttributesValueItemTemp> attributesValueItemTemps = new ArrayList<>();
+                        for (int j = 0; j < dr.getAttributeList().get(i).getAttributeValues().size(); j++) {
+                            AttributesValueItemTemp attributesValueItemTemp = new AttributesValueItemTemp();
+                            attributesValueItemTemp.setId(dr.getAttributeList().get(i).getAttributeValues().get(j).getId());
+                            attributesValueItemTemp.setValue(dr.getAttributeList().get(i).getAttributeValues().get(j).getValue());
+                            attributesValueItemTemp.setAttributeId(dr.getAttributeList().get(i).getAttributeValues().get(j).getAttributeId());
+                            attributesValueItemTemps.add(attributesValueItemTemp);
+                        }
+                        attributeList.add(new AttributeItemModel(dr.getAttributeList().get(i).getName(), dr.getAttributeList().get(i).getAttributeValues(), dr.getAttributeList().get(i).getType(), dr.getAttributeList().get(i).getAttributeId(), dr.getAttributeList().get(i).getMandatory(), dr.getAttributeList().get(i).getIsTitle(), dr.getAttributeList().get(i).getIsPrefix(), "", "", "", attributesValueItemTemps));
                     }
 //                    attributeListAdapter = new AttributeListAdapter(attributeList, getApplicationContext());
                     attributeListAdapter.notifyDataSetChanged();
@@ -2123,7 +1878,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             txt_area_content.setText("");
             txt_area_content.setFocusableInTouchMode(true);
             areaId = "";
-
+            areaString = "";
             if (_fun.isInternetAvailable(AddPostActivity.this)) {
                 GetArea(cityId, false);
             } else {
@@ -2149,8 +1904,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 if (dr.isStatus()) {
                     if (areaList.size() != 0) {
                         areaList.clear();
+                        tempAreaList.clear();
                     }
                     areaList.addAll(dr.getAreaList());
+                    tempAreaList.addAll(dr.getAreaList());
                     areaAutoCompleteAdapter = new AreaAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, areaList);
                     txt_area_content.setAdapter(areaAutoCompleteAdapter);
                     txt_area_content.setThreshold(1);
@@ -2161,7 +1918,8 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             txt_area_content.setText(model.getAreaName().trim());
                             txt_area_content.dismissDropDown();
                             txt_area_content.setSelection(txt_area_content.getText().toString().length());
-                            areaId = model.getAreaName().trim();
+                            areaId = model.getAreaId();
+                            areaString = model.getAreaName().trim();
                         }
                     });
                 } else {
@@ -2220,33 +1978,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             isClickChange = false;
         }
     };
-    retrofit2.Callback<DefaultResponse> checkServicePost = new retrofit2.Callback<DefaultResponse>() {
-        @Override
-        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
 
-            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
-
-            DefaultResponse dr = response.body();
-            try {
-                if (dr.isStatus()) {
-                    Function.CustomMessage(AddPostActivity.this, dr.getMessage());
-                } else {
-                    isServiceValid = true;
-//                    savePostDetails();
-                    new AsyncTaskSavePost().execute("");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-//        }
-
-        @Override
-        public void onFailure(Call call, Throwable t) {
-            Log.d("TAG", t.getMessage());
-            call.cancel();
-        }
-    };
     retrofit2.Callback<EditAdModel> adDetails = new retrofit2.Callback<EditAdModel>() {
         @Override
         public void onResponse(Call<EditAdModel> call, retrofit2.Response<EditAdModel> response) {
@@ -2267,6 +1999,12 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         layout_post_details.setVisibility(View.VISIBLE);
                         rc_category.setVisibility(View.VISIBLE);
                         rc_service.setVisibility(View.GONE);
+                        if (editAdDetailsModel.getAdType().equals("2")) {
+                            isRequirement = true;
+                            AdType = 2;
+                        } else {
+                            isRequirement = false;
+                        }
                         if (!adStatus.equals("0")) {
                             layout_product_type.setEnabled(false);
                             txt_product_type_content.setTextColor(getResources().getColor(R.color.hint_txt_color));
@@ -2278,7 +2016,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         txt_product_type_title.setText(dr.getEditDataModel().getCategoryTitle() + " *");
                         txt_product_type_content.setHint("Enter " + dr.getEditDataModel().getCategoryTitle());
 
-                        if (dr.getEditDataModel().getCatGroup().equals("1")) {
+                        if (editAdDetailsModel.getCatGroup() != null && editAdDetailsModel.getCatGroup().equals("1")) {
                             tabNo = 1;
                             postImageListAdapter.ChangeSize(4);
                             postImageListAdapter.notifyDataSetChanged();
@@ -2320,31 +2058,62 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 //                                txt_service_img_alert.setVisibility(View.VISIBLE);
                         }
                         txt_parent_title.setText(dr.getEditDataModel().getParentTitle());
+                        if (editAdDetailsModel.getCustomCategory() == null || editAdDetailsModel.getCustomCategory().equals("")) {
+                            for (int s = 0; s < dr.getEditDataModel().getProductTypeSuggestion().size(); s++) {
+                                if (dr.getEditDataModel().getProductTypeSuggestion().get(s).getSubcategoryId().equals(editAdDetailsModel.getCatId())) {
+                                    txt_product_type_content.setText(dr.getEditDataModel().getProductTypeSuggestion().get(s).getSubcategoryName().trim());
+                                    catId = editAdDetailsModel.getCatId();
+                                    productTitle = dr.getEditDataModel().getProductTypeSuggestion().get(s).getSubcategoryName().trim();
+                                }
+                            }
+                        } else {
+                            txt_product_type_content.setText(editAdDetailsModel.getCustomCategory().trim());
+                            productTitle = editAdDetailsModel.getCustomCategory().trim();
+                            catId = editAdDetailsModel.getCatId();
+                            isTyped = true;
 
+                        }
+                        titleContent = dr.getEditDataModel().getCategoryTitle();
 
-                        txt_product_type_content.setText(dr.getEditDataModel().getProductType().get(0).getChildCategoryName().trim());
-                        catId = dr.getEditDataModel().getProductType().get(0).getChildCategoryName().trim();
-                        productTitle = dr.getEditDataModel().getProductType().get(0).getChildCategoryName().trim();
                         if (attributeList.size() != 0) {
                             attributeList.clear();
                         }
 //                        attributeList.addAll(dr.getEditDataModel().getAttributeModel().getAttributeEditList());
                         for (int i = 0; i < dr.getEditDataModel().getAttributeModel().getAttributeEditList().size(); i++) {
-                            attributeList.add(new AttributeItemModel(dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getName(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getType(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeId(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getMandatory(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getIsTitle(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getIsPrefix(), "", ""));
+                            ArrayList<AttributesValueItemTemp> attributesValueItemTemps = new ArrayList<>();
+                            for (int j = 0; j < dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues().size(); j++) {
+                                AttributesValueItemTemp attributesValueItemTemp = new AttributesValueItemTemp();
+                                attributesValueItemTemp.setId(dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues().get(j).getId());
+                                attributesValueItemTemp.setValue(dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues().get(j).getValue());
+                                attributesValueItemTemp.setAttributeId(dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues().get(j).getAttributeId());
+                                attributesValueItemTemps.add(attributesValueItemTemp);
+                            }
+                            attributeList.add(new AttributeItemModel(dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getName(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeValues(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getType(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getAttributeId(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getMandatory(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getIsTitle(), dr.getEditDataModel().getAttributeModel().getAttributeEditList().get(i).getIsPrefix(), "", "", "", attributesValueItemTemps));
                         }
-                        if (attributeList.size() != 0 && dr.getEditDataModel().getAttributeModel().getSelectValue() != null) {
+                        if (attributeList.size() != 0) {
                             attributeTitle = "";
-                            for (Map.Entry<String, String> entry : dr.getEditDataModel().getAttributeModel().getSelectValue().entrySet()) {
-                                String key = entry.getKey();
-                                String value = entry.getValue();
+                            for (int j = 0; j < dr.getEditDataModel().getAttributeModel().getAttributeValues().size(); j++) {
+                                String key = dr.getEditDataModel().getAttributeModel().getAttributeValues().get(j).getAttributeId();
+                                String value = dr.getEditDataModel().getAttributeModel().getAttributeValues().get(j).getValue();
+                                String customValue = dr.getEditDataModel().getAttributeModel().getAttributeValues().get(j).getCustomValue();
+
                                 for (int i = 0; i < attributeList.size(); i++) {
                                     if (key.equals(attributeList.get(i).getAttributeId())) {
-                                        attributeList.get(i).setInputValue(value);
-                                        break;
+                                        if (customValue != null && !customValue.equals("")) {
+                                            attributeList.get(i).setInputValue(customValue);
+                                        } else {
+                                            for (int h = 0; h < attributeList.get(i).getAttributeValues().size(); h++) {
+                                                if (value != null && value.equals(attributeList.get(i).getAttributeValues().get(h).getId())) {
+                                                    attributeList.get(i).setInputValue(attributeList.get(i).getAttributeValues().get(h).getValue());
+                                                }
+                                            }
+
+
+                                            break;
+                                        }
                                     }
                                 }
-                                Log.i("Key", key);
-                                Log.i("Value", value);
+
 
                             }
                         }
@@ -2370,8 +2139,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             attributeListAdapter.SetEditable(true);
                         }
                         attributeListAdapter.notifyDataSetChanged();
+
                         RentalDurationList(dr.getEditDataModel().getRentalDuration());
+//                        spinnerAdapter.notifyDataSetChanged();
                         rentalDurationAdapter.notifyDataSetChanged();
+
 
                         for (int i = 0; i < rentalDurationList.size(); i++) {
                             if (editAdDetailsModel.getRentalDuration().equals(rentalDurationList.get(i))) {
@@ -2388,8 +2160,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         cityList.addAll(dr.getEditDataModel().getCityList());
                         if (areaList.size() != 0) {
                             areaList.clear();
+                            tempAreaList.clear();
                         }
                         areaList.addAll(dr.getEditDataModel().getAreaList());
+                        tempAreaList.addAll(dr.getEditDataModel().getAreaList());
                         if (editAdDetailsModel.getRentalFee() != null) {
                             String price = "";
                             if (editAdDetailsModel.getRentalFee().contains(".")) {
@@ -2402,24 +2176,34 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                             edt_price.setText(price);
                         }
                         cityId = editAdDetailsModel.getCityId();
+
                         areaId = editAdDetailsModel.getAreaId();
+                        if (areaId.equals("0")) {
+                            areaId = "";
+                        }
                         for (int c = 0; c < cityList.size(); c++) {
                             if (cityId.equals(cityList.get(c).getCityId())) {
                                 txt_city_content.setText(cityList.get(c).getCityName());
                                 break;
                             }
                         }
+                        if (editAdDetailsModel.getCustomLocality() != null && !editAdDetailsModel.getCustomLocality().equals("")) {
+                            txt_area_content.setText(editAdDetailsModel.getCustomLocality().trim());
+                            areaString = editAdDetailsModel.getCustomLocality().trim();
 
+                        }
                         for (int a = 0; a < areaList.size(); a++) {
                             if (areaId.equals(areaList.get(a).getAreaId())) {
                                 txt_area_content.setText(areaList.get(a).getAreaName());
-                                areaId = areaList.get(a).getAreaName().trim();
+                                areaId = areaList.get(a).getAreaId();
+                                areaString = areaList.get(a).getAreaName().trim();
                                 break;
                             }
                         }
                         txt_area_content.setFocusableInTouchMode(true);
                         edt_mobile_number.setText(editAdDetailsModel.getMobile());
                         postMobileNum = editAdDetailsModel.getMobile();
+                        cb_tc.setChecked(true);
                         if (editAdDetailsModel.getIsNegotiable().equals("1")) {
                             cb_price.setChecked(true);
                         } else {
@@ -2432,21 +2216,16 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         }
                         edt_description.setText(editAdDetailsModel.getDescription());
                         txt_post_title_content.setText(editAdDetailsModel.getAdTitle().trim());
-                        parentId = dr.getEditDataModel().getProductType().get(0).getParentId();
+                        parentId = editAdDetailsModel.getParentId();
                         if (dr.getEditDataModel().getAdImage() != null) {
-                            shareImageList.clear();
                             for (int p = 0; p < dr.getEditDataModel().getAdImage().size(); p++) {
-                                shareImageList.add(new UploadImageModel(dr.getEditDataModel().getAdImage().get(p), false, "", ""));
-
+                                shareImageList.get(p).setImgURL(dr.getEditDataModel().getAdImage().get(p));
                             }
-//                        if (dr.getEditDataModel().getCatGroup() == 1) {
                             if (shareImageList.size() != 0) {
                                 btn_add_image.setVisibility(View.GONE);
-//                        view_gallery.setVisibility(View.GONE);
                                 rc_image_list.setVisibility(View.VISIBLE);
                             } else {
                                 btn_add_image.setVisibility(View.VISIBLE);
-//                        view_gallery.setVisibility(View.VISIBLE);
                                 rc_image_list.setVisibility(View.GONE);
                             }
                         }
@@ -2454,12 +2233,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         changeDeductedAmount = false;
                         if (adStatus.equals("0")) {
                             subCategoryList.clear();
+                            subCategoryTempList.clear();
                             subCategoryList.addAll(dr.getEditDataModel().getProductTypeSuggestion());
-                            parentId = dr.getEditDataModel().getProductType().get(0).getParentId();
+                            subCategoryTempList.addAll(dr.getEditDataModel().getProductTypeSuggestion());
+                            parentId = editAdDetailsModel.getParentId();
                             productAutoCompleteAdapter = new ProductAutoCompleteAdapter(AddPostActivity.this, R.layout.layout_sub_category_item, subCategoryList);
                             txt_product_type_content.setThreshold(1);
                             txt_product_type_content.setAdapter(productAutoCompleteAdapter);
-                            txt_product_type_content.setSelected(true);
                             SubCategoryCallBack();
                         }
                     }
@@ -2522,16 +2302,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 if (dr.isStatus()) {
                     Function.CustomMessage(AddPostActivity.this, dr.getMessage());
                 } else {
-                    if (_fun.isInternetAvailable(AddPostActivity.this)) {
-                        sendOTP();
-                    } else {
-                        _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                sendOTP();
-                            }
-                        });
-                    }
+                    sendOTP();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -2564,18 +2335,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
                         Sessions.saveSession(Constant.UserPhone, edt_mobile_number.getText().toString(), getApplicationContext());
                     }
-                    if (_fun.isInternetAvailable(AddPostActivity.this)) {
-//                        savePostDetails();
-                        new AsyncTaskSavePost().execute("");
-                    } else {
-                        _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-//                                savePostDetails();
-                                new AsyncTaskSavePost().execute("");
-                            }
-                        });
-                    }
+                    savePostDetails();
                 } else {
                     Function.CustomMessage(AddPostActivity.this, dr.getMessage());
                 }
@@ -2635,40 +2395,9 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        rentalDuration = rentalDurationList.get(position);
-        if (position == 0) {
-            rentalDurationTitle = getString(R.string.txt_hourly);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
-        } else if (position == 1) {
-            rentalDurationTitle = getString(R.string.txt_daily);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.VISIBLE);
-            }
-            isPriceVisible = true;
-        } else if (position == 2) {
-//            layout_input_price.setVisibility(View.INVISIBLE);
-            if (AdType != 2) {
-                layout_input_price.setVisibility(View.INVISIBLE);
-            }
-            isPriceVisible = false;
-            edt_price.setText("");
-            rentalDurationTitle = rentalDurationList.get(position);
-        }
-        AdTitleCreation();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    @Override
     public void onBackPressed() {
         if (spinnerPopup != null && spinnerPopup.isShowing()) {
+            spinnerPopup.dismiss();
             if (isRequirement) {
                 Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
                 h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -2684,13 +2413,6 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             layout_post_details.setVisibility(View.VISIBLE);
             if (!isEdit)
                 tb_offer_need.setVisibility(View.VISIBLE);
-        } else if (isSubCat) {
-            isSubCat = false;
-            layout_list.setVisibility(View.VISIBLE);
-            layout_post_details.setVisibility(View.GONE);
-            tb_offer_need.setVisibility(View.GONE);
-            layout_search.setVisibility(View.GONE);
-            rc_category.setAdapter(subCategoryListAdapter);
         } else if (isPostView) {
             if (checkData()) {
                 WarningPopup();
@@ -2704,12 +2426,21 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 layout_selection_button.setVisibility(View.VISIBLE);
                 rc_category.setVisibility(View.GONE);
                 rc_service.setVisibility(View.VISIBLE);
+
+
                 if (isRequirement && !parentId.equals("")) {
 //                    AdType = 0;
                     btn_product.performClick();
 //                    layout_input_price.setVisibility(View.GONE);
 //                    view_rental_fee.setVisibility(View.GONE);
+                } else if (tabNo == 2) {
+                    tabNo = 1;
+                    btn_service.performClick();
+                } else if (tabNo == 1) {
+                    tabNo = 2;
+                    btn_product.performClick();
                 }
+
             }
 
         } else {
@@ -2738,7 +2469,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                         layout_selection_button.setVisibility(View.VISIBLE);
                         rc_category.setVisibility(View.GONE);
                         rc_service.setVisibility(View.VISIBLE);
-                        ClearFileds();
+                        ClearFileds(1);
 
                     }
                 });
@@ -2754,22 +2485,34 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public boolean checkData() {
-        return !txt_product_type_content.getText().toString().equals("") || !edt_price.getText().toString().equals("") || !cityId.equals("") || !edt_description.getText().toString().equals("") || shareImageList.size() != 0;
+        boolean isImage = false;
+        boolean isCity = false;
+        for (int i = 0; i < shareImageList.size(); i++) {
+            if (!shareImageList.get(i).getUri().equals("") || !shareImageList.get(i).getImgURL().equals("")) {
+                isImage = true;
+            }
+        }
+        isCity = !Sessions.getSession(Constant.CityId, getApplicationContext()).equals(cityId);
+        return !txt_product_type_content.getText().toString().equals("") || !edt_price.getText().toString().equals("") || isCity || !edt_description.getText().toString().equals("") || isImage;
     }
 
-    public void ClearFileds() {
+    public void ClearFileds(int type) {
         productTitle = "";
         attributeTitle = "";
 
         edt_price.setText("");
         edt_description.setText("");
-        cityId = "";
-        txt_city_content.setText("");
-        txt_area_content.setText("");
-        txt_area_content.setFocusableInTouchMode(false);
+        cb_price.setChecked(false);
+        cb_tc.setChecked(false);
+        if (type != 2) {
+            cityId = "";
+            txt_city_content.setText("");
+            txt_area_content.setText("");
+            txt_area_content.setFocusableInTouchMode(false);
+        }
         txt_post_title_content.setText("");
         txt_product_type_content.setText("");
-        shareImageList.clear();
+        AddImageItems();
         postImageListAdapter.notifyDataSetChanged();
         attributeList.clear();
         attributeListAdapter.notifyDataSetChanged();
@@ -2799,7 +2542,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         spinnerPopup.setFocusable(false);
         spinnerPopup.update();
         TextView txt_content_one = view.findViewById(R.id.txt_content_one);
+        TextView txt_content_two = view.findViewById(R.id.txt_content_two);
+        LinearLayout layout_no = view.findViewById(R.id.layout_no);
         Button btn_ok = view.findViewById(R.id.btn_ok);
+        Button btn_no = view.findViewById(R.id.btn_no);
+        btn_ok.setText(getString(R.string.txt_no));
         txt_content_one.setText(mesg);
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -2807,14 +2554,28 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 
                 spinnerPopup.dismiss();
                 if (EditType.equals("")) {
-                    Intent h = new Intent(AddPostActivity.this, HomeActivity.class);
+                    Intent h = new Intent(AddPostActivity.this, DashBoardActivity.class);
                     h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(h);
                 }
                 finish();
             }
         });
-
+        if (AdType == 0 || AdType == 2 && !EditType.equals("2")) {
+            txt_content_two.setVisibility(View.VISIBLE);
+            layout_no.setVisibility(View.VISIBLE);
+        } else {
+            btn_ok.setText(getString(R.string.txt_continue));
+        }
+        btn_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClearFileds(2);
+                txt_product_type_content.requestFocus();
+                layout_post_details.scrollTo(0, 0);
+                spinnerPopup.dismiss();
+            }
+        });
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 

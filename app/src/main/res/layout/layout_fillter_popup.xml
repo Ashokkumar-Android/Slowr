@@ -7,23 +7,151 @@
 
     <include layout="@layout/layout_header" />
 
-    <EditText
-        android:id="@+id/edt_search_suggestion"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:layout_margin="@dimen/size_ten"
-        android:background="@drawable/bg_edt_login"
-        android:drawableRight="@drawable/ic_search"
-        android:inputType="text"
-        android:paddingLeft="@dimen/size_ten"
-        android:paddingRight="@dimen/size_ten"
-        android:visibility="gone"
-        android:textSize="@dimen/size_fifteen" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:background="@color/gst_bg"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_filter_option"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:id="@+id/layout_rent_hire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="@dimen/size_five"
+                android:paddingRight="@dimen/size_five"
+                android:paddingBottom="@dimen/size_ten"
+                android:paddingTop="@dimen/size_ten">
+
+                <TextView
+                    android:id="@+id/txt_rent_hire_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/nunito_regular"
+                    android:textColor="@color/color_black_five"
+                    android:text="@string/txt_rent_hire"
+                    android:textSize="@dimen/size_fourteen" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:background="@color/color_white"
+            android:orientation="vertical"
+            android:padding="@dimen/size_five">
+
+            <TextView
+                android:id="@+id/txt_filter_option_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/nunito_regular"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/size_five"
+                android:paddingLeft="@dimen/size_five"
+                android:paddingRight="@dimen/size_five"
+                android:text="Enter Rental / Hiring Fee Range"
+                android:textColor="@color/color_black_five"
+                android:textSize="@dimen/size_fourteen" />
+
+            <EditText
+                android:id="@+id/edt_search_suggestion"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="@dimen/size_five"
+                android:background="@drawable/bg_edt_login"
+                android:drawableRight="@drawable/ic_search"
+                android:inputType="text"
+                android:paddingLeft="@dimen/size_ten"
+                android:paddingRight="@dimen/size_ten"
+                android:textSize="@dimen/size_fifteen"
+                android:visibility="gone" />
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rc_filter"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_filter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/layout_min_max"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/edt_min"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_orenge_border_select"
+                        android:hint="Min"
+                        android:paddingLeft="@dimen/size_five"
+                        android:paddingRight="3dp"
+                        android:inputType="number"
+                        android:maxLength="6"
+                        android:textColorHint="@color/txt_gray"
+                        android:textSize="@dimen/size_fourteen" />
+
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="1dp" />
+
+                    <EditText
+                        android:id="@+id/edt_max"
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_orenge_border_select"
+                        android:hint="Max"
+                        android:paddingLeft="@dimen/size_five"
+                        android:paddingRight="3dp"
+                        android:maxLength="6"
+                        android:inputType="number"
+                        android:textColorHint="@color/txt_gray"
+                        android:textSize="@dimen/size_fourteen" />
+
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_reset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="35dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="@dimen/size_ten"
+                    android:background="@drawable/bg_blue_border_select_filled"
+                    android:gravity="center"
+                    android:text="@string/txt_reset"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/size_fourteen" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

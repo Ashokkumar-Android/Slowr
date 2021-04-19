@@ -95,7 +95,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     TextView txt_alert_footer;
     FrameLayout layout_fav;
     CardView layout_image_tile;
+    CardView layout_profile_details;
     TextView txt_report_ad;
+    Button btn_view_contact;
 
     ArrayList<UploadImageModel> shareImageList = new ArrayList<>();
     HashMap<String, Object> params = new HashMap<String, Object>();
@@ -121,6 +123,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     String imageStringArray = "";
     int imgSelectPos = 0;
     String userPhone = "";
+    String userEmail = "";
+    String userName = "";
     String chatId = "";
     String NotificationId = "";
     String catGroup = "";
@@ -141,9 +145,6 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 
     private void doDeclaration() {
 
-        if (getIntent().hasExtra("CatId")) {
-            catId = getIntent().getStringExtra("CatId");
-        }
         if (getIntent().hasExtra("AdId")) {
             adId = getIntent().getStringExtra("AdId");
         }
@@ -192,9 +193,11 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         layout_fav = findViewById(R.id.layout_fav);
         layout_image_tile = findViewById(R.id.layout_image_tile);
         txt_report_ad = findViewById(R.id.txt_report_ad);
+        btn_view_contact = findViewById(R.id.btn_view_contact);
+        layout_profile_details = findViewById(R.id.layout_profile_details);
         txt_page_title.setText(getString(R.string.nav_dash_board));
 
-
+        btn_call_now.setVisibility(View.GONE);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MyPostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_image_list.setLayoutManager(linearLayoutManager);
         rc_image_list.setItemAnimator(new DefaultItemAnimator());
@@ -218,8 +221,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_prosperId.setOnClickListener(this);
         btn_chat_now.setOnClickListener(this);
         txt_report_ad.setOnClickListener(this);
+        btn_view_contact.setOnClickListener(this);
         CallBackFunction();
-        if (!catId.equals(""))
+        if (!adId.equals(""))
             CallApi();
 
         NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -261,13 +265,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             pageLink = pageLink.replaceAll("//", "~");
                             pageLink = pageLink.replaceAll("/", "~");
                             Log.i("Link", pageLink);
-                            if (pageLink.contains("https:~www.slowr.com~")) {
-                                pageLink = pageLink.replace("https:~www.slowr.com~", "");
+                            if (pageLink.contains("https:~www.slowr.com~ad-details~")) {
+                                pageLink = pageLink.replace("https:~www.slowr.com~ad-details~", "");
                             }
                             Log.i("Link", pageLink);
-                            String[] ids = pageLink.split("~");
-                            catId = ids[0];
-                            adId = ids[1];
+//                            String[] ids = pageLink.split("~");
+//                            catId = ids[0];
+                            adId = pageLink;
                             PageFrom = "2";
                             CallApi();
                         }
@@ -290,13 +294,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         Log.i("Params", params.toString());
         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
             RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false,false));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false, false));
         } else {
             _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).ReadNotification(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false,false));
+                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, noteReadResponse, false, false));
                 }
             });
         }
@@ -331,7 +335,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             } else {
                 if (adParentId.equals("1")) {
                     defu = R.drawable.ic_need_space;
-                } else if (adParentId.equals("1306")) {
+                } else if (adParentId.equals("34")) {
                     defu = R.drawable.ic_need_pet;
                 } else if (adParentId.equals("5")) {
                     defu = R.drawable.ic_need_book;
@@ -362,9 +366,9 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void GetAdDetails() {
-        Log.i("CATAD", catId + " , " + adId);
-        RetrofitClient.getClient().create(Api.class).getHomeAdDetails(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adDetails, true,false));
+        Log.i("ADID", adId);
+        RetrofitClient.getClient().create(Api.class).getHomeAdDetails(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adDetails, true, false));
 
     }
 
@@ -383,7 +387,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             layout_root.setVisibility(View.VISIBLE);
                             EditAdDetailsModel editAdDetailsModel = dr.getEditDataModel().getAdDetailsModel();
                             chatId = dr.getEditDataModel().getChatId();
-                            catGroup = dr.getEditDataModel().getCatGroup();
+                            catGroup = editAdDetailsModel.getCatGroup();
                             adParentId = dr.getEditDataModel().getAdDetailsModel().getParentId();
 //                            Sessions.saveSession(Constant.ImagePath, dr.getEditDataModel().getUrlPath(), MyPostViewActivity.this);
                             AdType = editAdDetailsModel.getAdType();
@@ -406,30 +410,36 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             } else {
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.txt_orange));
                             }
-                            if (editAdDetailsModel.getRentalFee() != null) {
-                                txt_price.setVisibility(View.VISIBLE);
-                                String price = "";
-                                if (editAdDetailsModel.getRentalFee().contains(".")) {
-                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
-                                    price = tempPrice[0];
-                                } else {
-                                    price = editAdDetailsModel.getRentalFee();
-                                }
 
-//                            txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
-                                if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
-
-                                    Function.RentalDurationText(txt_price, catGroup,editAdDetailsModel.getRentalDuration(), getApplicationContext());
-//                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
-                                } else {
-                                    DecimalFormat formatter = new DecimalFormat("#,###,###");
-                                    String formatPrice = formatter.format(Integer.valueOf(price));
-                                    txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
-                                }
+                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(),editAdDetailsModel.getRentalDuration(),txt_price,catGroup,getApplicationContext());
+//                            if (editAdDetailsModel.getRentalFee() != null) {
+//                                txt_price.setVisibility(View.VISIBLE);
+//                                String price = "";
+//                                if (editAdDetailsModel.getRentalFee().contains(".")) {
+//                                    String[] tempPrice = editAdDetailsModel.getRentalFee().split("\\.");
+//                                    price = tempPrice[0];
+//                                } else {
+//                                    price = editAdDetailsModel.getRentalFee();
+//                                }
+//
+////                            txt_price.setText("₹ " + price + " / " + editAdDetailsModel.getRentalDuration());
+//                                if (price.equals("0") || editAdDetailsModel.getRentalDuration().equals("Custom")) {
+//
+//                                    Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
+////                                    txt_price.setText(editAdDetailsModel.getRentalDuration());
+//                                } else {
+//                                    DecimalFormat formatter = new DecimalFormat("#,###,###");
+//                                    String formatPrice = formatter.format(Integer.valueOf(price));
+//                                    txt_price.setText("₹ " + formatPrice + " / " + editAdDetailsModel.getRentalDuration());
+//                                }
+//                            } else {
+//                                Function.RentalDurationText(txt_price, catGroup, editAdDetailsModel.getRentalDuration(), getApplicationContext());
+//                            }
+                            if (editAdDetailsModel.getDescription() != null && !editAdDetailsModel.getDescription().equals("")) {
+                                txt_description.setText(editAdDetailsModel.getDescription());
                             } else {
-                                Function.RentalDurationText(txt_price, catGroup,editAdDetailsModel.getRentalDuration(), getApplicationContext());
+                                txt_description.setText(getString(R.string.no_description));
                             }
-                            txt_description.setText(editAdDetailsModel.getDescription());
                             userProsperId = dr.getEditDataModel().getUserDetailsModel().getProsperId();
                             txt_prosperId.setText(dr.getEditDataModel().getUserDetailsModel().getProsperId());
                             userProUrl = dr.getEditDataModel().getUserDetailsModel().getUserPhoto();
@@ -449,11 +459,15 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
 //                            if (editAdDetailsModel.getIsMobileVisible().equals("1")) {
 //                                txt_phone.setVisibility(View.GONE);
 //                            } else {
-                            txt_phone.setVisibility(View.VISIBLE);
+                            txt_phone.setVisibility(View.GONE);
                             txt_phone.setText(dr.getEditDataModel().getUserDetailsModel().getUserPhone());
                             userPhone = dr.getEditDataModel().getUserDetailsModel().getUserPhone();
+                            userEmail = dr.getEditDataModel().getUserDetailsModel().getUserEmail();
+                            userName = dr.getEditDataModel().getUserDetailsModel().getUserName();
                             if (userPhone != null && userPhone.equals("")) {
                                 btn_call_now.setVisibility(View.GONE);
+                            }else {
+
                             }
 //                            }
 
@@ -559,12 +573,14 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 layout_action_button.setVisibility(View.GONE);
                                 layout_fav.setVisibility(View.VISIBLE);
                                 layout_chat_call.setVisibility(View.VISIBLE);
-                            }else {
+                                layout_profile_details.setVisibility(View.VISIBLE);
+                            } else {
+                                layout_profile_details.setVisibility(View.GONE);
                                 txt_report_ad.setVisibility(View.GONE);
                             }
                             if (dr.getEditDataModel().getCommunicationModel() != null) {
                                 if (dr.getEditDataModel().getCommunicationModel().getComments() != null) {
-                                    if (AdStatus.equals("9")) {
+                                    if (AdStatus.equals("9") || AdStatus.equals("7")) {
                                         btn_edit.setVisibility(View.VISIBLE);
                                     }
                                     layout_alert.setVisibility(View.VISIBLE);
@@ -614,7 +630,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_share:
-                Function.ShareLink(MyPostViewActivity.this, catId, adId, adTitle, catGroup, adShareUrl);
+                Function.ShareLink(MyPostViewActivity.this, adId, adTitle, catGroup, adShareUrl);
                 break;
             case R.id.img_favorite:
                 if (userId.equals(Sessions.getSession(Constant.UserId, getApplicationContext()))) {
@@ -647,7 +663,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     }
                 } else {
                     Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, EDIT_POST_CODE);
                 }
 
                 break;
@@ -662,7 +678,6 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 break;
             case R.id.btn_edit:
                 Intent i = new Intent(MyPostViewActivity.this, AddPostActivity.class);
-                i.putExtra("CatId", catId);
                 i.putExtra("AdId", adId);
                 i.putExtra("AdType", 1);
                 i.putExtra("EditType", AdType);
@@ -682,24 +697,18 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             public void onClick(DialogInterface dialog, int which) {
 
                                 if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
-                                    if (AdType.equals("1")) {
-                                        RetrofitClient.getClient().create(Api.class).deletePost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
-                                    } else {
-                                        RetrofitClient.getClient().create(Api.class).deleteRequirementPost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
-                                    }
+
+                                    RetrofitClient.getClient().create(Api.class).deletePost(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true, false));
+
                                 } else {
                                     _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
                                         @Override
                                         public void isInternet() {
-                                            if (AdType.equals("1")) {
-                                                RetrofitClient.getClient().create(Api.class).deletePost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
-                                            } else {
-                                                RetrofitClient.getClient().create(Api.class).deleteRequirementPost(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                                        .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true,false));
-                                            }
+
+                                            RetrofitClient.getClient().create(Api.class).deletePost(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                                                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, deleteAd, true, false));
+
                                         }
                                     });
 
@@ -765,6 +774,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 } else {
                     Intent j = new Intent(MyPostViewActivity.this, UserProfileActivity.class);
                     j.putExtra("prosperId", userProsperId);
+                    j.putExtra("PageFrom", "1");
                     startActivity(j);
                 }
 
@@ -795,7 +805,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     startActivity(c);
                 } else {
                     Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, EDIT_POST_CODE);
                 }
                 break;
             case R.id.txt_report_ad:
@@ -806,7 +816,16 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     startActivity(ru);
                 } else {
                     Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
-                    startActivity(l);
+                    startActivityForResult(l, EDIT_POST_CODE);
+                }
+                break;
+            case R.id.btn_view_contact:
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    ShowPopupContact();
+                    ViewContact("1");
+                } else {
+                    Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
+                    startActivityForResult(l, EDIT_POST_CODE);
                 }
                 break;
         }
@@ -855,6 +874,72 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
+    public void ShowPopupContact() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_contact_view, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        TextView txt_phone = view.findViewById(R.id.txt_phone);
+        TextView txt_email = view.findViewById(R.id.txt_email);
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        TextView txt_name = view.findViewById(R.id.txt_name);
+        TextView txt_whats_app = view.findViewById(R.id.txt_whats_app);
+        txt_phone.setText(userPhone);
+        txt_whats_app.setText(userPhone);
+        txt_email.setText(userEmail);
+        txt_name.setText(userName);
+        if (userPhone != null && !userPhone.equals("")) {
+            txt_phone.setVisibility(View.VISIBLE);
+            txt_whats_app.setVisibility(View.VISIBLE);
+        } else {
+            txt_phone.setVisibility(View.GONE);
+            txt_whats_app.setVisibility(View.GONE);
+        }
+        if (userEmail != null && !userEmail.equals("")) {
+            txt_email.setVisibility(View.VISIBLE);
+        } else {
+            txt_email.setVisibility(View.GONE);
+        }
+        txt_whats_app.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("http://api.whatsapp.com/send?phone=" + "+91" + userPhone));
+                startActivity(intent);
+            }
+        });
+        txt_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (_fun.checkPermission2(MyPostViewActivity.this)) {
+                    Function.CallNow(MyPostViewActivity.this, userPhone);
+                    ViewContact("2");
+                }
+            }
+        });
+        txt_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + txt_email.getText().toString()));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "");
+                intent.putExtra(Intent.EXTRA_TEXT, "");
+                startActivity(intent);
+                ViewContact("4");
+            }
+        });
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
     private void callAddFavorite() {
         img_favorite.setEnabled(false);
         if (isFavorite.equals("0")) {
@@ -862,15 +947,50 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addFavorite(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true,false));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true, false));
         } else {
-            RetrofitClient.getClient().create(Api.class).deleteFavorite(catId, adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true,false));
+            RetrofitClient.getClient().create(Api.class).deleteFavorite(adId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addFavorite, true, false));
         }
     }
+
+    private void ViewContact(String type) {
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("ads_id", adId);
+        params.put("platform", "3");
+        params.put("type", type);
+        params.put("user_id", Sessions.getSession(Constant.UserId, getApplicationContext()));
+        Log.i("Params", params.toString());
+        RetrofitClient.getClient().create(Api.class).viewContact(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(MyPostViewActivity.this, viewContactResponse, false, false));
+    }
+
+    retrofit2.Callback<DefaultResponse> viewContactResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                DefaultResponse dr = response.body();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
 
     retrofit2.Callback<DefaultResponse> noteReadResponse = new retrofit2.Callback<DefaultResponse>() {
         @Override
@@ -904,13 +1024,10 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                 params.clear();
             }
             params.put("ads_id", adId);
-            params.put("category_id", catId);
             Log.i("Params", params.toString());
             RetrofitClient.getClient().create(Api.class).addLike(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addLike, true,false));
+                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, addLike, true, false));
         } else {
-//            RetrofitClient.getClient().create(Api.class).deleteLike(catId, adId, "Bearer " + Sessions.getSession(Constant.UserToken, getApplicationContext()))
-//                    .enqueue(new RetrofitCallBack(PostViewActivity.this, addLike, true));
             Function.CustomMessage(MyPostViewActivity.this, getString(R.string.txt_already_liked));
         }
     }
@@ -1125,7 +1242,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }
         } else {
             Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
-            startActivity(l);
+            startActivityForResult(l, EDIT_POST_CODE);
             likeButton.setLiked(false);
         }
     }
@@ -1141,7 +1258,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }
         } else {
             Intent l = new Intent(MyPostViewActivity.this, LoginActivity.class);
-            startActivity(l);
+            startActivityForResult(l, EDIT_POST_CODE);
             likeButton.setLiked(false);
         }
     }
@@ -1161,6 +1278,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         }
         if (result) {
             Function.CallNow(MyPostViewActivity.this, userPhone);
+            ViewContact("2");
         }
     }
 
@@ -1189,19 +1307,18 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             params.clear();
                         }
                         params.put("ads_id", adId);
-                        params.put("category_id", catId);
                         params.put("status", changeAdStatus);
                         Log.i("Params", params.toString());
 
                         if (_fun.isInternetAvailable(MyPostViewActivity.this)) {
                             RetrofitClient.getClient().create(Api.class).changeAdStatus(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true,false));
+                                    .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true, false));
                         } else {
                             _fun.ShowNoInternetPopup(MyPostViewActivity.this, new Function.NoInternetCallBack() {
                                 @Override
                                 public void isInternet() {
                                     RetrofitClient.getClient().create(Api.class).changeAdStatus(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true,false));
+                                            .enqueue(new RetrofitCallBack(MyPostViewActivity.this, adStatusApi, true, false));
                                 }
                             });
 

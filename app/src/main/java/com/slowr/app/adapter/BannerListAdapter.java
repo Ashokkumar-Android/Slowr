@@ -20,7 +20,6 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
     private List<BannerItemModel> categoryList;
     Callback callback;
     Context ctx;
-    PopularAdListAdapter popularAdListAdapter;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_banner_title;
@@ -110,12 +109,15 @@ public class BannerListAdapter extends RecyclerView.Adapter<BannerListAdapter.My
             } else if (model.getBannerStatus().equals("9")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
                 holder.btn_edit.setVisibility(View.GONE);
-                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
+
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_blue_border_select));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.colorPrimary));
             } else {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_in_review));
                 holder.btn_edit.setText(ctx.getString(R.string.txt_edit));
-                holder.btn_edit.setVisibility(View.VISIBLE);
-                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_green_border_view));
+                holder.btn_edit.setVisibility(View.GONE);
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_blue_border_select));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.colorPrimary));
             }
 
 

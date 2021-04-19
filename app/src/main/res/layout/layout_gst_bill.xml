@@ -110,7 +110,8 @@
                             android:layout_height="wrap_content"
                             android:background="@android:color/transparent"
                             android:imeOptions="actionDone"
-                            android:inputType="textCapSentences|textImeMultiLine"
+                            android:maxLength="15"
+                            android:inputType="textCapCharacters"
                             android:text="" />
 
 
@@ -145,10 +146,11 @@
                                 android:text="@string/txt_company_name" />
 
 
-                            <TextView
+                            <EditText
                                 android:id="@+id/txt_company_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:background="@android:color/transparent"
                                 android:fontFamily="@font/nunito_regular" />
 
 
@@ -163,7 +165,7 @@
                             android:fontFamily="@font/nunito_regular"
                             android:text="@string/txt_company_address" />
 
-                        <TextView
+                        <EditText
                             android:id="@+id/txt_company_address"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

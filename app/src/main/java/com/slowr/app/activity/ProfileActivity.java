@@ -52,6 +52,7 @@ import com.slowr.matisse.internal.entity.CaptureStrategy;
 import com.slowr.matisse.ui.MatisseActivity;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
@@ -115,7 +116,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     String adCount = "";
     boolean isPageChange = false;
 
-    private PopupWindow spinnerPopup;
+    private PopupWindow spinnerPopup, demoPopup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -291,6 +292,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     layout_profile_details_edit.setVisibility(View.VISIBLE);
                 } else if (isEditView) {
                     isEditView = false;
+                    txt_page_title.setText(getString(R.string.txt_profile));
                     layout_edit_profile.setVisibility(View.GONE);
                     layout_profile_details.setVisibility(View.VISIBLE);
                     btn_edit.setVisibility(View.VISIBLE);
@@ -303,6 +305,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 layout_edit_profile.setVisibility(View.VISIBLE);
                 layout_profile_details.setVisibility(View.GONE);
                 isEditView = true;
+                txt_page_title.setText(getString(R.string.txt_profile_edit));
                 if (txt_user_name.getText().toString().equals(getString(R.string.click_edit_name))) {
                     edt_name.setText("");
                 } else {
@@ -360,8 +363,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.btn_update_profile:
                 doValidation();
-
-
                 break;
             case R.id.btn_verify_otp:
                 if (otp.length() == 0) {
@@ -453,12 +454,27 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.btn_demo_page:
 
-                if (!adCount.equals("") && !adCount.equals("0")) {
+//                PackageManager packageManager = getPackageManager();
+//                Intent t = new Intent(Intent.ACTION_VIEW);
+//
+//                try {
+//                    String url = "https://api.whatsapp.com/send?phone="+ "+9101235489848" +"&text=" + URLEncoder.encode("hi", "UTF-8");
+//                    t.setPackage("com.whatsapp");
+//                    t.setData(Uri.parse(url));
+//                    if (t.resolveActivity(packageManager) != null) {
+//                        startActivity(t);
+//                    }
+//                } catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
+                if (adCount != null && !adCount.equals("") && !adCount.equals("0")) {
                     Intent j = new Intent(ProfileActivity.this, UserProfileActivity.class);
                     j.putExtra("prosperId", Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+                    j.putExtra("PageFrom", "1");
                     startActivityForResult(j, PROSPER_ID_CODE);
                 } else {
-                    ShowPopupAppVersion();
+                    ShowPopupProfileDemo();
                 }
                 break;
         }
@@ -494,6 +510,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 //        }
         if (name.isEmpty()) {
             til_edt_name.setError(getString(R.string.enter_name));
+            til_edt_name.requestFocus();
+            return;
+        } else {
+            til_edt_name.setErrorEnabled(false);
+        }
+        if (name.length() < 3) {
+            til_edt_name.setError(getString(R.string.enter_name_minimum));
             til_edt_name.requestFocus();
             return;
         } else {
@@ -705,6 +728,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     btn_edit.setVisibility(View.VISIBLE);
                     txt_prosperId.setText(dr.getUserDetailsModel().getProsperId());
                     adCount = dr.getUserDetailsModel().getAdCount();
+                    if (adCount != null && !adCount.equals("") && !adCount.equals("0")) {
+                        btn_demo_page.setText(getString(R.string.txt_view_client));
+                    } else {
+                        btn_demo_page.setText(getString(R.string.txt_demo_profile));
+                    }
                     if (dr.getUserDetailsModel().getUserName() != null && !dr.getUserDetailsModel().getUserName().equals("")) {
                         txt_user_name.setText(dr.getUserDetailsModel().getUserName());
                     } else {
@@ -923,6 +951,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     layout_profile_details.setVisibility(View.VISIBLE);
                     btn_edit.setVisibility(View.VISIBLE);
                     isEditView = false;
+                    txt_page_title.setText(getString(R.string.txt_profile));
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
                     if (_fun.isInternetAvailable(ProfileActivity.this)) {
@@ -1215,7 +1244,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
-        if (PageFrom.equals("2")) {
+        if (spinnerPopup != null && spinnerPopup.isShowing()) {
+            spinnerPopup.dismiss();
+        } else if (demoPopup != null && demoPopup.isShowing()) {
+            demoPopup.dismiss();
+        } else if (PageFrom.equals("2")) {
             Intent h = new Intent(ProfileActivity.this, HomeActivity.class);
             h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(h);
@@ -1226,6 +1259,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             layout_profile_details_edit.setVisibility(View.VISIBLE);
         } else if (isEditView) {
             isEditView = false;
+            txt_page_title.setText(getString(R.string.txt_profile));
             layout_edit_profile.setVisibility(View.GONE);
             layout_profile_details.setVisibility(View.VISIBLE);
             btn_edit.setVisibility(View.VISIBLE);
@@ -1278,8 +1312,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         spinnerPopup = new PopupWindow(view,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        spinnerPopup.setOutsideTouchable(false);
-        spinnerPopup.setFocusable(false);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(true);
         spinnerPopup.update();
 
         TextView popup_content = view.findViewById(R.id.txt_content_one);
@@ -1301,12 +1335,75 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 spinnerPopup.dismiss();
+                if (demoPopup.isShowing()) {
+                    demoPopup.dismiss();
+                }
                 Intent p = new Intent(ProfileActivity.this, AddPostActivity.class);
                 p.putExtra("AdType", 0);
                 startActivityForResult(p, PROSPER_ID_CODE);
             }
         });
         spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    public void ShowPopupProfileDemo() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_profile_demo, null);
+        demoPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        demoPopup.setOutsideTouchable(true);
+        demoPopup.setFocusable(true);
+        demoPopup.update();
+        TextView txt_prosperId_demo = view.findViewById(R.id.txt_prosperId_demo);
+        TextView txt_name_demo = view.findViewById(R.id.txt_name_demo);
+        TextView txt_phone_dmo = view.findViewById(R.id.txt_phone_dmo);
+        TextView txt_email_dmo = view.findViewById(R.id.txt_email_dmo);
+        TextView txt_page_title = view.findViewById(R.id.txt_page_title);
+        Button btn_ok = view.findViewById(R.id.btn_ok);
+        LinearLayout img_back = view.findViewById(R.id.img_back);
+        txt_page_title.setText("Demo Prosper Page");
+        txt_prosperId_demo.setText(Sessions.getSession(Constant.ProsperId, getApplicationContext()));
+        if (Sessions.getSession(Constant.UserName, getApplicationContext()).equals("")) {
+            txt_name_demo.setText(getString(R.string.txt_demo_name));
+        } else {
+            txt_name_demo.setText(Sessions.getSession(Constant.UserName, getApplicationContext()));
+        }
+        if (Sessions.getSession(Constant.UserPhone, getApplicationContext()).equals("")) {
+            txt_phone_dmo.setText(getString(R.string.txt_demo_phone));
+        } else {
+            txt_phone_dmo.setText(Sessions.getSession(Constant.UserPhone, getApplicationContext()));
+        }
+
+        if (Sessions.getSession(Constant.UserEmail, getApplicationContext()).equals("")) {
+            txt_email_dmo.setText(getString(R.string.txt_demo_email));
+        } else {
+            txt_email_dmo.setText(Sessions.getSession(Constant.UserEmail, getApplicationContext()));
+        }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ShowPopupAppVersion();
+            }
+        }, 500);
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                demoPopup.dismiss();
+                spinnerPopup.dismiss();
+            }
+        });
+
+        img_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                demoPopup.dismiss();
+                spinnerPopup.dismiss();
+            }
+        });
+
+        demoPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
     @Override

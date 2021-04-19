@@ -37,7 +37,7 @@ public class AdItemModel {
     @SerializedName("photo")
     private String photoType = "";
 
-    @SerializedName("like_count")
+    @SerializedName("total_like")
     private String likeCount = "";
 
     @SerializedName("is_user_fav")
@@ -58,7 +58,7 @@ public class AdItemModel {
     @SerializedName("promotion")
     private String adPromotion;
 
-    @SerializedName("cat_group")
+    @SerializedName("category_type")
     private String catGroup;
 
     @SerializedName("service_ad_count")
@@ -76,7 +76,13 @@ public class AdItemModel {
     @SerializedName("prosper_page_view_count")
     private String prosperPageViewCount;
 
+    @SerializedName("user_contact_view_count")
+    private String userContactViewCount;
     boolean isProgress = false;
+    @SerializedName("slug")
+    private String adSlug;
+
+    String imagePath = "";
 
     public String getAdId() {
         return adId;
@@ -277,4 +283,29 @@ public class AdItemModel {
     public void setProsperPageViewCount(String prosperPageViewCount) {
         this.prosperPageViewCount = prosperPageViewCount;
     }
+
+    public String getAdSlug() {
+        return adSlug;
+    }
+
+    public void setAdSlug(String adSlug) {
+        this.adSlug = adSlug;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public String getUserContactViewCount() {
+        return userContactViewCount;
+    }
+
+    public void setUserContactViewCount(String userContactViewCount) {
+        this.userContactViewCount = userContactViewCount;
+    }
 }
+

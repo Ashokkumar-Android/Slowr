@@ -41,7 +41,7 @@ public class EditAdDetailsModel {
 
     @SerializedName("is_mobile_visible")
     private String isMobileVisible;
-    @SerializedName("like_count")
+    @SerializedName("total_like")
     private String likeCount;
 
     @SerializedName("fav_count")
@@ -72,6 +72,15 @@ public class EditAdDetailsModel {
     private String userId;
     @SerializedName("parent_id")
     private String parentId;
+
+    @SerializedName("category_type")
+    private String catGroup;
+
+    @SerializedName("custom_locality")
+    String customLocality;
+
+    @SerializedName("custom_cat_value")
+    String customCategory;
 
     public String getAdId() {
         return adId;
@@ -255,5 +264,29 @@ public class EditAdDetailsModel {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getCatGroup() {
+        return catGroup;
+    }
+
+    public void setCatGroup(String catGroup) {
+        this.catGroup = catGroup;
+    }
+
+    public String getCustomLocality() {
+        return customLocality;
+    }
+
+    public void setCustomLocality(String customLocality) {
+        this.customLocality = customLocality;
+    }
+
+    public String getCustomCategory() {
+        return customCategory;
+    }
+
+    public void setCustomCategory(String customCategory) {
+        this.customCategory = customCategory;
     }
 }

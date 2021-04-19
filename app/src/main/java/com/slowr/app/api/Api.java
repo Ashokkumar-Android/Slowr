@@ -16,6 +16,8 @@ import com.slowr.app.models.CountModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditAdModel;
 import com.slowr.app.models.EditBannerModel;
+import com.slowr.app.models.Fillter.FilterModel;
+import com.slowr.app.models.FilterResult.FilterResult;
 import com.slowr.app.models.GSTLitsModel;
 import com.slowr.app.models.HomeBannerModel;
 import com.slowr.app.models.HomeDetailsModel;
@@ -36,6 +38,7 @@ import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SearchSuggistonModel;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -47,6 +50,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -118,12 +122,13 @@ public interface Api {
 
     @Multipart
     @POST("post/store")
-    Call<DefaultResponse> savePostForm(@Part List<MultipartBody.Part> file, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @Part("attributeValue[]") List<RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
+    Call<DefaultResponse> savePostForm(@Part List<MultipartBody.Part> file, @Part("type") RequestBody adType, @Part("category_type") RequestBody catType, @Part("category_id") RequestBody catId, @Part("custom_cat_value") RequestBody catTypeText, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("custom_locality") RequestBody locality_custom, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @PartMap Map<String, RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
 
 
     @Multipart
     @POST("post/update")
-    Call<DefaultResponse> updatePostForm(@Part List<MultipartBody.Part> file, @Part("ads_id") RequestBody adId, @Part("category_id") RequestBody catId, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @Part("attributeValue[]") List<RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Header("Authorization") String contentRange);
+    Call<DefaultResponse> updatePostForm(@Part List<MultipartBody.Part> file, @Part("type") RequestBody adType, @Part("category_type") RequestBody catType, @Part("category_id") RequestBody catId, @Part("custom_cat_value") RequestBody catTypeText, @Part("rental_fee") RequestBody rental_fee, @Part("rental_duration") RequestBody rental_duration, @Part("title") RequestBody title, @Part("description") RequestBody description, @Part("city_id") RequestBody city_id, @Part("locality_id") RequestBody locality_id, @Part("custom_locality") RequestBody locality_custom, @Part("status") RequestBody status, @Part("is_rent_negotiable") RequestBody is_rent_negotiable, @Part("attributeId[]") List<RequestBody> attributeId, @PartMap Map<String, RequestBody> attributeValue, @Part("mobile") RequestBody mobile, @Part("is_mobile_visible") RequestBody is_mobile_visible, @Part("parent_id") RequestBody parent_id, @Part("slug") RequestBody ads_id, @Part("new_photo_keys[]") List<RequestBody> newPhotoKey, @Part("delete_photo_keys[]") List<RequestBody> deletePhotoKey, @Header("Authorization") String contentRange);
+
 
     @POST("report-us")
     Call<ReportResponsModel> saveReport(@Body Object params, @Header("Authorization") String contentRange);
@@ -131,14 +136,14 @@ public interface Api {
     @GET("ads/listing")
     Call<AdModel> getPost(@Header("Authorization") String contentRange);
 
-    @GET("postdelete/{categoryId}/{id}")
-    Call<DefaultResponse> deletePost(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String token);
+    @GET("postdelete/{id}")
+    Call<DefaultResponse> deletePost(@Path(value = "id", encoded = true) String adId, @Header("Authorization") String token);
 
     @GET("requirement/delete/{categoryId}/{id}")
     Call<DefaultResponse> deleteRequirementPost(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String token);
 
-    @GET("edit/{categoryId}/{id}")
-    Call<EditAdModel> getAdDetails(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String token);
+    @GET("edit/{id}")
+    Call<EditAdModel> getAdDetails(@Path(value = "id", encoded = true) String adId, @Header("Authorization") String token);
 
     @POST("post/update")
     Call<DefaultResponse> updatePost(@Body Object params, @Header("Authorization") String contentRange);
@@ -149,11 +154,17 @@ public interface Api {
     @POST("ads-listing")
     Call<HomeFilterAdModel> getHomeAds(@Body Object params, @Header("Authorization") String contentRange);
 
+    @POST("filter-result")
+    Call<FilterResult> getHomeAdsNew(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("filter-data")
+    Call<FilterModel> getFilter(@Body Object params, @Header("Authorization") String contentRange);
+
     @POST("home")
     Call<HomeDetailsModel> getHomeDetails(@Body Object params, @Header("Authorization") String contentRange);
 
     @GET("home-categories-cities")
-    Call<HomeDetailsModel> getHomeCategory( @Header("Authorization") String contentRange);
+    Call<HomeDetailsModel> getHomeCategory(@Header("Authorization") String contentRange);
 
     @POST("home-flyers")
     Call<HomeFlyersModel> getHomeFlyers(@Body Object params, @Header("Authorization") String contentRange);
@@ -161,8 +172,8 @@ public interface Api {
     @POST("home-banners")
     Call<HomeBannerModel> getHomeBanners(@Body Object params, @Header("Authorization") String contentRange);
 
-    @GET("adsview/{categoryId}/{id}")
-    Call<EditAdModel> getHomeAdDetails(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "id", encoded = true) String adId, @Header("Authorization") String contentRange);
+    @GET("adsview/{id}")
+    Call<EditAdModel> getHomeAdDetails(@Path(value = "id", encoded = true) String adId, @Header("Authorization") String contentRange);
 
 
     @POST("like")
@@ -174,8 +185,8 @@ public interface Api {
     @GET("like/delete/{categoryId}/{adsId}")
     Call<DefaultResponse> deleteLike(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "adsId", encoded = true) String adId, @Header("Authorization") String token);
 
-    @GET("favorite/delete/{categoryId}/{adsId}")
-    Call<DefaultResponse> deleteFavorite(@Path(value = "categoryId", encoded = true) String catId, @Path(value = "adsId", encoded = true) String adId, @Header("Authorization") String token);
+    @GET("favorite/delete/{adsId}")
+    Call<DefaultResponse> deleteFavorite(@Path(value = "adsId", encoded = true) String adId, @Header("Authorization") String token);
 
     @POST("user/change-password")
     Call<DefaultResponse> changePassword(@Body Object params, @Header("Authorization") String contentRange);
@@ -258,6 +269,9 @@ public interface Api {
     @GET("user/{prosperId}")
     Call<OtherProfileModel> getUserAdDetails(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
 
+    @GET("user/{prosperId}/search")
+    Call<OtherProfileModel> getUserAdDetailsSearch(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
+
 
     @GET("page/terms-conditions")
     Call<PrivacyModel> getTC();
@@ -330,7 +344,10 @@ public interface Api {
     Call<DefaultResponse> removeProfile(@Header("Authorization") String contentRange);
 
     @POST("geo-location")
-    Call<DefaultResponse> deviceDetails(@Body Object params,@Header("Authorization") String contentRange);
+    Call<DefaultResponse> deviceDetails(@Body Object params, @Header("Authorization") String contentRange);
+
+    @POST("contact-view")
+    Call<DefaultResponse> viewContact(@Body Object params, @Header("Authorization") String contentRange);
 
     @GET("all-gst")
     Call<GSTLitsModel> gstNoList(@Header("Authorization") String contentRange);
