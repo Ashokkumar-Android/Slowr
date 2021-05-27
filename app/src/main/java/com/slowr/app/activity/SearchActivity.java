@@ -326,6 +326,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                             Intent i = new Intent(SearchActivity.this, UserProfileActivity.class);
                             i.putExtra("prosperId", searchSugeistionValue);
                             i.putExtra("PageFrom", "3");
+                            i.putExtra("PageID", "3");
                             startActivity(i);
                         } else {
                             Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
@@ -780,8 +781,13 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
 //                    isSearch = true;
                     serachView = 1;
                     if (adList.size() == 0) {
-                        layout_list_filter.setVisibility(View.VISIBLE);
-                        layout_requirement_ad.setVisibility(View.VISIBLE);
+                        layout_ad_list.setVisibility(View.GONE);
+//                        layout_list_filter.setVisibility(View.VISIBLE);
+//                        layout_requirement_ad.setVisibility(View.VISIBLE);
+                        layout_ad_list.setVisibility(View.GONE);
+                        layout_search_list.setVisibility(View.VISIBLE);
+                        txt_page_title.setText(getString(R.string.txt_search));
+                        ShowPopupNoADCity();
                     } else {
                         layout_list_filter.setVisibility(View.VISIBLE);
                         layout_requirement_ad.setVisibility(View.GONE);
@@ -858,6 +864,18 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                     layout_search_list.setVisibility(View.VISIBLE);
                     txt_page_title.setText(getString(R.string.txt_search));
                     isCategory = false;
+
+                    sortById = "";
+
+                    filterList.clear();
+                    searchSubCatId = "";
+
+                    minValue = "";
+                    maxValue = "";
+                    filterSelectAdapter.notifyDataSetChanged();
+                    isFilterClear = true;
+                    currentPageNo = 1;
+                    filterSelectCount = 0;
                 } else {
                     if (isChanges) {
                         Intent h = new Intent(SearchActivity.this, HomeActivity.class);
@@ -913,6 +931,7 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
                         Intent i = new Intent(SearchActivity.this, UserProfileActivity.class);
                         i.putExtra("prosperId", searchSugeistionValue);
                         i.putExtra("PageFrom", "3");
+                        i.putExtra("PageID", "3");
                         startActivity(i);
                     } else {
                         Function.hideSoftKeyboard(SearchActivity.this, edt_search_suggestion);
@@ -963,6 +982,19 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             layout_search_list.setVisibility(View.VISIBLE);
             txt_page_title.setText(getString(R.string.txt_search));
             isCategory = false;
+            sortById = "";
+
+            filterList.clear();
+            filterOptionAdapter.notifyDataSetChanged();
+            searchSubCatId = "";
+
+            minValue = "";
+            maxValue = "";
+            filterSelectAdapter.notifyDataSetChanged();
+            isFilterClear = true;
+            currentPageNo = 1;
+            filterSelectCount = 0;
+
         } else {
             if (isChanges) {
                 Intent h = new Intent(SearchActivity.this, HomeActivity.class);
@@ -1651,5 +1683,58 @@ public class SearchActivity extends AppCompatActivity implements View.OnClickLis
             }
 
         }
+    }
+
+    public void ShowPopupNoADCity() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_no_search_list, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+        Button btn_offer = view.findViewById(R.id.btn_offer_req);
+        Button btn_need = view.findViewById(R.id.btn_need_req);
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        btn_offer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                    spinnerPopup.dismiss();
+                } else {
+                    Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                    startActivityForResult(l, POST_VIEW_CODE);
+                }
+            }
+        });
+        btn_need.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(SearchActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 2);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                    spinnerPopup.dismiss();
+                } else {
+                    Intent l = new Intent(SearchActivity.this, LoginActivity.class);
+                    startActivityForResult(l, POST_VIEW_CODE);
+                }
+            }
+        });
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

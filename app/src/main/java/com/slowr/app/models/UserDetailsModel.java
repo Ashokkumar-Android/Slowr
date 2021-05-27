@@ -36,6 +36,24 @@ public class UserDetailsModel {
     @SerializedName("ads_count")
     String adCount;
 
+    @SerializedName("state_id")
+    String stateId;
+
+    @SerializedName("city_id")
+    String cityId;
+
+    @SerializedName("state")
+    String stateName;
+
+    @SerializedName("city")
+    String cityName;
+
+    @SerializedName("prosper_page_view_count")
+    String prosperPageCount;
+
+    @SerializedName("gender")
+    String userGender;
+
     public String getUserId() {
         return userId;
     }
@@ -122,5 +140,53 @@ public class UserDetailsModel {
 
     public void setAdCount(String adCount) {
         this.adCount = adCount;
+    }
+
+    public String getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(String stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public String getProsperPageCount() {
+        return prosperPageCount;
+    }
+
+    public void setProsperPageCount(String prosperPageCount) {
+        this.prosperPageCount = prosperPageCount;
+    }
+
+    public String getUserGender() {
+        return userGender;
+    }
+
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
     }
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.slowr.app.R;
 import com.slowr.app.activity.HomeActivity;
 import com.slowr.app.components.ViewDialog;
 import com.slowr.app.utils.Constant;
@@ -20,7 +19,6 @@ import retrofit2.Response;
 import static com.slowr.app.utils.Constant.Msg_Something;
 import static com.slowr.app.utils.Constant.SERVER_ERROR;
 import static com.slowr.app.utils.Constant.Unauthorized_Error;
-import static com.slowr.app.utils.Constant.msg_Somethingwentwrong;
 
 
 public class RetrofitCallBack<T> implements Callback<T> {
@@ -44,9 +42,11 @@ public class RetrofitCallBack<T> implements Callback<T> {
 //        dialog.setCancelable(false);
 //        dialog.show();
 
-        if (isLoad){
-            viewDialog.showDialog();
-            viewDialog.cancelableDialog(_isCancel);
+        if (isLoad) {
+            if (viewDialog != null) {
+                viewDialog.showDialog();
+                viewDialog.cancelableDialog(_isCancel);
+            }
         }
 
     }
@@ -70,7 +70,8 @@ public class RetrofitCallBack<T> implements Callback<T> {
             mContext.startActivity(h);
         }
         if (isLoad)
-            viewDialog.hideDialog();
+            if (viewDialog != null)
+                viewDialog.hideDialog();
 //        if (dialog.isShowing())
 //            dialog.dismiss();
 
@@ -86,11 +87,12 @@ public class RetrofitCallBack<T> implements Callback<T> {
 //            Function.CustomMessage((Activity) mContext, mContext.getString(R.string.txt_poor_connection));
             call.clone().enqueue(this);
             Log.d("NoConnection", t.getMessage());
-        }else {
+        } else {
             mCallback.onFailure(call, t);
+            if (isLoad)
+                viewDialog.hideDialog();
         }
-        if (isLoad)
-            viewDialog.hideDialog();
+
 
 
     }

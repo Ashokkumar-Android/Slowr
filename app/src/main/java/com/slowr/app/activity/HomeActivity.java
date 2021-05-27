@@ -192,6 +192,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     long startTime;
 
+    boolean requestFlrClick = false;
+    String requestFlyType = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,6 +210,17 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         if (getIntent().hasExtra("IsRegister")) {
             isRegister = true;
             Log.i("IsRegister", "Called");
+        }
+
+        if (getIntent().hasExtra("ProsperId")) {
+            String proID = getIntent().getStringExtra("ProsperId");
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ShowPopupNoProsperPage(proID);
+                }
+            }, 200);
         }
         homeActivity = new BaseActivity();
         homeActivity.callBackCity = callBackCity;
@@ -352,12 +366,13 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                             List<Address> addresses = null;
                             try {
                                 addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                cityName = addresses.get(0).getLocality();
+                                String stateName = addresses.get(0).getAdminArea();
+                                String countryName = addresses.get(0).getCountryName();
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            cityName = addresses.get(0).getLocality();
-                            String stateName = addresses.get(0).getAdminArea();
-                            String countryName = addresses.get(0).getCountryName();
+
 
                         } else {
                             Log.i("User Location", "Step4");
@@ -536,6 +551,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                             Intent i = new Intent(HomeActivity.this, UserProfileActivity.class);
                             i.putExtra("prosperId", userProsperId);
                             i.putExtra("PageFrom", "1");
+                            i.putExtra("PageID", "5");
                             startActivity(i);
                         } else {
                             ShowPopupDefauldBanner();
@@ -687,6 +703,23 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 getAdList(true);
 
             }
+
+            @Override
+            public void requestFlyersClick(String type) {
+                requestFlyType = type;
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    p.putExtra("RequstType", type);
+                    startActivity(p);
+                    callInsigths(type);
+                } else {
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivityForResult(l, LOGIN_VIEW);
+                    requestFlrClick = true;
+                }
+            }
         });
 
         productCategoryListAdapter.setCallback(new ProductCategoryListAdapter.Callback() {
@@ -745,12 +778,27 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
+    private void callInsigths(String type) {
+
+        if (!params.isEmpty()) {
+            params.clear();
+        }
+        params.put("request_type", type);
+        params.put("platform", "2");
+        Log.i("Params", params.toString());
+
+        RetrofitClient.getClient().create(Api.class).storeRequest(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                .enqueue(new RetrofitCallBack(HomeActivity.this, requestFlyerResponse, false, false));
+
+    }
+
     private void getFilterData(boolean isLoad) {
         if (!params.isEmpty()) {
             params.clear();
         }
         params.put("parent_id", catId);
         params.put("subcategory_id", filterSubCatId);
+        params.put("category_type", productType);
         params.put("city_id", Sessions.getSession(Constant.CityId, getApplicationContext()));
         Log.i("Params", params.toString());
         RetrofitClient.getClient().create(Api.class).getFilter(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
@@ -1043,16 +1091,18 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         homeAdList.addAll(dr.getHomeAdsList());
 
                     if (homeAdList.size() == 0) {
-                        layout_no_ad_city.setVisibility(View.VISIBLE);
-                        rc_home_ad_list.setVisibility(View.GONE);
+//                        layout_no_ad_city.setVisibility(View.VISIBLE);
+//                        rc_home_ad_list.setVisibility(View.GONE);
+                        BaseActivity.instance.txt_location.setText("All India");
+                        cityId = "0";
+                        Sessions.saveSession(Constant.CityId, "", getApplicationContext());
+                        getHomeBannerDetails(false);
+                        ShowPopupNoADCity();
                     } else {
                         layout_no_ad_city.setVisibility(View.GONE);
                         rc_home_ad_list.setVisibility(View.VISIBLE);
                     }
-
                     homeCustomListAdapter.notifyDataSetChanged();
-
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1294,6 +1344,34 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
 
+
+                } else {
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
+    retrofit2.Callback<DefaultResponse> requestFlyerResponse = new retrofit2.Callback<DefaultResponse>() {
+        @Override
+        public void onResponse(Call<DefaultResponse> call, retrofit2.Response<DefaultResponse> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                DefaultResponse dr = response.body();
+                if (dr.isStatus()) {
 
                 } else {
                 }
@@ -2201,28 +2279,38 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                 isViewBack = true;
                 getAdList(true);
             } else if (requestCode == LOGIN_VIEW) {
-                if (isCategory) {
-                    currentPageNo = 1;
-                    isViewBack = true;
-                    isRefresh = true;
-                    getAdList(false);
-
+                if (requestFlrClick) {
+                    requestFlrClick = false;
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    p.putExtra("RequstType", requestFlyType);
+                    startActivity(p);
+                    callInsigths(requestFlyType);
                 } else {
-                    if (_fun.isInternetAvailable(HomeActivity.this)) {
-                        getHomeBannerDetails(false);
-                    } else {
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
-                                    @Override
-                                    public void isInternet() {
-                                        getHomeBannerDetails(false);
-                                    }
-                                });
-                            }
-                        }, 200);
+                    if (isCategory) {
+                        currentPageNo = 1;
+                        isViewBack = true;
+                        isRefresh = true;
+                        getAdList(false);
 
+                    } else {
+                        if (_fun.isInternetAvailable(HomeActivity.this)) {
+                            getHomeBannerDetails(false);
+                        } else {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    _fun.ShowNoInternetPopup(HomeActivity.this, new Function.NoInternetCallBack() {
+                                        @Override
+                                        public void isInternet() {
+                                            getHomeBannerDetails(false);
+                                        }
+                                    });
+                                }
+                            }, 200);
+
+                        }
                     }
                 }
             }
@@ -2396,5 +2484,81 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
             }
         }
+    }
+
+    public void ShowPopupNoADCity() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_no_ad_cidy, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+        Button btn_offer = view.findViewById(R.id.btn_offer);
+        Button btn_need = view.findViewById(R.id.btn_need);
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        btn_offer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 0);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                    spinnerPopup.dismiss();
+                } else {
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivityForResult(l, LOGIN_VIEW);
+                }
+            }
+        });
+        btn_need.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Sessions.getSessionBool(Constant.LoginFlag, getApplicationContext())) {
+                    Intent p = new Intent(HomeActivity.this, AddPostActivity.class);
+                    p.putExtra("AdType", 2);
+                    p.putExtra("ParId", "");
+                    startActivity(p);
+                    spinnerPopup.dismiss();
+                } else {
+                    Intent l = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivityForResult(l, LOGIN_VIEW);
+                }
+            }
+        });
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    public void ShowPopupNoProsperPage(String prosperId) {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_no_proper_page, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(true);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+        TextView txt_prosperId_no = view.findViewById(R.id.txt_prosperId_no);
+        txt_prosperId_no.setText(prosperId);
+        Button btn_home_page = view.findViewById(R.id.btn_home_page);
+        btn_home_page.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

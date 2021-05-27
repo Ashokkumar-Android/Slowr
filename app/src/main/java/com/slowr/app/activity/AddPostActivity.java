@@ -226,6 +226,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     boolean isClickChange = false;
     boolean isTyped = false;
     int imageSelectPos = 0;
+    String requestType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,7 +250,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             } else {
                 parentId = "";
             }
+            if (getIntent().hasExtra("RequstType")) {
+                requestType = getIntent().getStringExtra("RequstType");
+            } else {
+                String requestType = "";
+            }
         }
+
         img_back = findViewById(R.id.img_back);
         txt_page_title = findViewById(R.id.txt_page_title);
         txt_page_title.setText(getString(R.string.txt_add_post));
@@ -888,8 +895,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     private void getCategory() {
 
         if (_fun.isInternetAvailable(AddPostActivity.this)) {
+
             RetrofitClient.getClient().create(Api.class).getCategory()
                     .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true, false));
+
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -897,8 +906,10 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                     _fun.ShowNoInternetPopup(AddPostActivity.this, new Function.NoInternetCallBack() {
                         @Override
                         public void isInternet() {
+
                             RetrofitClient.getClient().create(Api.class).getCategory()
                                     .enqueue(new RetrofitCallBack(AddPostActivity.this, categoryApi, true, false));
+
                         }
                     });
                 }
@@ -930,7 +941,13 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
 //                    categoryExpandAdapter = new CategoryExpandAdapter(getApplicationContext(), categoryList);
                     rc_service.setAdapter(categoryListAdapter);
 
-
+                    if (!requestType.equals("")) {
+                        if (requestType.equals("1")) {
+                            btn_product.performClick();
+                        } else if (requestType.equals("2")) {
+                            btn_service.performClick();
+                        }
+                    }
 //                    spinnerAdapter.notifyDataSetChanged();
 
                     if ((isRequirement && !parentId.equals("")) || (AdType == 0 && !parentId.equals("")) || (AdType == 1 && !parentId.equals(""))) {
@@ -1588,11 +1605,11 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             List<MultipartBody.Part> parts = new ArrayList<>();
             for (int i = 0; i < shareImageList.size(); i++) {
                 if (shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("")) {
-                    File file = new File(Function.compressImage(shareImageList.get(i).getUri()));
+                    File file = new File(shareImageList.get(i).getUri());
                     final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                     parts.add(MultipartBody.Part.createFormData("photos[]", file.getName(), requestFile));
                 } else if (!shareImageList.get(i).getImgURL().equals("") && !shareImageList.get(i).getUri().equals("")) {
-                    File file = new File(Function.compressImage(shareImageList.get(i).getUri()));
+                    File file = new File(shareImageList.get(i).getUri());
                     final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                     parts.add(MultipartBody.Part.createFormData("photos[]", file.getName(), requestFile));
 
@@ -1872,9 +1889,9 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
     };
 
     private void setCityDefault() {
-        if (!Sessions.getSession(Constant.CityId, getApplicationContext()).equals("")) {
-            txt_city_content.setText(Sessions.getSession(Constant.CityName, getApplicationContext()));
-            cityId = Sessions.getSession(Constant.CityId, getApplicationContext());
+        if (!Sessions.getSession(Constant.RegCityId, getApplicationContext()).equals("")) {
+            txt_city_content.setText(Sessions.getSession(Constant.RegCityName, getApplicationContext()));
+            cityId = Sessions.getSession(Constant.RegCityId, getApplicationContext());
             txt_area_content.setText("");
             txt_area_content.setFocusableInTouchMode(true);
             areaId = "";
@@ -2492,7 +2509,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
                 isImage = true;
             }
         }
-        isCity = !Sessions.getSession(Constant.CityId, getApplicationContext()).equals(cityId);
+        isCity = !Sessions.getSession(Constant.RegCityId, getApplicationContext()).equals(cityId);
         return !txt_product_type_content.getText().toString().equals("") || !edt_price.getText().toString().equals("") || isCity || !edt_description.getText().toString().equals("") || isImage;
     }
 
@@ -2509,6 +2526,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
             txt_city_content.setText("");
             txt_area_content.setText("");
             txt_area_content.setFocusableInTouchMode(false);
+            setCityDefault();
         }
         txt_post_title_content.setText("");
         txt_product_type_content.setText("");
@@ -2529,7 +2547,7 @@ public class AddPostActivity extends AppCompatActivity implements View.OnClickLi
         rentalDuration = rentalDurationList.get(0);
         setRentalDuration(rentalDurationList.get(0));
         txt_rental_duration_content.setText(rentalDurationList.get(0));
-        setCityDefault();
+
     }
 
     public void ShowPopupSuccess(String mesg) {

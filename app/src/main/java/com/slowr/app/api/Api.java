@@ -33,9 +33,11 @@ import com.slowr.app.models.ProductChatModel;
 import com.slowr.app.models.ProfileModel;
 import com.slowr.app.models.PromotePriceModel;
 import com.slowr.app.models.ProsperIdModel;
+import com.slowr.app.models.RegCityModel;
 import com.slowr.app.models.ReportResponsModel;
 import com.slowr.app.models.ReportTypeModel;
 import com.slowr.app.models.SearchSuggistonModel;
+import com.slowr.app.models.StateModel;
 
 import java.util.List;
 import java.util.Map;
@@ -99,6 +101,10 @@ public interface Api {
     @POST("customattribtes")
     Call<AttributeModel> getAttributes(@Body Object params, @Header("Authorization") String contentRange);
 
+
+    @POST("insight")
+    Call<DefaultResponse> storeRequest(@Body Object params, @Header("Authorization") String contentRange);
+
     @GET("postad")
     Call<CategoryModel> getCategory();
 
@@ -108,6 +114,12 @@ public interface Api {
 
     @GET("city")
     Call<CityModel> getCity();
+
+    @GET("states")
+    Call<StateModel> getState();
+
+    @GET("cities/{state}")
+    Call<RegCityModel> getCityState(@Path(value = "state", encoded = true) String cityId);
 
     @GET("report-types")
     Call<ReportTypeModel> getReportType();
@@ -266,11 +278,8 @@ public interface Api {
     Call<DefaultResponse> checkPromotionValid(@Body Object params, @Header("Authorization") String contentRange);
 
 
-    @GET("user/{prosperId}")
-    Call<OtherProfileModel> getUserAdDetails(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
-
-    @GET("user/{prosperId}/search")
-    Call<OtherProfileModel> getUserAdDetailsSearch(@Path(value = "prosperId", encoded = true) String prosperId, @Header("Authorization") String contentRange);
+    @POST("prosper-details")
+    Call<OtherProfileModel> getUserAdDetails(@Body Object params, @Header("Authorization") String contentRange);
 
 
     @GET("page/terms-conditions")

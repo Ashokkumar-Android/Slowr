@@ -8,12 +8,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
@@ -68,6 +65,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
     TextInputLayout til_edt_type;
     TextView txt_ticket_id;
     TextView txt_description_count;
+    TextView txt_description_same;
     ArrayAdapter<String> spinnerAdapter;
     private PopupWindow spinnerPopup;
     private Function _fun = new Function();
@@ -112,6 +110,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
         edt_report_typ = findViewById(R.id.edt_report_typ);
         til_edt_type = findViewById(R.id.til_edt_type);
         txt_description_count = findViewById(R.id.txt_description_count);
+        txt_description_same = findViewById(R.id.txt_description_same);
 
         rentalDurationAdapter = new RentalDurationAdapter(reportTypeStringList, getApplicationContext());
 
@@ -154,7 +153,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
 
         if (pageFrom.equals("2")) {
             btn_continue.setText(getText(R.string.txt_continue));
-        }else {
+        } else {
             btn_continue.setText(getText(R.string.txt_home_page));
         }
     }
@@ -207,7 +206,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
 
     private void getReportType() {
         RetrofitClient.getClient().create(Api.class).getReportType()
-                .enqueue(new RetrofitCallBack(ReportUsActivity.this, cityValue, true,false));
+                .enqueue(new RetrofitCallBack(ReportUsActivity.this, cityValue, true, false));
     }
 
     retrofit2.Callback<ReportTypeModel> cityValue = new retrofit2.Callback<ReportTypeModel>() {
@@ -263,6 +262,8 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
                 finish();
                 break;
             case R.id.btn_submit:
+
+//                txt_description_same.setText(Function.removeUrl(edt_description.getText().toString()));
                 doValidation();
                 break;
             case R.id.btn_continue:
@@ -295,7 +296,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
             Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_name));
             return;
         }
-        if (name.length()<3) {
+        if (name.length() < 3) {
             Function.CustomMessage(ReportUsActivity.this, getString(R.string.enter_name_minimum));
             return;
         }
@@ -360,7 +361,7 @@ public class ReportUsActivity extends AppCompatActivity implements View.OnClickL
         params.put("description", edt_description.getText().toString());
         Log.i("params", params.toString());
         RetrofitClient.getClient().create(Api.class).saveReport(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                .enqueue(new RetrofitCallBack(ReportUsActivity.this, saveReportApi, true,false));
+                .enqueue(new RetrofitCallBack(ReportUsActivity.this, saveReportApi, true, false));
     }
 
     retrofit2.Callback<ReportResponsModel> saveReportApi = new retrofit2.Callback<ReportResponsModel>() {

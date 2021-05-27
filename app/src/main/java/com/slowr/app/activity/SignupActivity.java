@@ -14,12 +14,19 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
@@ -27,6 +34,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.slowr.app.R;
+import com.slowr.app.adapter.RegCityListAdapter;
+import com.slowr.app.adapter.StateListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
@@ -34,10 +43,15 @@ import com.slowr.app.components.otpview.OnOtpCompletionListener;
 import com.slowr.app.components.otpview.OtpView;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.LoginResponse;
+import com.slowr.app.models.RegCityItemModel;
+import com.slowr.app.models.RegCityModel;
+import com.slowr.app.models.StateItemModel;
+import com.slowr.app.models.StateModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -56,6 +70,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     TextInputLayout til_confirm_password;
     LinearLayout layout_register;
     LinearLayout layout_otp;
+    LinearLayout layout_state;
+    LinearLayout layout_city;
     Button btn_sign_up;
     TextView txt_privacy_policy;
     TextView txt_login;
@@ -63,18 +79,38 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     TextView btn_sent_otp;
     Button btn_verify_otp;
     OtpView edt_otp;
+    ScrollView layout_root_register;
+    LinearLayout layout_list;
+    EditText edt_list_search;
+    RecyclerView rc_list;
+    TextView txt_state_content;
+    TextView txt_city_content;
+    TextView txt_page_title;
+    LinearLayout latout_img_back;
+    RadioGroup rg_gender;
+    RadioButton selectedRadioButton;
 
     int resentCount = 0;
     boolean isOTPView = false;
+    boolean isCityView = false;
 
     PopupWindow popupWindow;
 
     HashMap<String, String> params = new HashMap<String, String>();
     private Function _fun = new Function();
+    StateListAdapter stateListAdapter;
+    RegCityListAdapter cityListAdapter;
+    ArrayList<StateItemModel> stateList = new ArrayList<>();
+    ArrayList<RegCityItemModel> cityList = new ArrayList<>();
     String otp = "";
     String fieldType = "";
     String fieldValue = "";
     String fbToken = "";
+    String stateId = "";
+    String stateName = "";
+    String cityId = "";
+    String cityName = "";
+    int tabNo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,18 +135,37 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         til_confirm_password = findViewById(R.id.til_confirm_password);
         txt_privacy_policy = findViewById(R.id.txt_privacy_policy);
         txt_login = findViewById(R.id.txt_login);
-        img_back = findViewById(R.id.img_back);
+        img_back = findViewById(R.id.reg_img_back);
         btn_sent_otp = findViewById(R.id.txt_resend_otp);
         btn_verify_otp = findViewById(R.id.btn_verify_otp);
         edt_otp = findViewById(R.id.otp_view);
         layout_register = findViewById(R.id.layout_register);
         layout_otp = findViewById(R.id.layout_otp);
+        layout_root_register = findViewById(R.id.layout_root_register);
+        layout_list = findViewById(R.id.layout_list);
+        edt_list_search = findViewById(R.id.edt_list_search);
+        rc_list = findViewById(R.id.rc_list);
+        layout_state = findViewById(R.id.layout_state);
+        txt_state_content = findViewById(R.id.txt_state_content);
+        layout_city = findViewById(R.id.layout_city);
+        txt_city_content = findViewById(R.id.txt_city_content);
+        txt_page_title = findViewById(R.id.txt_page_title);
+        latout_img_back = findViewById(R.id.img_back);
+        rg_gender = findViewById(R.id.rg_gender);
 
         btn_sign_up.setOnClickListener(this);
         txt_login.setOnClickListener(this);
         img_back.setOnClickListener(this);
         btn_sent_otp.setOnClickListener(this);
         btn_verify_otp.setOnClickListener(this);
+        layout_state.setOnClickListener(this);
+        layout_city.setOnClickListener(this);
+        latout_img_back.setOnClickListener(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        rc_list.setLayoutManager(linearLayoutManager);
+        rc_list.setItemAnimator(new DefaultItemAnimator());
+        stateListAdapter = new StateListAdapter(stateList, SignupActivity.this);
+        cityListAdapter = new RegCityListAdapter(cityList, SignupActivity.this);
         edt_otp.setOtpCompletionListener(new OnOtpCompletionListener() {
             @Override
             public void onOtpCompleted(String _otp) {
@@ -140,6 +195,74 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             edt_email.setText(fieldValue);
         }
         GetDeviceId();
+        getStateList();
+        callBackFunction();
+    }
+
+    private void callBackFunction() {
+        stateListAdapter.setCallback(new StateListAdapter.Callback() {
+            @Override
+            public void itemClick(StateItemModel model) {
+                stateId = model.getStateId();
+                stateName = model.getStateName();
+                txt_state_content.setText(model.getStateName());
+                layout_list.setVisibility(View.GONE);
+                layout_root_register.setVisibility(View.VISIBLE);
+                isCityView = false;
+                edt_list_search.setText("");
+//                stateListAdapter.getFilter().filter("");
+                cityId = "";
+                cityName = "";
+                txt_city_content.setText("");
+                cityList.clear();
+                getCityList(stateId);
+            }
+        });
+        cityListAdapter.setCallback(new RegCityListAdapter.Callback() {
+            @Override
+            public void itemClick(RegCityItemModel model) {
+                cityId = model.getStateId();
+                cityName = model.getStateName();
+                txt_city_content.setText(model.getStateName());
+                layout_list.setVisibility(View.GONE);
+                layout_root_register.setVisibility(View.VISIBLE);
+                isCityView = false;
+                edt_list_search.setText("");
+                Function.hideSoftKeyboard(SignupActivity.this, btn_sign_up);
+//                cityListAdapter.getFilter().filter("");
+            }
+        });
+        edt_list_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (tabNo == 1) {
+                    stateListAdapter.getFilter().filter(edt_list_search.getText().toString());
+                } else if (tabNo == 2) {
+                    cityListAdapter.getFilter().filter(edt_list_search.getText().toString());
+                }
+
+            }
+        });
+    }
+
+    private void getStateList() {
+        RetrofitClient.getClient().create(Api.class).getState()
+                .enqueue(new RetrofitCallBack(SignupActivity.this, stateValue, false, false));
+    }
+
+    private void getCityList(String stateId) {
+        RetrofitClient.getClient().create(Api.class).getCityState(stateId)
+                .enqueue(new RetrofitCallBack(SignupActivity.this, cityValue, true, false));
     }
 
     private void GetDeviceId() {
@@ -229,11 +352,15 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.txt_login:
                 finish();
                 break;
-            case R.id.img_back:
+            case R.id.reg_img_back:
                 if (isOTPView) {
                     isOTPView = false;
                     layout_register.setVisibility(View.VISIBLE);
                     layout_otp.setVisibility(View.GONE);
+                } else if (isCityView) {
+                    layout_list.setVisibility(View.GONE);
+                    layout_root_register.setVisibility(View.VISIBLE);
+                    isCityView = false;
                 } else {
 //                    Intent i = new Intent(SignupActivity.this, LoginActivity.class);
 //                    startActivity(i);
@@ -259,6 +386,37 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     verifyOTP(otp);
                 }
                 break;
+            case R.id.layout_state:
+                layout_root_register.setVisibility(View.GONE);
+                layout_list.setVisibility(View.VISIBLE);
+                rc_list.setAdapter(stateListAdapter);
+                stateListAdapter.notifyDataSetChanged();
+                isCityView = true;
+                tabNo = 1;
+                txt_page_title.setText(getString(R.string.txt_select_state));
+                break;
+            case R.id.layout_city:
+                if (stateId.equals("")) {
+                    Function.CustomMessage(SignupActivity.this, getString(R.string.select_state));
+                    Function.hideSoftKeyboard(SignupActivity.this, v);
+                } else {
+                    if (cityList.size() != 0) {
+                        layout_root_register.setVisibility(View.GONE);
+                        layout_list.setVisibility(View.VISIBLE);
+                        rc_list.setAdapter(cityListAdapter);
+                        cityListAdapter.notifyDataSetChanged();
+                        isCityView = true;
+                        tabNo = 2;
+                        txt_page_title.setText(getString(R.string.txt_select_city));
+                    }
+                }
+                break;
+            case R.id.img_back:
+                layout_list.setVisibility(View.GONE);
+                layout_root_register.setVisibility(View.VISIBLE);
+                isCityView = false;
+                break;
+
         }
     }
 
@@ -319,7 +477,14 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             til_mobile_number.setErrorEnabled(false);
         }
-
+        if (stateId.equals("")) {
+            Function.CustomMessage(SignupActivity.this, getString(R.string.txt_select_state));
+            return;
+        }
+        if (cityId.equals("")) {
+            Function.CustomMessage(SignupActivity.this, getString(R.string.txt_select_city));
+            return;
+        }
         if (password.isEmpty()) {
             til_password.setError(getString(R.string.enter_password));
             til_password.requestFocus();
@@ -361,13 +526,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true,false));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true, false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).emailPhoneRegistration(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true,false));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, emailPhoneValidate, true, false));
                 }
             });
         }
@@ -387,13 +552,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true,false));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).sendOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true,false));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, sendOTP, true, false));
                 }
             });
         }
@@ -413,13 +578,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true,false));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).reSendOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true,false));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, reSendOTP, true, false));
                 }
             });
         }
@@ -439,13 +604,13 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true,false));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true, false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).verifyOTP(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true,false));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, verifyOTP, true, false));
                 }
             });
         }
@@ -457,6 +622,21 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         String confirmPassword = edt_confirm_password.getText().toString().trim();
         String name = edt_name.getText().toString().trim();
         String phone = edt_phone_number.getText().toString().trim();
+        String gender = "";
+        int selectedRadioButtonId = rg_gender.getCheckedRadioButtonId();
+        if (selectedRadioButtonId != -1) {
+            selectedRadioButton = findViewById(selectedRadioButtonId);
+            String selectedRbText = selectedRadioButton.getText().toString();
+            if (selectedRbText.equals(getString(R.string.txt_male))) {
+                gender = "1";
+            } else if (selectedRbText.equals(getString(R.string.txt_female))) {
+                gender = "2";
+            } else {
+                gender = "3";
+            }
+        } else {
+            gender = "";
+        }
         if (!params.isEmpty()) {
             params.clear();
         }
@@ -467,18 +647,21 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         params.put("password_confirmation", password);
         params.put("fcm_token", fbToken);
         params.put("platform", "2");
+        params.put("state_id", stateId);
+        params.put("city_id", cityId);
+        params.put("gender", gender);
 
         Log.i("params", params.toString());
 
         if (_fun.isInternetAvailable(SignupActivity.this)) {
             RetrofitClient.getClient().create(Api.class).register(params)
-                    .enqueue(new RetrofitCallBack(SignupActivity.this, register, true,false));
+                    .enqueue(new RetrofitCallBack(SignupActivity.this, register, true, false));
         } else {
             _fun.ShowNoInternetPopup(SignupActivity.this, new Function.NoInternetCallBack() {
                 @Override
                 public void isInternet() {
                     RetrofitClient.getClient().create(Api.class).register(params)
-                            .enqueue(new RetrofitCallBack(SignupActivity.this, register, true,false));
+                            .enqueue(new RetrofitCallBack(SignupActivity.this, register, true, false));
                 }
             });
         }
@@ -616,6 +799,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     Sessions.saveSession(Constant.UserEmail, dr.getEmail(), getApplicationContext());
                     Sessions.saveSession(Constant.UserPhone, dr.getPhone(), getApplicationContext());
                     Sessions.saveSession(Constant.ProsperId, dr.getProsperId(), getApplicationContext());
+                    Sessions.saveSession(Constant.RegCityId, cityId, getApplicationContext());
+                    Sessions.saveSession(Constant.RegStateId, stateId, getApplicationContext());
+                    Sessions.saveSession(Constant.RegCityName, cityName, getApplicationContext());
+                    Sessions.saveSession(Constant.RegStateName, stateName, getApplicationContext());
                     Intent signup = new Intent(SignupActivity.this, HomeActivity.class);
                     signup.putExtra("IsRegister", "True");
                     signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -632,6 +819,66 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         public void onFailure(Call call, Throwable t) {
 
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+    retrofit2.Callback<StateModel> stateValue = new retrofit2.Callback<StateModel>() {
+        @Override
+        public void onResponse(Call<StateModel> call, retrofit2.Response<StateModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                StateModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (stateList.size() != 0) {
+                        stateList.clear();
+                    }
+
+                    stateList.addAll(dr.getStateList());
+
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+    retrofit2.Callback<RegCityModel> cityValue = new retrofit2.Callback<RegCityModel>() {
+        @Override
+        public void onResponse(Call<RegCityModel> call, retrofit2.Response<RegCityModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                RegCityModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (cityList.size() != 0) {
+                        cityList.clear();
+                    }
+
+                    cityList.addAll(dr.getStateList());
+
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
             Log.d("TAG", t.getMessage());
             call.cancel();
         }
@@ -688,6 +935,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             isOTPView = false;
             layout_register.setVisibility(View.VISIBLE);
             layout_otp.setVisibility(View.GONE);
+        } else if (isCityView) {
+            layout_list.setVisibility(View.GONE);
+            layout_root_register.setVisibility(View.VISIBLE);
+            isCityView = false;
         } else {
             finish();
             super.onBackPressed();

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical"
     android:background="@color/color_white"
@@ -15,5 +16,14 @@
         android:visibility="visible"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_splash_load"/>
+
+<!--    <com.airbnb.lottie.LottieAnimationView-->
+<!--        android:id="@+id/animationView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        app:lottie_autoPlay="true"-->
+<!--        app:lottie_loop="false"-->
+<!--        app:lottie_rawRes="@raw/splash_screen" />-->
 
 </LinearLayout>

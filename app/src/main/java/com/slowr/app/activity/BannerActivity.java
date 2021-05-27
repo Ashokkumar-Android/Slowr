@@ -31,9 +31,6 @@ import com.slowr.app.api.RetrofitClient;
 import com.slowr.app.models.BannerDetailsModel;
 import com.slowr.app.models.BannerItemModel;
 import com.slowr.app.models.BannerModel;
-import com.slowr.app.models.CityChipModel;
-import com.slowr.app.models.CityItemModel;
-import com.slowr.app.models.ColorCodeItemModel;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.EditBannerModel;
 import com.slowr.app.utils.Constant;
@@ -153,6 +150,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
     }
+
     private void getBannerDetails(String _bannerId) {
         try {
             if (_fun.isInternetAvailable(BannerActivity.this)) {
@@ -171,6 +169,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             e.printStackTrace();
         }
     }
+
     private void DeleteBanner(String id) {
         AlertDialog.Builder alertDialog2 = new AlertDialog.Builder(
                 BannerActivity.this);
@@ -273,7 +272,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                     txt_no_banner_content_one.setText(getString(R.string.txt_no_ad_banner));
                     txt_no_banner_content_two.setText(getString(R.string.txt_no_ad_content));
                     btn_add_banner.setText(getString(R.string.post_ad));
-                    fb_add_banner.setVisibility(View.GONE);
+//                    fb_add_banner.setVisibility(View.GONE);
                 }
                 if (bannerList.size() == 0) {
                     layout_list.setVisibility(View.GONE);
@@ -395,9 +394,9 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                         btn_edit.setText(getString(R.string.txt_edit));
                     }
 
-                    if (detailsModel.getAdStatus().equals("9")||detailsModel.getAdStatus().equals("7")) {
+                    if (detailsModel.getAdStatus().equals("9") || detailsModel.getAdStatus().equals("7")) {
                         btn_edit.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         btn_edit.setVisibility(View.VISIBLE);
                     }
 
@@ -417,6 +416,7 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
             call.cancel();
         }
     };
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -441,6 +441,8 @@ public class BannerActivity extends AppCompatActivity implements View.OnClickLis
                     i.putExtra("Type", "1");
                     startActivityForResult(i, EDIT_CODE);
                 } else {
+                    if (bannerList.size() != 0)
+                        Function.CustomMessage(BannerActivity.this, getString(R.string.txt_no_ad_banner));
                     Intent p = new Intent(BannerActivity.this, AddPostActivity.class);
                     p.putExtra("AdType", 0);
                     startActivity(p);

@@ -12,6 +12,9 @@ public class HomeAdsModel {
     @SerializedName("productType")
     String productType;
 
+    @SerializedName("request_flyers")
+    String RequestUrl;
+
     @SerializedName("ads")
     ArrayList<AdItemModel> homeAdsList;
 
@@ -37,5 +40,13 @@ public class HomeAdsModel {
 
     public void setHomeAdsList(ArrayList<AdItemModel> homeAdsList) {
         this.homeAdsList = homeAdsList;
+    }
+
+    public String getRequestUrl() {
+        return RequestUrl;
+    }
+
+    public void setRequestUrl(String requestUrl) {
+        RequestUrl = requestUrl;
     }
 }

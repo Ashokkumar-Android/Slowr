@@ -103,6 +103,8 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
     String userProUrl = "";
     String userProsperId = "";
     String pageFrom = "";
+    String pageID = "3";
+    String adID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +119,13 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
             if (getIntent().hasExtra("PageFrom")) {
                 pageFrom = getIntent().getStringExtra("PageFrom");
             }
+        }
+        if (getIntent().hasExtra("PageID")) {
+            pageID = getIntent().getStringExtra("PageID");
+        }
+
+        if (getIntent().hasExtra("adID")) {
+            adID = getIntent().getStringExtra("adID");
         }
         txt_page_title = findViewById(R.id.txt_page_title);
         img_back = findViewById(R.id.img_back);
@@ -191,14 +200,17 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
 
     private void getAdList() {
         if (prosperId != null && !prosperId.equals("")) {
+
+            params.clear();
+
+            params.put("prosper_id", prosperId);
+            params.put("page", pageID);
+            params.put("ads_id", adID);
+            Log.i("Params", params.toString());
             if (_fun.isInternetAvailable(UserProfileActivity.this)) {
-                if (pageFrom.equals("3")) {
-                    RetrofitClient.getClient().create(Api.class).getUserAdDetailsSearch(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
-                } else {
-                    RetrofitClient.getClient().create(Api.class).getUserAdDetails(prosperId, Sessions.getSession(Constant.UserToken, getApplicationContext()))
-                            .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
-                }
+
+                RetrofitClient.getClient().create(Api.class).getUserAdDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
+                        .enqueue(new RetrofitCallBack(UserProfileActivity.this, adListResponse, true, false));
             } else {
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -295,12 +307,17 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                             pageLink = pageLink.replaceAll("//", "~");
                             pageLink = pageLink.replaceAll("/", "~");
                             Log.i("Link", pageLink);
+
                             if (pageLink.contains("https:~www.slowr.com~")) {
                                 pageLink = pageLink.replace("https:~www.slowr.com~", "");
                             }
+//                            if (pageLink.contains("https:~test.slowr.in~")) {
+//                                pageLink = pageLink.replace("https:~test.slowr.in~", "");
+//                            }
                             Log.i("Link", pageLink);
                             prosperId = pageLink;
                             pageFrom = "2";
+                            pageID = "7";
                             getAdList();
                         }
 
@@ -583,9 +600,13 @@ public class UserProfileActivity extends AppCompatActivity implements View.OnCli
                     }
                 } else {
 //                    Function.CustomMessage(UserProfileActivity.this, dr.getMessage());
-                    txt_prosperId_no.setText(prosperId.toUpperCase());
-                    layout_no_result.setVisibility(View.VISIBLE);
-                    layout_root.setVisibility(View.GONE);
+//                    txt_prosperId_no.setText(prosperId.toUpperCase());
+//                    layout_no_result.setVisibility(View.VISIBLE);
+//                    layout_root.setVisibility(View.GONE);
+                    Intent h = new Intent(UserProfileActivity.this, HomeActivity.class);
+                    h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    h.putExtra("ProsperId", prosperId.toUpperCase());
+                    startActivity(h);
 
                 }
             } catch (Exception e) {

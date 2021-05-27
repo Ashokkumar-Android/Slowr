@@ -2,7 +2,6 @@ package com.slowr.app.adapter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +18,12 @@ import com.bumptech.glide.Glide;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.slowr.app.R;
-import com.slowr.app.activity.LoginActivity;
 import com.slowr.app.activity.UserProfileActivity;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +97,8 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
                     Intent i = new Intent(ctx, UserProfileActivity.class);
                     i.putExtra("prosperId", categoryListFilter.get(getAdapterPosition()).getProsperId());
                     i.putExtra("PageFrom", "1");
+                    i.putExtra("PageID", "6");
+                    i.putExtra("adID", categoryList.get(getAdapterPosition()).getAdSlug());
                     ctx.startActivity(i);
                     break;
 
@@ -208,7 +207,7 @@ public class UserAdListAdapter extends RecyclerView.Adapter<UserAdListAdapter.My
 //                Function.RentalDurationText(holder.txt_price, movie.getCatGroup(), movie.getAdDuration(), ctx);
 //            }
 
-            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+            Function.SetRentalPrice(movie.getAdFee(), movie.getAdDuration(), holder.txt_price, movie.getCatGroup(), ctx);
             if (movie.getIsFavorite().equals("0")) {
                 holder.img_favorite.setLiked(false);
 

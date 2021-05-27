@@ -646,7 +646,12 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
 //        String totalDays = getCountOfDays(adStartDate, adEndDate);
             if (Type.equals("1")) {
                 isAddressEnable = false;
-                ShowPopupGST();
+                if (Sessions.getSession(Constant.RegStateId, getApplicationContext())!=null&&Sessions.getSession(Constant.RegStateId, getApplicationContext()).equals("")) {
+                    ShowPopupStateCity();
+                } else {
+                    ShowPopupGST();
+                }
+//                ShowPopupGST();
 
             } else {
                 addBannerCall();
@@ -688,7 +693,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             String bannerTitle = edt_banner_title.getText().toString().trim();
             String description = edt_description.getText().toString().trim();
             if (!imgPath.equals("")) {
-                File file = new File(Function.compressImage(imgPath));
+                File file = new File(imgPath);
                 final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
                 bannerImage = MultipartBody.Part.createFormData("image", file.getName(), requestFile);
             }
@@ -1366,7 +1371,7 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onClick(View v) {
                 Function.hideSoftKeyboard(AddBannerActivity.this, v);
-                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("")&&gstNo.equals(edt_gst_no_bill.getText().toString())) {
+                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("") && gstNo.equals(edt_gst_no_bill.getText().toString())) {
                     gstName = txt_company_name.getText().toString();
                     gstAddress = txt_company_address.getText().toString();
                     if (gstName.length() == 0) {
@@ -1670,5 +1675,40 @@ public class AddBannerActivity extends AppCompatActivity implements View.OnClick
             Log.e("TAG", "Exception in onPaymentError", e);
         }
 
+    }
+
+    public void ShowPopupStateCity() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_state_city, null);
+
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(false);
+        spinnerPopup.update();
+
+        TextView txt_skip = view.findViewById(R.id.txt_skip);
+        Button txt_done = view.findViewById(R.id.btn_ok);
+
+        txt_skip.setVisibility(View.GONE);
+        txt_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+
+        txt_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+                Intent profile = new Intent(AddBannerActivity.this, ProfileActivity.class);
+                profile.putExtra("PageFrom", "3");
+                startActivity(profile);
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

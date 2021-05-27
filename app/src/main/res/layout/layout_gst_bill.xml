@@ -151,6 +151,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
+                                android:maxLength="75"
                                 android:fontFamily="@font/nunito_regular" />
 
 
@@ -175,6 +176,7 @@
                             android:background="@drawable/bg_description"
                             android:fontFamily="@font/nunito_regular"
                             android:gravity="top"
+                            android:maxLength="200"
                             android:minHeight="60dp"
                             android:padding="@dimen/size_ten"
                             android:textSize="@dimen/size_fifteen" />

@@ -15,6 +15,7 @@ import com.slowr.app.models.AdItemModel;
 import com.slowr.app.models.HomeAdsModel;
 
 import java.util.List;
+import java.util.Random;
 
 public class HomeCustomListAdapter extends RecyclerView.Adapter<HomeCustomListAdapter.MyViewHolder> {
 
@@ -68,12 +69,32 @@ public class HomeCustomListAdapter extends RecyclerView.Adapter<HomeCustomListAd
             HomeAdsModel model = categoryList.get(position);
 
             holder.txt_list_title.setText(model.getListTitle().trim());
-            popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx);
+            if (model.getRequestUrl() != null && !model.getRequestUrl().equals("")) {
+                if (model.getHomeAdsList().size() < 5) {
+                    popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx, model.getRequestUrl(), model.getHomeAdsList().size() - 1);
+                } else if (model.getHomeAdsList().size() > 10) {
+                    Random r = new Random();
+                    int rp = r.nextInt(10 - 5) + 5;
+                    popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx, model.getRequestUrl(), rp);
+                } else {
+                    Random r = new Random();
+                    int rp = r.nextInt(model.getHomeAdsList().size() - 5) + 5;
+                    popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx, model.getRequestUrl(), rp);
+                }
+            } else {
+                popularAdListAdapter = new PopularAdListAdapter(model.getHomeAdsList(), ctx, "", -1);
+            }
+
             holder.rc_home_ad_list.setAdapter(popularAdListAdapter);
             popularAdListAdapter.setCallback(new PopularAdListAdapter.Callback() {
                 @Override
                 public void itemClick(AdItemModel model) {
                     callback.itemClick(model);
+                }
+
+                @Override
+                public void itemRequestClick(int pos) {
+                    callback.requestFlyersClick(model.getProductType());
                 }
             });
 
@@ -105,5 +126,7 @@ public class HomeCustomListAdapter extends RecyclerView.Adapter<HomeCustomListAd
         void itemClick(AdItemModel model);
 
         void viewMoreClick(int pos);
+
+        void requestFlyersClick(String pos);
     }
 }

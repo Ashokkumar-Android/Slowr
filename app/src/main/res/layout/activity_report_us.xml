@@ -146,6 +146,16 @@
                             android:text="@string/txt_des_count"
                             android:textColor="@color/color_hind" />
 
+
+                        <TextView
+                            android:id="@+id/txt_description_same"
+                            style="@style/attribute_content"
+                            android:layout_gravity="right"
+                            android:layout_marginTop="@dimen/size_five"
+                            android:visibility="gone"
+                            android:text="@string/txt_des_count"
+                            android:textColor="@color/color_hind" />
+
                     </LinearLayout>
 
                     <Button

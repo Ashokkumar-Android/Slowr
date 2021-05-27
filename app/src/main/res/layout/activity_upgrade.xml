@@ -352,7 +352,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/size_ten"
+            android:layout_marginRight="@dimen/size_ten"
             android:fontFamily="@font/nunito_regular"
+            android:gravity="center"
             android:text="@string/txt_prosper_suggestion"
             android:textColor="@color/color_black"
             android:textSize="@dimen/size_eighteen" />
@@ -478,7 +481,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="@dimen/size_fifteen">
+                android:padding="@dimen/size_ten">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -487,13 +490,14 @@
                     android:text="@string/txt_congratulations"
                     android:textAllCaps="true"
                     android:textColor="@color/txt_orange"
-                    android:textSize="@dimen/size_thirdy" />
+                    android:textSize="@dimen/size_twenty_six" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/size_ten"
                     android:fontFamily="@font/nunito_regular"
+                    android:gravity="center"
                     android:text="@string/propsper_success_content_one"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/size_eighteen" />
@@ -514,7 +518,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/nunito_regular"
                     android:text="AA1111"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/txt_orange"
                     android:textSize="@dimen/size_forty_five" />
 
 

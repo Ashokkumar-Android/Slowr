@@ -224,6 +224,11 @@ setLoginItem();
                 Intent h = new Intent(BaseActivity.this, HomeActivity.class);
                 h.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(h);
+
+//                Intent i = new Intent(BaseActivity.this,SignupActivity.class);
+//                i.putExtra("field", "mobile");
+//                i.putExtra("value","8012029736");
+//                startActivity(i);
             }
         });
         edt_search.setOnClickListener(new View.OnClickListener() {

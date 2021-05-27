@@ -1,7 +1,6 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,6 @@ import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Function;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdapter.MyViewHolder> {
@@ -25,26 +23,33 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
     private List<AdItemModel> categoryList;
     Callback callback;
     Context ctx;
+    String url = "";
+    int reqPos = 0;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txt_ad_title;
         public TextView txt_price;
         public CardView layout_root;
+        public CardView layout_request_flyer;
         public ImageView img_ad;
         LinearLayout layout_promoted;
         ImageView txt_premium_mark;
         ImageView img_top_page_mark;
+        ImageView img_request;
 
         public MyViewHolder(View view) {
             super(view);
             txt_ad_title = view.findViewById(R.id.txt_ad_title);
             txt_price = view.findViewById(R.id.txt_price);
             layout_root = view.findViewById(R.id.layout_root);
+            layout_request_flyer = view.findViewById(R.id.layout_request_flyer);
             img_ad = view.findViewById(R.id.img_ad);
             layout_promoted = view.findViewById(R.id.layout_promoted);
             img_top_page_mark = view.findViewById(R.id.img_top_page_mark);
             txt_premium_mark = view.findViewById(R.id.txt_premium_mark);
+            img_request = view.findViewById(R.id.img_request);
             layout_root.setOnClickListener(this);
+            layout_request_flyer.setOnClickListener(this);
         }
 
         @Override
@@ -53,15 +58,20 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                 case R.id.layout_root:
                     callback.itemClick(categoryList.get(getAdapterPosition()));
                     break;
+                case R.id.layout_request_flyer:
+                    callback.itemRequestClick(getAdapterPosition());
+                    break;
 
             }
 
         }
     }
 
-    public PopularAdListAdapter(List<AdItemModel> _categoryList, Context ctx) {
+    public PopularAdListAdapter(List<AdItemModel> _categoryList, Context ctx, String url, int pos) {
         this.categoryList = _categoryList;
         this.ctx = ctx;
+        this.url = url;
+        this.reqPos = pos;
     }
 
     @Override
@@ -78,7 +88,7 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
 
             holder.txt_ad_title.setText(movie.getAdTitle().trim());
 
-            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+            Function.SetRentalPrice(movie.getAdFee(), movie.getAdDuration(), holder.txt_price, movie.getCatGroup(), ctx);
 //            if (movie.getAdFee() != null) {
 //                holder.txt_price.setVisibility(View.VISIBLE);
 //                String price = "";
@@ -124,13 +134,13 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                         defu = R.drawable.ic_need_pet;
                     } else if (movie.getAdParentId() != null && movie.getAdParentId().equals("5")) {
                         defu = R.drawable.ic_need_book;
-                    }else {
+                    } else {
                         defu = R.drawable.ic_need_product;
                     }
                 }
                 Glide.with(ctx)
                         .load(movie.getPhotoType())
-                         .error(defu)
+                        .error(defu)
                         .placeholder(defu)
                         .into(holder.img_ad);
             } else {
@@ -146,30 +156,26 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
                         .placeholder(defu)
                         .into(holder.img_ad);
             }
-//        if (movie.getPhotoType() != null) {
-//            JSONArray jsonArray = null;
-//            try {
-//                jsonArray = new JSONArray(movie.getPhotoType());
-//                String[] strArr = new String[jsonArray.length()];
-//                String imgPath = "";
-//                if (strArr.length != 0) {
-//
-//                    for (int i = 0; i < jsonArray.length(); i++) {
-//                        strArr[i] = jsonArray.getString(i);
-//                    }
-//                    imgPath = Sessions.getSession(Constant.ImagePath, ctx) + "/" + strArr[0];
-//
-//
-//                    Log.i("ImagePath", imgPath);
-//
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//
-//        }
+
+            if (reqPos != -1 && !url.equals("") && position == reqPos) {
+                holder.layout_request_flyer.setVisibility(View.VISIBLE);
+                if (movie.getCatGroup() != null && movie.getCatGroup().equals("1")) {
+                    Glide.with(ctx)
+                            .load(url)
+                            .error(R.drawable.ic_no_image)
+                            .placeholder(R.drawable.ic_no_image)
+                            .into(holder.img_request);
+                }else {
+                    Glide.with(ctx)
+                            .load(url)
+                            .error(R.drawable.ic_service_big)
+                            .placeholder(R.drawable.ic_service_big)
+                            .into(holder.img_request);
+                }
+            } else {
+                holder.layout_request_flyer.setVisibility(View.GONE);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -192,6 +198,8 @@ public class PopularAdListAdapter extends RecyclerView.Adapter<PopularAdListAdap
 
     public interface Callback {
         void itemClick(AdItemModel model);
+
+        void itemRequestClick(int pos);
 
 
     }

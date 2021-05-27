@@ -6,9 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
@@ -21,6 +25,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,12 +34,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.gioco.image.cropper.CropImage;
 import com.gioco.image.cropper.CropImageView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.slowr.app.R;
+import com.slowr.app.adapter.RegCityListAdapter;
+import com.slowr.app.adapter.StateListAdapter;
 import com.slowr.app.api.Api;
 import com.slowr.app.api.RetrofitCallBack;
 import com.slowr.app.api.RetrofitClient;
@@ -42,6 +53,10 @@ import com.slowr.app.components.otpview.OnOtpCompletionListener;
 import com.slowr.app.components.otpview.OtpView;
 import com.slowr.app.models.DefaultResponse;
 import com.slowr.app.models.ProfileModel;
+import com.slowr.app.models.RegCityItemModel;
+import com.slowr.app.models.RegCityModel;
+import com.slowr.app.models.StateItemModel;
+import com.slowr.app.models.StateModel;
 import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
@@ -52,7 +67,7 @@ import com.slowr.matisse.internal.entity.CaptureStrategy;
 import com.slowr.matisse.ui.MatisseActivity;
 
 import java.io.File;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,6 +93,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     HeartBeatView btn_fancy_prosper_id;
     Button btn_profile_verification;
     ImageView img_profile_pic;
+    ImageView img_profile_info;
     TextInputLayout til_email;
     TextInputLayout til_mobile_number;
     TextInputLayout til_edt_name;
@@ -90,6 +106,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     TextView txt_verified;
     ImageView img_remove;
     private TextView txt_otp_content;
+    LinearLayout layout_state;
+    LinearLayout layout_city;
+    LinearLayout layout_list;
+    EditText edt_list_search;
+    RecyclerView rc_list;
+    TextView txt_state_content;
+    TextView txt_city_content;
+    TextView txt_city_title;
+    LinearLayout layout_img_back;
+    RadioGroup rg_gender;
+    RadioButton selectedRadioButton;
+    RadioButton rb_male;
+    RadioButton rb_female;
+    RadioButton rb_transgender;
+    LinearLayout layout_profile_root;
+    TextView txt_user_address;
+    TextView txt_state_title;
+    TextView txt_city_title_content;
 
     private Function _fun = new Function();
     String imgPath = "";
@@ -100,6 +134,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     boolean isOTPView = false;
     boolean isEditView = false;
+    boolean isCityView = false;
     String otp = "";
     OtpView otp_view;
     TextView txt_resend_otp;
@@ -114,9 +149,19 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     MultipartBody.Part chatImage = null;
     String NotificationId = "";
     String adCount = "";
+    String pageViewCount = "";
     boolean isPageChange = false;
 
     private PopupWindow spinnerPopup, demoPopup;
+    StateListAdapter stateListAdapter;
+    RegCityListAdapter cityListAdapter;
+    ArrayList<StateItemModel> stateList = new ArrayList<>();
+    ArrayList<RegCityItemModel> cityList = new ArrayList<>();
+    String stateId = "";
+    String cityId = "";
+    String stateName = "";
+    String cityName = "";
+    int tabNo = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +173,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void doDeclaration() {
         if (getIntent().hasExtra("PageFrom")) {
             PageFrom = getIntent().getStringExtra("PageFrom");
-            NotificationId = getIntent().getStringExtra("NotificationId");
-            NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notifManager.cancelAll();
-            ReadNotification(NotificationId);
+            if (getIntent().hasExtra("NotificationId")) {
+                NotificationId = getIntent().getStringExtra("NotificationId");
+                NotificationManager notifManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notifManager.cancelAll();
+                ReadNotification(NotificationId);
+            }
         }
         txt_page_title = findViewById(R.id.txt_page_title);
         txt_prosperId = findViewById(R.id.txt_prosperId);
@@ -164,6 +211,25 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txt_otp_content = findViewById(R.id.txt_otp_content);
         img_remove = findViewById(R.id.img_remove);
         btn_demo_page = findViewById(R.id.btn_demo_page);
+        layout_profile_root = findViewById(R.id.layout_profile_root);
+        txt_user_address = findViewById(R.id.txt_user_address);
+        img_profile_info = findViewById(R.id.img_profile_info);
+        rb_male = findViewById(R.id.rb_male);
+        rb_female = findViewById(R.id.rb_female);
+        rb_transgender = findViewById(R.id.rb_transgender);
+        txt_state_title = findViewById(R.id.txt_state_title);
+
+        layout_list = findViewById(R.id.layout_list);
+        edt_list_search = findViewById(R.id.edt_list_search);
+        rc_list = findViewById(R.id.rc_list);
+        layout_state = findViewById(R.id.layout_state);
+        txt_state_content = findViewById(R.id.txt_state_content);
+        layout_city = findViewById(R.id.layout_city);
+        txt_city_content = findViewById(R.id.txt_city_content);
+        txt_city_title = findViewById(R.id.txt_city_title);
+        layout_img_back = findViewById(R.id.layout_img_back);
+        rg_gender = findViewById(R.id.rg_gender);
+        txt_city_title_content = findViewById(R.id.txt_city_title_content);
 
         txt_page_title.setText(getString(R.string.txt_profile));
 
@@ -180,6 +246,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         txt_user_email_verify.setOnClickListener(this);
         img_remove.setOnClickListener(this);
         btn_demo_page.setOnClickListener(this);
+        layout_state.setOnClickListener(this);
+        layout_city.setOnClickListener(this);
+        layout_img_back.setOnClickListener(this);
+        img_profile_info.setOnClickListener(this);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        rc_list.setLayoutManager(linearLayoutManager);
+        rc_list.setItemAnimator(new DefaultItemAnimator());
+        stateListAdapter = new StateListAdapter(stateList, ProfileActivity.this);
+        cityListAdapter = new RegCityListAdapter(cityList, ProfileActivity.this);
+
         btn_fancy_prosper_id.start();
         btn_fancy_prosper_id.setDurationBasedOnBPM(30);
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
@@ -249,6 +326,71 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (Sessions.getSessionBool(Constant.LoginType, ProfileActivity.this)) {
             txt_change_password.setVisibility(View.INVISIBLE);
         }
+//        getStateList();
+        callBackFunction();
+    }
+
+    private void callBackFunction() {
+        stateListAdapter.setCallback(new StateListAdapter.Callback() {
+            @Override
+            public void itemClick(StateItemModel model) {
+                stateId = model.getStateId();
+                txt_state_content.setText(model.getStateName());
+                layout_list.setVisibility(View.GONE);
+                layout_profile_root.setVisibility(View.VISIBLE);
+                isCityView = false;
+                edt_list_search.setText("");
+//                stateListAdapter.getFilter().filter("");
+                cityId = "";
+                txt_city_content.setText("");
+                cityList.clear();
+                getCityList(stateId);
+            }
+        });
+        cityListAdapter.setCallback(new RegCityListAdapter.Callback() {
+            @Override
+            public void itemClick(RegCityItemModel model) {
+                cityId = model.getStateId();
+                txt_city_content.setText(model.getStateName());
+                layout_list.setVisibility(View.GONE);
+                layout_profile_root.setVisibility(View.VISIBLE);
+                isCityView = false;
+                edt_list_search.setText("");
+                Function.hideSoftKeyboard(ProfileActivity.this, btn_edit);
+//                cityListAdapter.getFilter().filter("");
+            }
+        });
+        edt_list_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (tabNo == 1) {
+                    stateListAdapter.getFilter().filter(edt_list_search.getText().toString());
+                } else if (tabNo == 2) {
+                    cityListAdapter.getFilter().filter(edt_list_search.getText().toString());
+                }
+
+            }
+        });
+    }
+
+    private void getStateList() {
+        RetrofitClient.getClient().create(Api.class).getState()
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, stateValue, true, false));
+    }
+
+    private void getCityList(String stateId) {
+        RetrofitClient.getClient().create(Api.class).getCityState(stateId)
+                .enqueue(new RetrofitCallBack(ProfileActivity.this, cityValue, true, false));
     }
 
     private void ReadNotification(String noteId) {
@@ -289,7 +431,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 } else if (isOTPView) {
                     isOTPView = false;
                     layout_otp.setVisibility(View.GONE);
-                    layout_profile_details_edit.setVisibility(View.VISIBLE);
+                    layout_profile_root.setVisibility(View.VISIBLE);
                 } else if (isEditView) {
                     isEditView = false;
                     txt_page_title.setText(getString(R.string.txt_profile));
@@ -318,9 +460,28 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 if (txt_user_mobile.getText().toString().equals(getString(R.string.click_edit_phone))) {
                     edt_phone_number.setText("");
+                    edt_phone_number.requestFocus();
+                    til_mobile_number.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.txt_orange)));
                 } else {
                     edt_phone_number.setText(txt_user_mobile.getText().toString());
                 }
+                txt_city_content.setText(cityName);
+                txt_state_content.setText(stateName);
+                if (stateId == null) {
+                    txt_state_title.setTypeface(txt_state_title.getTypeface(), Typeface.BOLD);
+                    txt_city_title_content.setTypeface(txt_state_title.getTypeface(), Typeface.BOLD);
+                    txt_state_title.setTextColor(getResources().getColor(R.color.txt_orange));
+                    txt_city_title_content.setTextColor(getResources().getColor(R.color.txt_orange));
+                } else {
+                    if (stateId.equals("")) {
+                        txt_state_title.setTypeface(txt_state_title.getTypeface(), Typeface.BOLD);
+                        txt_city_title_content.setTypeface(txt_state_title.getTypeface(), Typeface.BOLD);
+                        txt_state_title.setTextColor(getResources().getColor(R.color.txt_orange));
+                        txt_city_title_content.setTextColor(getResources().getColor(R.color.txt_orange));
+                    }
+                }
+                getStateList();
+
                 break;
             case R.id.img_profile_pic:
                 if (isEditView) {
@@ -472,10 +633,44 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     Intent j = new Intent(ProfileActivity.this, UserProfileActivity.class);
                     j.putExtra("prosperId", Sessions.getSession(Constant.ProsperId, getApplicationContext()));
                     j.putExtra("PageFrom", "1");
+                    j.putExtra("PageID", "3");
                     startActivityForResult(j, PROSPER_ID_CODE);
                 } else {
                     ShowPopupProfileDemo();
                 }
+                break;
+            case R.id.layout_state:
+                layout_profile_root.setVisibility(View.GONE);
+                layout_list.setVisibility(View.VISIBLE);
+                rc_list.setAdapter(stateListAdapter);
+                stateListAdapter.notifyDataSetChanged();
+                isCityView = true;
+                tabNo = 1;
+                txt_city_title.setText(getString(R.string.txt_select_state));
+                break;
+            case R.id.layout_city:
+                if (stateId.equals("")) {
+                    Function.CustomMessage(ProfileActivity.this, getString(R.string.select_state));
+                    Function.hideSoftKeyboard(ProfileActivity.this, v);
+                } else {
+                    if (cityList.size() != 0) {
+                        layout_profile_root.setVisibility(View.GONE);
+                        layout_list.setVisibility(View.VISIBLE);
+                        rc_list.setAdapter(cityListAdapter);
+                        cityListAdapter.notifyDataSetChanged();
+                        isCityView = true;
+                        tabNo = 2;
+                        txt_city_title.setText(getString(R.string.txt_select_city));
+                    }
+                }
+                break;
+            case R.id.layout_img_back:
+                layout_list.setVisibility(View.GONE);
+                layout_profile_root.setVisibility(View.VISIBLE);
+                isCityView = false;
+                break;
+            case R.id.img_profile_info:
+                ShowPopupViewCount();
                 break;
         }
     }
@@ -551,7 +746,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         } else {
             til_mobile_number.setErrorEnabled(false);
         }
-
+        if (stateId.equals("")) {
+            Function.CustomMessage(ProfileActivity.this, getString(R.string.txt_select_state));
+            return;
+        }
+        if (cityId.equals("")) {
+            Function.CustomMessage(ProfileActivity.this, getString(R.string.txt_select_city));
+            return;
+        }
         if (_fun.isInternetAvailable(ProfileActivity.this)) {
             if (currentMobileNumber.equals(edt_phone_number.getText().toString())) {
                 if (isImageChanged) {
@@ -583,6 +785,21 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void saveProfileDetails() {
+        String gender = "";
+        int selectedRadioButtonId = rg_gender.getCheckedRadioButtonId();
+        if (selectedRadioButtonId != -1) {
+            selectedRadioButton = findViewById(selectedRadioButtonId);
+            String selectedRbText = selectedRadioButton.getText().toString();
+            if (selectedRbText.equals(getString(R.string.txt_male))) {
+                gender = "1";
+            } else if (selectedRbText.equals(getString(R.string.txt_female))) {
+                gender = "2";
+            } else {
+                gender = "3";
+            }
+        } else {
+            gender = "";
+        }
         if (!params.isEmpty()) {
             params.clear();
         }
@@ -591,6 +808,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         params.put("phone", edt_phone_number.getText().toString());
         params.put("is_mobile_verified", "1");
         params.put("is_email_verified", "0");
+        params.put("state_id", stateId);
+        params.put("city_id", cityId);
+        params.put("gender", gender);
         Log.i("Params", params.toString());
         RetrofitClient.getClient().create(Api.class).uploadProfileDetails(params, Sessions.getSession(Constant.UserToken, getApplicationContext()))
                 .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileDetails, true, false));
@@ -606,7 +826,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 //                .enqueue(new RetrofitCallBack(ProfileActivity.this, uploadProfileImage, true));
 
         //creating a file
-        File file = new File(Function.compressImage(imgPath));
+        File file = new File(imgPath);
         final RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         chatImage = MultipartBody.Part.createFormData("avator", file.getName(), requestFile);
 
@@ -763,6 +983,23 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                             txt_user_mobile_verify.setTextColor(getResources().getColor(R.color.chat_sticker_circle_bg));
                         }
 
+                    if (dr.getUserDetailsModel().getStateId() != null && dr.getUserDetailsModel().getCityId() != null) {
+                        if (!dr.getUserDetailsModel().getStateId().equals("") && !dr.getUserDetailsModel().getCityId().equals("")) {
+                            txt_user_address.setText(dr.getUserDetailsModel().getCityName() + ", " + dr.getUserDetailsModel().getStateName());
+                            stateName = dr.getUserDetailsModel().getStateName();
+                            cityName = dr.getUserDetailsModel().getCityName();
+                            stateId = dr.getUserDetailsModel().getStateId();
+                            cityId = dr.getUserDetailsModel().getCityId();
+                            Sessions.saveSession(Constant.RegCityId, cityId, getApplicationContext());
+                            Sessions.saveSession(Constant.RegStateId, stateId, getApplicationContext());
+                            Sessions.saveSession(Constant.RegCityName, cityName, getApplicationContext());
+                            Sessions.saveSession(Constant.RegStateName, stateName, getApplicationContext());
+                        } else {
+                            txt_user_address.setVisibility(View.GONE);
+                        }
+                    } else {
+                        txt_user_address.setVisibility(View.GONE);
+                    }
 //                    if (dr.getUserDetailsModel().getUserEmail() != null && !dr.getUserDetailsModel().getUserEmail().equals(""))
 //                        if (dr.getUserDetailsModel().getIsEmailVerified().equals("1")) {
 //                            txt_user_email_verify.setText("Verified");
@@ -772,11 +1009,22 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 //                            txt_user_email_verify.setText("Not Verified");
 //                            txt_user_email_verify.setTextColor(getResources().getColor(R.color.chat_sticker_circle_bg));
 //                        }
-
+                    pageViewCount = dr.getUserDetailsModel().getProsperPageCount();
+                    if (dr.getUserDetailsModel().getUserGender() != null) {
+                        if (dr.getUserDetailsModel().getUserGender().equals("1")) {
+                            rb_male.setChecked(true);
+                        } else if (dr.getUserDetailsModel().getUserGender().equals("2")) {
+                            rb_female.setChecked(true);
+                        } else if (dr.getUserDetailsModel().getUserGender().equals("3")) {
+                            rb_transgender.setChecked(true);
+                        }
+                    }
                     Sessions.saveSession(Constant.UserPhone, currentMobileNumber, getApplicationContext());
                     Sessions.saveSession(Constant.UserName, dr.getUserDetailsModel().getUserName(), getApplicationContext());
                     Sessions.saveSession(Constant.ProsperId, dr.getUserDetailsModel().getProsperId(), getApplicationContext());
                     Sessions.saveSession(Constant.UserProfile, dr.getUserDetailsModel().getUserPhoto(), getApplicationContext());
+
+
                     Glide.with(ProfileActivity.this)
                             .load(dr.getUserDetailsModel().getUserPhoto())
                             .circleCrop()
@@ -804,6 +1052,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         img_remove.setVisibility(View.VISIBLE);
                     } else {
                         img_remove.setVisibility(View.GONE);
+                    }
+                    if (PageFrom.equals("3")) {
+                        btn_edit.performClick();
                     }
                 } else {
                     Function.CustomMessage(ProfileActivity.this, dr.getMessage());
@@ -884,6 +1135,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         } else if (requestCode == PROSPER_ID_CODE) {
             if (_fun.isInternetAvailable(ProfileActivity.this)) {
+                PageFrom = "";
                 getUserDetails();
             } else {
                 _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
@@ -947,22 +1199,31 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     Function.CustomMessage(ProfileActivity.this, dr.getMessage());
-                    layout_edit_profile.setVisibility(View.GONE);
-                    layout_profile_details.setVisibility(View.VISIBLE);
-                    btn_edit.setVisibility(View.VISIBLE);
-                    isEditView = false;
-                    txt_page_title.setText(getString(R.string.txt_profile));
+
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
-                    if (_fun.isInternetAvailable(ProfileActivity.this)) {
-                        getUserDetails();
+                    if (PageFrom.equals("3")) {
+                        Sessions.saveSession(Constant.RegCityId, cityId, getApplicationContext());
+                        Sessions.saveSession(Constant.RegStateId, stateId, getApplicationContext());
+                        Sessions.saveSession(Constant.RegCityName, cityName, getApplicationContext());
+                        Sessions.saveSession(Constant.RegStateName, stateName, getApplicationContext());
+                        finish();
                     } else {
-                        _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
-                            @Override
-                            public void isInternet() {
-                                getUserDetails();
-                            }
-                        });
+                        layout_edit_profile.setVisibility(View.GONE);
+                        layout_profile_details.setVisibility(View.VISIBLE);
+                        btn_edit.setVisibility(View.VISIBLE);
+                        isEditView = false;
+                        txt_page_title.setText(getString(R.string.txt_profile));
+                        if (_fun.isInternetAvailable(ProfileActivity.this)) {
+                            getUserDetails();
+                        } else {
+                            _fun.ShowNoInternetPopup(ProfileActivity.this, new Function.NoInternetCallBack() {
+                                @Override
+                                public void isInternet() {
+                                    getUserDetails();
+                                }
+                            });
+                        }
                     }
                 } else {
                     Function.CustomMessage(ProfileActivity.this, dr.getMessage());
@@ -991,7 +1252,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
 
                 if (dr.isStatus()) {
-                    layout_profile_details_edit.setVisibility(View.GONE);
+                    layout_profile_root.setVisibility(View.GONE);
                     layout_otp.setVisibility(View.VISIBLE);
                     isOTPView = true;
                     txt_otp_content.setText(getString(R.string.txt_otp_content));
@@ -1058,7 +1319,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 DefaultResponse dr = response.body();
                 if (dr.isStatus()) {
                     layout_otp.setVisibility(View.GONE);
-                    layout_profile_details_edit.setVisibility(View.VISIBLE);
+                    layout_profile_root.setVisibility(View.VISIBLE);
                     isOTPView = false;
                     if (isEmail) {
                         isEmail = false;
@@ -1150,7 +1411,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
                 if (dr.isStatus()) {
                     txt_otp_content.setText(getString(R.string.txt_otp_content_email));
-                    layout_profile_details_edit.setVisibility(View.GONE);
+                    layout_profile_root.setVisibility(View.GONE);
                     layout_otp.setVisibility(View.VISIBLE);
                     isOTPView = true;
                     isEmail = true;
@@ -1228,6 +1489,70 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         }
     };
 
+    retrofit2.Callback<StateModel> stateValue = new retrofit2.Callback<StateModel>() {
+        @Override
+        public void onResponse(Call<StateModel> call, retrofit2.Response<StateModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                StateModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (stateList.size() != 0) {
+                        stateList.clear();
+                    }
+
+                    stateList.addAll(dr.getStateList());
+                    if (stateId != null && !stateId.equals("")) {
+                        getCityList(stateId);
+                    }
+
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+    retrofit2.Callback<RegCityModel> cityValue = new retrofit2.Callback<RegCityModel>() {
+        @Override
+        public void onResponse(Call<RegCityModel> call, retrofit2.Response<RegCityModel> response) {
+
+            Log.d("Response", response.isSuccessful() + " : " + response.raw());//response.body()!=null);
+
+
+            try {
+                RegCityModel dr = response.body();
+                if (dr.isStatus()) {
+                    if (cityList.size() != 0) {
+                        cityList.clear();
+                    }
+
+                    cityList.addAll(dr.getStateList());
+
+                } else {
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+//        }
+
+        @Override
+        public void onFailure(Call call, Throwable t) {
+            Log.d("TAG", t.getMessage());
+            call.cancel();
+        }
+    };
+
     private void callOTP() {
         String phone = edt_phone_number.getText().toString().trim();
         if (!params.isEmpty()) {
@@ -1256,13 +1581,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         } else if (isOTPView) {
             isOTPView = false;
             layout_otp.setVisibility(View.GONE);
-            layout_profile_details_edit.setVisibility(View.VISIBLE);
+            layout_profile_root.setVisibility(View.VISIBLE);
         } else if (isEditView) {
             isEditView = false;
             txt_page_title.setText(getString(R.string.txt_profile));
             layout_edit_profile.setVisibility(View.GONE);
             layout_profile_details.setVisibility(View.VISIBLE);
             btn_edit.setVisibility(View.VISIBLE);
+        } else if (isCityView) {
+            layout_list.setVisibility(View.GONE);
+            layout_profile_root.setVisibility(View.VISIBLE);
+            isCityView = false;
         } else {
             finish();
             super.onBackPressed();
@@ -1410,5 +1739,28 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onResume() {
         isPageChange = false;
         super.onResume();
+    }
+
+    public void ShowPopupViewCount() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_popup_profile_view, null);
+        spinnerPopup = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopup.setOutsideTouchable(false);
+        spinnerPopup.setFocusable(true);
+        spinnerPopup.update();
+        LinearLayout layout_delete = view.findViewById(R.id.layout_delete);
+        LinearLayout layout_ad_view = view.findViewById(R.id.layout_ad_view);
+        TextView txt_page_view_count = view.findViewById(R.id.txt_page_view_count);
+        txt_page_view_count.setText(pageViewCount);
+
+        layout_delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopup.dismiss();
+            }
+        });
+        spinnerPopup.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

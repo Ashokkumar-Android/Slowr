@@ -999,6 +999,11 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                         Sessions.saveSession(Constant.UserProfile, dr.getProUrl(), getApplicationContext());
                         Sessions.saveSession(Constant.UserVerified, dr.getIsVerified(), getApplicationContext());
 
+                        Sessions.saveSession(Constant.RegCityId, dr.getCityId(), getApplicationContext());
+                        Sessions.saveSession(Constant.RegStateId, dr.getStateId(), getApplicationContext());
+                        Sessions.saveSession(Constant.RegCityName, dr.getCityName(), getApplicationContext());
+                        Sessions.saveSession(Constant.RegStateName, dr.getStateName(), getApplicationContext());
+
                         if (dr.getIsRegister().equals("1")) {
                             Intent signup = new Intent(LoginActivity.this, HomeActivity.class);
                             signup.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -1193,6 +1198,10 @@ public class LoginActivity extends AppCompatActivity implements FacebookHelper.O
                     Sessions.saveSession(Constant.ProsperId, dr.getProsperId(), getApplicationContext());
                     Sessions.saveSession(Constant.UserProfile, dr.getProUrl(), getApplicationContext());
                     Sessions.saveSession(Constant.UserVerified, dr.getIsVerified(), getApplicationContext());
+                    Sessions.saveSession(Constant.RegCityId, dr.getCityId(), getApplicationContext());
+                    Sessions.saveSession(Constant.RegStateId, dr.getStateId(), getApplicationContext());
+                    Sessions.saveSession(Constant.RegCityName, dr.getCityName(), getApplicationContext());
+                    Sessions.saveSession(Constant.RegStateName, dr.getStateName(), getApplicationContext());
 
                     if (dr.getIsRegister().equals("1")) {
                         Intent signup = new Intent(LoginActivity.this, HomeActivity.class);

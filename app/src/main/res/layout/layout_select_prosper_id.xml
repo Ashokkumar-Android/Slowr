@@ -34,18 +34,33 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="@dimen/size_five"
+                android:gravity="center"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txt_prosper_id"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/nunito_regular"
-                    android:text="AA1111"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="@dimen/size_forty_five" />
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_prosper_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="AA1111"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/size_forty_five" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/nunito_regular"
+                        android:text="@string/txt_inc_tax"
+                        android:textColor="@color/color_black"
+                        android:textSize="@dimen/size_eighteen" />
+                </LinearLayout>
 
 
                 <Button

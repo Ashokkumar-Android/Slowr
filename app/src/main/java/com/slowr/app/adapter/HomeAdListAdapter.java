@@ -96,6 +96,8 @@ public class HomeAdListAdapter extends RecyclerView.Adapter<HomeAdListAdapter.My
                     Intent i = new Intent(ctx, UserProfileActivity.class);
                     i.putExtra("prosperId", categoryList.get(getAdapterPosition()).getProsperId());
                     i.putExtra("PageFrom", "1");
+                    i.putExtra("PageID", "6");
+                    i.putExtra("adID", categoryList.get(getAdapterPosition()).getAdSlug());
                     ctx.startActivity(i);
                     break;
 

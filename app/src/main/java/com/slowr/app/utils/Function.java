@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -393,6 +394,7 @@ public class Function {
         vi.setBackground(gd);
     }
 
+
     public static void ShareLink(Activity ctx, String adId, String adTitle, String catGroup, String imgUrl) {
         ViewDialog viewDialog;
         viewDialog = new ViewDialog(ctx);
@@ -403,14 +405,19 @@ public class Function {
         builder.setDescription("Rent Anything Hire Anybody \"Temporarily\"");
         builder.setImageUrl(Uri.parse(imgUrl));
 
+
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setSocialMetaTagParameters(builder.build())
-                .setLink(Uri.parse("https://www.slowr.com/ad-details/" + adId))
+                .setLink(Uri.parse("https://www.slowr.com/view/" + adId))
+//                .setLink(Uri.parse("https://test.slowr.in/view/" + adId))
+
                 .setDomainUriPrefix("https://appslowr.page.link")
+//                .setNavigationInfoParameters(new DynamicLink.NavigationInfoParameters.Builder().setForcedRedirectEnabled(false)
+//                        .build())
                 // Open links with this app on Android
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+//                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().setFallbackUrl(Uri.parse("https://www.slowr.com/ad-details/" + adId)).build())
                 // Open links with com.example.ios on iOS
-                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").build())
+//                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").setFallbackUrl(Uri.parse("https://www.slowr.com/ad-details/" + adId)).build())
                 .buildShortDynamicLink()
                 .addOnCompleteListener(ctx, new OnCompleteListener<ShortDynamicLink>() {
 
@@ -461,11 +468,14 @@ public class Function {
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setSocialMetaTagParameters(builder.build())
                 .setLink(Uri.parse("https://www.slowr.com/" + prosperId))
+//                .setLink(Uri.parse("https://test.slowr.in/" + prosperId))
                 .setDomainUriPrefix("https://slowrprofile.page.link")
                 // Open links with this app on Android
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+//                .setNavigationInfoParameters(new DynamicLink.NavigationInfoParameters.Builder().setForcedRedirectEnabled(false)
+//                        .build())
+//                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 // Open links with com.example.ios on iOS
-                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").build())
+//                .setIosParameters(new DynamicLink.IosParameters.Builder("com.app.slowr.dev").build())
                 .buildShortDynamicLink()
                 .addOnCompleteListener(ctx, new OnCompleteListener<ShortDynamicLink>() {
 
@@ -575,6 +585,7 @@ public class Function {
         }
         FileOutputStream out = null;
         String filepath = getFilename();
+        Log.i("File location", filepath);
         try {
             //new File(imageFilePath).delete();
             out = new FileOutputStream(filepath);
@@ -753,5 +764,35 @@ public class Function {
         Matcher m = p.matcher(val);
 
         return m.matches();
+    }
+
+
+    public static String removeUrl(String commentstr) {
+
+//        String urlPattern = "\\(?\\b(https?://|www[.]|ftp://)[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]";
+//        Pattern p = Pattern.compile(urlPattern, Pattern.CASE_INSENSITIVE);
+////        Matcher m = p.matcher(commentstr);
+
+
+        Matcher m = Patterns.WEB_URL.matcher(commentstr);
+        Matcher n = Patterns.EMAIL_ADDRESS.matcher(commentstr);
+        Matcher o = Patterns.DOMAIN_NAME.matcher(commentstr);
+        int i = 0;
+
+
+        while (n.find()) {
+            commentstr = commentstr.replaceAll(n.group(i), "").trim();
+            i++;
+        }
+
+        while (m.find()) {
+            commentstr = commentstr.replaceAll(m.group(i), "").trim();
+            i++;
+        }
+        while (o.find()) {
+            commentstr = commentstr.replaceAll(o.group(i), "").trim();
+            i++;
+        }
+        return commentstr;
     }
 }

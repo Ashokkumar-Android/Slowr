@@ -21,6 +21,9 @@
 
     <string name="enter_your_name">Your Name*</string>
     <string name="enter_your_phone_no">Mobile Number*</string>
+    <string name="enter_your_state">State*</string>
+    <string name="enter_your_city">City*</string>
+    <string name="txt_gender">Gender</string>
     <string name="enter_your_phone_no_email">Mobile Number(10digit) / Email Address</string>
     <string name="enter_your_phone_no_email_content">Enter Email</string>
     <string name="enter_your_email">E-mail ID</string>
@@ -66,6 +69,9 @@
     <string name="password_new_retype_same">New Password and Re-type New password should be same</string>
     <string name="txt_profile">My Profile</string>
     <string name="txt_profile_edit">Edit Profile</string>
+    <string name="txt_male">Male</string>
+    <string name="txt_female">Female</string>
+    <string name="txt_transgender">Transgender</string>
 
     <string name="enter_name">Enter Your Name</string>
     <string name="enter_name_minimum">Enter Minimum 3 Character</string>
@@ -100,6 +106,7 @@
     <string name="txt_locality">Locality *</string>
     <string name="txt_locality_select">Locality</string>
     <string name="txt_select_city">Select City</string>
+    <string name="txt_select_state">Select State</string>
     <string name="txt_type_city">Type City</string>
     <string name="txt_rental_duration_select">Select Rental Duration</string>
     <string name="txt_hiring_duration_select">Select Hiring Pattern</string>
@@ -143,6 +150,7 @@
     <string name="txt_ad_post_tc">Terms &amp; Conditions</string>
     <string name="accept_tc">Accept Terms &amp; Conditions to continue</string>
     <string name="select_city">Select City to continue</string>
+    <string name="select_state">Select State to continue</string>
     <string name="enter_rental_fee">Enter Rental Fee</string>
     <string name="enter_hiring_fee">Enter Hiring Fee</string>
     <string name="image_one_must">At least one image is mandatory. Please upload one to get more enquiries</string>
@@ -188,6 +196,8 @@
     <string name="nav_notification">My Notifications</string>
     <string name="nav_my_chat">My Chat</string>
     <string name="prosper_id">Prosper ID</string>
+
+    <string name="ad_details">Ad Details</string>
 
     <string name="txt_chat_now">Chat now</string>
     <string name="txt_description">Description</string>
@@ -269,8 +279,9 @@
     <string name="txt_expired">EXPIRED</string>
     <string name="txt_created">CREATED</string>
     <string name="txt_edited">EDITED</string>
+    <string name="txt_communicated">COMMUNICATED</string>
 
-    <string name="search_prosper_id">(eg, AA1234)</string>
+    <string name="search_prosper_id">(eg, 1234)</string>
     <string name="transaction_history">Invoices</string>
 
     <string name="txt_individual">Individual</string>
@@ -322,12 +333,12 @@
     <string name="promote_content_two">To boost another Ad click below</string>
     <string name="promote_success">SUCCESS</string>
     <string name="promote_error">ERROR</string>
-    <string name="txt_prosper_suggestion">Please enter only 2 Alphabets and 4 digits</string>
+    <string name="txt_prosper_suggestion">Please enter your desired 4 digit fancy number</string>
 
     <string name="default_notification_channel_id" translatable="false">8608</string>
 
     <string name="txt_congratulations">CONGRATULATIONS</string>
-    <string name="propsper_success_content_one">You are now the proud owner of</string>
+    <string name="propsper_success_content_one">Your Prosper page obtained a unique\nFancy ID</string>
     <string name="no_new_notification">No new notifications</string>
 
     <string name="duration_minutes_shortest">%1$d min ago</string>
@@ -473,6 +484,7 @@
     <string name="page_views">Prosper Page visits</string>
     <string name="contact_views">Contact views</string>
     <string name="page_views_content">Post more Ads to increase Prosper Page visits</string>
+    <string name="prosper_page_views_content">Get Fancy Prosper ID for more visits</string>
     <string name="page_views_content_two">Your Ad is in review.\nAd impression will be displayed\nonce published.</string>
     <string name="view_as_client_content">Post at least one Ad to view your Prosper Page as Client. \nClick below to post your first Ad</string>
 
@@ -489,6 +501,8 @@
     <string name="no_ads_display">No Ads to display</string>
     <string name="no_description">No Description</string>
     <string name="min_max_valitaion_msg">Min value should not be lesser than Max value</string>
+    <string name="update_location_for_bill">Please update your location\nto proceed.</string>
+    <string name="update_location_for_bill_two">(for GST bill)</string>
 
     <string name="serial">SERIAL: </string>
     <string name="model">MODEL: </string>

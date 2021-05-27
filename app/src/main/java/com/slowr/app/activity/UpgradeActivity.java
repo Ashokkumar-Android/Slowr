@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -23,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -113,7 +113,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
     ArrayList<ProsperIdItemModel> prosperIdList = new ArrayList<>();
     ProsperIdAdapter prosperIdAdapter;
 
-    private PopupWindow spinnerPopup;
+    private PopupWindow spinnerPopup,spinnerPopupCity;
 
     String prosperAmount = "0";
 
@@ -1101,14 +1101,23 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
         TextView txt_prosper_content = view.findViewById(R.id.txt_prosper_content);
         Button btn_ok = view.findViewById(R.id.btn_check_out);
         txt_prosperId_popup.setText(getString(R.string.txt_rupee_simpal) + " " + amount);
-        txt_prosper_content.setText(getString(R.string.prosper_id) + " " + proId + " " + getString(R.string.txt_has_been_selected));
+        String text = "<font color=#000000>" + getString(R.string.prosper_id) + "</font> <font color=#F2672E>" + " " + proId + " " + "</font>" + "<font color=#000000>" + getString(R.string.txt_has_been_selected);
+        txt_prosper_content.setText(Html.fromHtml(text));
+//        txt_prosper_content.setText(getString(R.string.prosper_id) + " " + proId + " " + getString(R.string.txt_has_been_selected));
         prosperAmount = amount;
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinnerPopup.dismiss();
-                isAddressEnable = false;
-                ShowPopupGST();
+
+//                ShowPopupStateCity();
+                if (Sessions.getSession(Constant.RegStateId, getApplicationContext())!=null&&Sessions.getSession(Constant.RegStateId, getApplicationContext()).equals("")) {
+                    ShowPopupStateCity();
+                } else {
+                    spinnerPopup.dismiss();
+                    isAddressEnable = false;
+                    ShowPopupGST();
+                }
+
 
             }
         });
@@ -1235,22 +1244,22 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 Function.hideSoftKeyboard(UpgradeActivity.this, v);
-                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("")&&gstNo.equals(edt_gst_no_bill.getText().toString())) {
+                if (isAddressEnable && !edt_gst_no_bill.getText().toString().equals("") && gstNo.equals(edt_gst_no_bill.getText().toString())) {
                     gstName = txt_company_name.getText().toString();
                     gstAddress = txt_company_address.getText().toString();
                     if (gstName.length() == 0) {
 //                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_name), Toast.LENGTH_SHORT).show();
-                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_company_name));
+                        Function.CustomMessage(UpgradeActivity.this, getString(R.string.enter_company_name));
                         return;
                     }
                     if (!Function.GSTNameValidation(gstName)) {
 //                        Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_company_name), Toast.LENGTH_SHORT).show();
-                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_valid_company_name));
+                        Function.CustomMessage(UpgradeActivity.this, getString(R.string.enter_valid_company_name));
                         return;
                     }
                     if (gstAddress.length() == 0) {
 //                        Toast.makeText(getApplicationContext(), getString(R.string.enter_company_address), Toast.LENGTH_SHORT).show();
-                        Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_company_address));
+                        Function.CustomMessage(UpgradeActivity.this, getString(R.string.enter_company_address));
                         return;
                     }
                     getOrderId();
@@ -1292,12 +1301,12 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
 
         if (_gstNo.length() == 0) {
 //            Toast.makeText(getApplicationContext(), getString(R.string.enter_gst_no), Toast.LENGTH_SHORT).show();
-            Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_gst_no));
+            Function.CustomMessage(UpgradeActivity.this, getString(R.string.enter_gst_no));
             return;
         }
         if (!Function.GSTNoValidation(_gstNo)) {
 //            Toast.makeText(getApplicationContext(), getString(R.string.enter_valid_gst_no), Toast.LENGTH_SHORT).show();
-            Function.CustomMessage(UpgradeActivity.this,getString(R.string.enter_valid_gst_no));
+            Function.CustomMessage(UpgradeActivity.this, getString(R.string.enter_valid_gst_no));
             return;
         }
         gstNo = _gstNo;
@@ -1358,7 +1367,7 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                         isAddressEnable = true;
                         gstId = "0";
                     } else {
-                    Function.CustomMessage(UpgradeActivity.this, "Enter a valid GST No");
+                        Function.CustomMessage(UpgradeActivity.this, "Enter a valid GST No");
 //                        Toast.makeText(getApplicationContext(), "Enter a valid GST No", Toast.LENGTH_SHORT).show();
                         txt_company_name.setText("");
                         txt_company_address.setText("");
@@ -1481,5 +1490,40 @@ public class UpgradeActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
         }
+    }
+
+    public void ShowPopupStateCity() {
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+
+        View view = inflater.inflate(R.layout.layout_state_city, null);
+
+        spinnerPopupCity = new PopupWindow(view,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        spinnerPopupCity.setOutsideTouchable(false);
+        spinnerPopupCity.setFocusable(false);
+        spinnerPopupCity.update();
+
+        TextView txt_skip = view.findViewById(R.id.txt_skip);
+        Button txt_done = view.findViewById(R.id.btn_ok);
+
+        txt_skip.setVisibility(View.GONE);
+        txt_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopupCity.dismiss();
+            }
+        });
+
+        txt_done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinnerPopupCity.dismiss();
+                Intent profile = new Intent(UpgradeActivity.this, ProfileActivity.class);
+                profile.putExtra("PageFrom", "3");
+                startActivity(profile);
+            }
+        });
+        spinnerPopupCity.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

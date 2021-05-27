@@ -1,7 +1,6 @@
 package com.slowr.app.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.slowr.app.R;
 import com.slowr.app.models.AdItemModel;
 import com.slowr.app.utils.Function;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +115,7 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_home_ad_item, parent, false);
+                .inflate(R.layout.layout_my_ad_item, parent, false);
         return new MyViewHolder(itemView);
     }
 
@@ -180,6 +178,11 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_border_color));
                 holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.txt_orange));
                 holder.img_share.setVisibility(View.GONE);
+            } else if (movie.getAdStatus().equals("7")) {
+                holder.txt_active_status.setText(ctx.getString(R.string.txt_communicated));
+                holder.txt_active_status.setBackground(ctx.getResources().getDrawable(R.drawable.bg_orenge_filled));
+                holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.color_white));
+                holder.img_share.setVisibility(View.GONE);
             } else if (movie.getAdStatus().equals("8")) {
                 holder.txt_active_status.setText(ctx.getString(R.string.txt_rejected));
                 holder.img_promote.setVisibility(View.GONE);
@@ -193,7 +196,8 @@ public class AdListAdapter extends RecyclerView.Adapter<AdListAdapter.MyViewHold
                 holder.txt_active_status.setTextColor(ctx.getResources().getColor(R.color.colorPrimary));
                 holder.img_share.setVisibility(View.GONE);
             }
-            Function.SetRentalPrice(movie.getAdFee(),movie.getAdDuration(),holder.txt_price,movie.getCatGroup(),ctx);
+            Function.SetRentalPrice(movie.getAdFee(), movie.getAdDuration(), holder.txt_price, movie.getCatGroup(), ctx);
+
 //            if (movie.getAdFee() != null) {
 //                holder.txt_price.setVisibility(View.VISIBLE);
 //                String price = "";

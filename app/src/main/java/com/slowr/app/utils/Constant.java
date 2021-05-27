@@ -18,16 +18,12 @@ public class Constant {
     /// Local Database.
 
 
-
-
     public static final String msg_Somethingwentwrong = "Your internet is not stable, Check your connection";
     public static final String Msg_Something = "Something went wrong please try again!";
     public static final String Content_Type = "application/json";
     public static final String Authorization = "Bearer a387714f5c3a0a9185ac50830a0a0185dc783637";
     public static final String ClientId = "uaBInTAtsKXNexyIyj";
     public static String ParentId = "";
-
-
 
 
     public static final String LoginFlag = "LoginFlag";
@@ -40,12 +36,14 @@ public class Constant {
     public static final String UserProfile = "UserProfile";
     public static final String ProsperId = "ProsperId";
     public static final String CityId = "CityId";
+    public static final String RegCityId = "RegCityId";
+    public static final String RegStateId = "RegStateId";
     public static final String CityName = "CityName";
+    public static final String RegCityName = "RegCityName";
+    public static final String RegStateName = "RegStateName";
     public static final String ImagePath = "ImagePath";
     public static final String UserVerified = "0";
     public static final String IsFirst = "IsFirst";
-
-
 
 
     public static final String[] Permissions = new String[]{

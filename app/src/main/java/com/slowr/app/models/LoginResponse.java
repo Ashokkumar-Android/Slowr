@@ -35,6 +35,18 @@ public class LoginResponse {
     @SerializedName("is_register")
     private String isRegister;
 
+    @SerializedName("state_id")
+    String stateId;
+
+    @SerializedName("city_id")
+    String cityId;
+
+    @SerializedName("state")
+    String stateName;
+
+    @SerializedName("city")
+    String cityName;
+
     public boolean isStatus() {
         return status;
     }
@@ -121,5 +133,37 @@ public class LoginResponse {
 
     public void setIsVerified(String isVerified) {
         this.isVerified = isVerified;
+    }
+
+    public String getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(String stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
     }
 }

@@ -48,7 +48,6 @@ import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -169,7 +168,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
         rc_related_ad_list.setLayoutManager(linearLayoutManager3);
         rc_related_ad_list.setItemAnimator(new DefaultItemAnimator());
-        popularAdListAdapter = new PopularAdListAdapter(relatedAdList, PostViewActivity.this);
+        popularAdListAdapter = new PopularAdListAdapter(relatedAdList, PostViewActivity.this, "", -1);
         rc_related_ad_list.setAdapter(popularAdListAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(PostViewActivity.this, RecyclerView.HORIZONTAL, false);
@@ -233,6 +232,11 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 String userId = model.getUserId();
                 changeFragment(adId, userId);
             }
+
+            @Override
+            public void itemRequestClick(int pos) {
+
+            }
         });
     }
 
@@ -279,7 +283,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
             }
             Glide.with(this)
                     .load(url)
-                    .circleCrop()
+//                    .circleCrop()
                     .placeholder(defu)
                     .error(defu)
                     .into(img_ad_view);
@@ -332,7 +336,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             } else {
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.txt_orange));
                             }
-                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(),editAdDetailsModel.getRentalDuration(),txt_price,catGroup,getApplicationContext());
+                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(), editAdDetailsModel.getRentalDuration(), txt_price, catGroup, getApplicationContext());
 //                            if (editAdDetailsModel.getRentalFee() != null) {
 //                                txt_price.setVisibility(View.VISIBLE);
 //                                String price = "";
@@ -385,7 +389,7 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                             userPhone = dr.getEditDataModel().getUserDetailsModel().getUserPhone();
                             userEmail = dr.getEditDataModel().getUserDetailsModel().getUserEmail();
                             userName = dr.getEditDataModel().getUserDetailsModel().getUserName();
-                            if (userPhone.equals("")) {
+                            if (userPhone!=null&& userPhone.equals("")) {
                                 btn_call_now.setVisibility(View.GONE);
                             }
 //                            }
@@ -570,6 +574,8 @@ public class PostViewActivity extends BaseActivity implements View.OnClickListen
                 Intent i = new Intent(PostViewActivity.this, UserProfileActivity.class);
                 i.putExtra("prosperId", userProsperId);
                 i.putExtra("PageFrom", "1");
+                i.putExtra("PageID", "4");
+                i.putExtra("adID", adId);
                 startActivity(i);
                 break;
             case R.id.btn_chat_now:

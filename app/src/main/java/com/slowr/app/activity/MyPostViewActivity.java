@@ -50,7 +50,6 @@ import com.slowr.app.utils.Constant;
 import com.slowr.app.utils.Function;
 import com.slowr.app.utils.Sessions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -195,7 +194,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
         txt_report_ad = findViewById(R.id.txt_report_ad);
         btn_view_contact = findViewById(R.id.btn_view_contact);
         layout_profile_details = findViewById(R.id.layout_profile_details);
-        txt_page_title.setText(getString(R.string.nav_dash_board));
+        txt_page_title.setText(getString(R.string.ad_details));
 
         btn_call_now.setVisibility(View.GONE);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MyPostViewActivity.this, RecyclerView.HORIZONTAL, false);
@@ -265,9 +264,13 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             pageLink = pageLink.replaceAll("//", "~");
                             pageLink = pageLink.replaceAll("/", "~");
                             Log.i("Link", pageLink);
-                            if (pageLink.contains("https:~www.slowr.com~ad-details~")) {
-                                pageLink = pageLink.replace("https:~www.slowr.com~ad-details~", "");
+                            if (pageLink.contains("https:~www.slowr.com~view~")) {
+                                pageLink = pageLink.replace("https:~www.slowr.com~view~", "");
                             }
+//                            if (pageLink.contains("https:~test.slowr.in~view~")) {
+//                                pageLink = pageLink.replace("https:~test.slowr.in~view~", "");
+//                            }
+
                             Log.i("Link", pageLink);
 //                            String[] ids = pageLink.split("~");
 //                            catId = ids[0];
@@ -356,7 +359,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
             }
             Glide.with(this)
                     .load(url)
-                    .circleCrop()
+//                    .circleCrop()
                     .error(defu)
                     .placeholder(defu)
                     .into(img_ad_view);
@@ -411,7 +414,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 img_like.setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.txt_orange));
                             }
 
-                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(),editAdDetailsModel.getRentalDuration(),txt_price,catGroup,getApplicationContext());
+                            Function.SetRentalPrice(editAdDetailsModel.getRentalFee(), editAdDetailsModel.getRentalDuration(), txt_price, catGroup, getApplicationContext());
 //                            if (editAdDetailsModel.getRentalFee() != null) {
 //                                txt_price.setVisibility(View.VISIBLE);
 //                                String price = "";
@@ -466,7 +469,7 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                             userName = dr.getEditDataModel().getUserDetailsModel().getUserName();
                             if (userPhone != null && userPhone.equals("")) {
                                 btn_call_now.setVisibility(View.GONE);
-                            }else {
+                            } else {
 
                             }
 //                            }
@@ -548,6 +551,16 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                                 txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
                                 txt_active_status.setText(getString(R.string.txt_edited));
                                 txt_active_status.setTextColor(getResources().getColor(R.color.txt_orange));
+//                                layout_like.setEnabled(false);
+                                img_share.setVisibility(View.GONE);
+                            } else if (AdStatus.equals("7")) {
+//                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_border_color));
+//                                txt_active_status.setText(getString(R.string.txt_edited));
+//                                txt_active_status.setTextColor(getResources().getColor(R.color.txt_orange));
+
+                                txt_active_status.setText(getString(R.string.txt_communicated));
+                                txt_active_status.setBackground(getResources().getDrawable(R.drawable.bg_orenge_filled));
+                                txt_active_status.setTextColor(getResources().getColor(R.color.color_white));
 //                                layout_like.setEnabled(false);
                                 img_share.setVisibility(View.GONE);
                             } else if (AdStatus.equals("8")) {
@@ -775,6 +788,8 @@ public class MyPostViewActivity extends AppCompatActivity implements View.OnClic
                     Intent j = new Intent(MyPostViewActivity.this, UserProfileActivity.class);
                     j.putExtra("prosperId", userProsperId);
                     j.putExtra("PageFrom", "1");
+                    j.putExtra("PageID", "4");
+                    j.putExtra("adID", adId);
                     startActivity(j);
                 }
 

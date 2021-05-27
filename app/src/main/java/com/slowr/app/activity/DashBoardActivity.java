@@ -166,7 +166,7 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
                 String adTitle = model.getAdTitle();
                 String catGroup = model.getCatGroup();
                 String url = model.getPhotoType();
-                Function.ShareLink(DashBoardActivity.this,  adId, adTitle, catGroup, url);
+                Function.ShareLink(DashBoardActivity.this, adId, adTitle, catGroup, url);
             }
 
             @Override
@@ -417,10 +417,10 @@ public class DashBoardActivity extends AppCompatActivity implements View.OnClick
         txt_ad_view_count.setText(model.getUserViewCount());
         txt_page_view_count.setText(model.getProsperPageViewCount());
         txt_contact_view_count.setText(model.getUserContactViewCount());
-        if(model.getAdStatus().equals("0")||model.getAdStatus().equals("9")){
+        if (model.getAdStatus().equals("0") || model.getAdStatus().equals("9")) {
             layout_ad_view.setVisibility(View.GONE);
             layout_no_count.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             layout_ad_view.setVisibility(View.VISIBLE);
             layout_no_count.setVisibility(View.GONE);
         }
